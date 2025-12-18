@@ -205,6 +205,428 @@ This repository contains the complete technical implementation model for the ICG
 - **Validation Tools**: Conformance checking
 - **Documentation**: Complete guides and examples
 
+### Component Overview and Usage
+
+#### JSON Schemas: Data Structure Definitions
+
+**What it is:**
+JSON Schemas are machine-readable documents that define the structure, format, and validation rules for all data entities in the ICGLR standard. They specify what fields are required, what data types are allowed, what values are valid, and how data should be formatted.
+
+**Location:** `schemas/` directory
+
+**What it's used for:**
+- **Data Validation**: Validate incoming and outgoing data to ensure it conforms to the standard
+- **Documentation**: Serve as authoritative documentation of data structures
+- **Code Generation**: Generate database schemas, API models, and client libraries
+- **Type Safety**: Ensure type consistency across different implementations
+- **Interoperability**: Guarantee that data from one system can be understood by another
+
+**How to use it:**
+
+1. **Validate Data:**
+   ```bash
+   # Using the validation tool
+   node conformance/validators/schema-validator.js mine-site your-data.json
+   ```
+
+2. **In Your Application:**
+   ```javascript
+   const Ajv = require('ajv');
+   const ajv = new Ajv();
+   const schema = require('./schemas/mine-site/mine-site.json');
+   const validate = ajv.compile(schema);
+   
+   const data = { icglr_id: "RW-1.9641+30.0619-00001", ... };
+   const valid = validate(data);
+   if (!valid) {
+     console.log(validate.errors);
+   }
+   ```
+
+3. **Generate Database Schema:**
+   ```bash
+   cd api-server
+   npm run db:generate
+   # This reads JSON schemas and generates SQLite database schema
+   ```
+
+4. **Reference in Code:**
+   - Use schemas to understand required fields before creating data
+   - Validate API requests and responses
+   - Generate forms and UI components automatically
+   - Create API documentation
+
+**Key Features:**
+- Defines all entities (Mine Site, Export Certificate, Lot, etc.)
+- Specifies cardinality (required/optional, single/multiple)
+- Validates formats (ICGLR ID, dates, coordinates)
+- Enforces code lists (status codes, mineral codes)
+- Language-independent validation
+
+---
+
+#### OpenAPI Specification: API Endpoint Definitions
+
+**What it is:**
+OpenAPI (formerly Swagger) is a standard format for describing RESTful APIs. The OpenAPI specification file defines all available endpoints, request/response formats, authentication methods, and error codes in a machine-readable format.
+
+**Location:** `api/openapi.yaml`
+
+**What it's used for:**
+- **API Documentation**: Generate interactive API documentation (Swagger UI)
+- **Code Generation**: Generate server stubs and client libraries automatically
+- **API Testing**: Test APIs directly from documentation
+- **Contract Definition**: Serve as a contract between API providers and consumers
+- **Validation**: Validate API requests and responses against the specification
+
+**How to use it:**
+
+1. **View Interactive Documentation:**
+   ```bash
+   # Start the API server
+   cd api-server && npm start
+   # Visit http://localhost:3000/api-docs
+   # This shows Swagger UI with all endpoints, try-it-out functionality
+   ```
+
+2. **Generate API Server:**
+   ```bash
+   cd api-server
+   npm run api:generate
+   # This reads openapi.yaml and generates Express.js routes, handlers, and services
+   ```
+
+3. **Generate Client Libraries:**
+   ```bash
+   # Using OpenAPI Generator
+   npx @openapitools/openapi-generator-cli generate \
+     -i api/openapi.yaml \
+     -g javascript \
+     -o client-js
+   ```
+
+4. **Validate API Requests:**
+   - Use tools like Swagger Codegen or OpenAPI Generator
+   - Validate requests against the specification before sending
+   - Generate type-safe client code
+
+5. **API Testing:**
+   - Use Swagger UI to test endpoints interactively
+   - Generate test cases from the specification
+   - Validate responses match the specification
+
+**Key Features:**
+- Complete endpoint definitions (GET, POST, PUT for all resources)
+- Request/response schemas with examples
+- Authentication methods (JWT, API Key)
+- Error response formats
+- Query parameters and filtering options
+- Pagination specifications
+
+**Example Usage:**
+```yaml
+# From openapi.yaml
+paths:
+  /mine-sites:
+    get:
+      summary: List mine sites
+      parameters:
+        - name: address_country
+          in: query
+          schema:
+            $ref: '#/components/schemas/ICGLRMemberState'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineSiteListResponse'
+```
+
+---
+
+#### Reference Implementation: Working API Server
+
+**What it is:**
+A complete, working API server implementation that demonstrates how to implement the ICGLR standard. It includes a fully functional Express.js server with all endpoints, database integration, validation, and error handling.
+
+**Location:** `api-server/` directory
+
+**What it's used for:**
+- **Learning**: Understand how to implement the standard
+- **Testing**: Test API functionality locally
+- **Development**: Use as a starting point for your own implementation
+- **Demonstration**: Show stakeholders how the API works
+- **Integration Testing**: Test client applications against a working server
+
+**How to use it:**
+
+1. **Quick Start:**
+   ```bash
+   cd api-server
+   npm install
+   npm run db:generate    # Generate database schema
+   npm run api:generate   # Generate API from OpenAPI spec
+   npm run db:seed        # (Optional) Load example data
+   npm start              # Start server
+   ```
+
+2. **Access the API:**
+   - API Base: `http://localhost:3000`
+   - Swagger UI: `http://localhost:3000/api-docs`
+   - Health Check: `http://localhost:3000/health`
+
+3. **Test Endpoints:**
+   ```bash
+   # List mine sites
+   curl http://localhost:3000/mine-sites
+   
+   # Create a mine site
+   curl -X POST http://localhost:3000/mine-sites \
+     -H "Content-Type: application/json" \
+     -d @../examples/json/mine-site-example.json
+   ```
+
+4. **Customize for Your Needs:**
+   - Modify `src/services/` for business logic
+   - Update `src/middleware/` for custom validation
+   - Change database in `src/database/`
+   - Add authentication in `src/middleware/`
+
+5. **Use as Reference:**
+   - Study how endpoints are implemented
+   - See how validation is performed
+   - Understand error handling patterns
+   - Learn database integration approach
+
+**Key Features:**
+- Auto-generated from OpenAPI specification
+- SQLite database with auto-generated schema
+- JSON Schema validation
+- Swagger UI documentation
+- Complete CRUD operations
+- Pagination and filtering
+- Error handling
+
+**Architecture:**
+```
+api-server/
+├── src/
+│   ├── server.js          # Main Express app
+│   ├── routes/            # API route handlers
+│   ├── services/          # Business logic
+│   ├── middleware/       # Validation & error handling
+│   └── database/         # Database connection
+├── scripts/
+│   ├── generate-api.js   # Generate API from OpenAPI
+│   └── generate-db-schema.js  # Generate DB from schemas
+└── data/                 # SQLite database
+```
+
+---
+
+#### Validation Tools: Conformance Checking
+
+**What it is:**
+Tools and scripts that verify data and implementations conform to the ICGLR standard. These tools check JSON Schema compliance, validate data formats, and ensure implementations meet conformance requirements.
+
+**Location:** `conformance/` directory
+
+**What it's used for:**
+- **Data Validation**: Verify data files conform to JSON schemas
+- **Conformance Testing**: Ensure implementations meet standard requirements
+- **Quality Assurance**: Catch errors before data exchange
+- **Certification**: Validate systems for ICGLR certification
+- **Development**: Test data during development
+
+**How to use it:**
+
+1. **Validate JSON Data:**
+   ```bash
+   # Validate a mine site JSON file
+   node conformance/validators/schema-validator.js mine-site examples/json/mine-site-example.json
+   
+   # Validate export certificate
+   node conformance/validators/schema-validator.js export-certificate examples/json/export-certificate-example.json
+   
+   # Validate lot
+   node conformance/validators/schema-validator.js lot examples/json/lot-example.json
+   ```
+
+2. **In Your Application:**
+   ```javascript
+   const validator = require('./conformance/validators/schema-validator');
+   
+   // Validate data before sending to API
+   const result = validator.validate(data, 'mine-site');
+   if (!result.valid) {
+     console.error('Validation errors:', result.errors);
+     // Handle errors
+   }
+   ```
+
+3. **Automated Testing:**
+   ```javascript
+   // In your test suite
+   describe('Data Validation', () => {
+     it('should validate mine site data', () => {
+       const data = loadTestData('mine-site.json');
+       const result = validator.validate(data, 'mine-site');
+       expect(result.valid).toBe(true);
+     });
+   });
+   ```
+
+4. **CI/CD Integration:**
+   ```yaml
+   # GitHub Actions example
+   - name: Validate Data
+     run: |
+       node conformance/validators/schema-validator.js mine-site data/mine-sites.json
+   ```
+
+5. **Check Conformance Levels:**
+   - Review `conformance/rules.md` for requirements
+   - Use validators to check Level 1 (Basic Conformance)
+   - Test API endpoints for Level 2 (API Conformance)
+   - Verify JSON-LD support for Level 3
+   - Test GraphQL for Level 4
+
+**Key Features:**
+- JSON Schema validation
+- ICGLR ID format validation
+- Status code validation
+- Date/time format validation
+- Coordinate validation
+- Error reporting with details
+
+**Validation Checks:**
+- Required fields present
+- Data types correct
+- Enum values valid
+- Format patterns match (ICGLR ID, dates, etc.)
+- Cardinality rules followed
+- Code list values correct
+
+---
+
+#### Documentation: Complete Guides and Examples
+
+**What it is:**
+Comprehensive documentation including guides, examples, architecture descriptions, and implementation instructions. This includes both human-readable documentation and executable examples.
+
+**Location:** Multiple files including `COMPLETE_DOCUMENTATION.md`, `docs/`, `examples/`
+
+**What it's used for:**
+- **Learning**: Understand the standard and how to implement it
+- **Reference**: Look up specific information quickly
+- **Examples**: See working examples of data structures and API calls
+- **Onboarding**: Help new developers understand the project
+- **Training**: Train team members on the standard
+
+**How to use it:**
+
+1. **Read Complete Documentation:**
+   ```bash
+   # Open COMPLETE_DOCUMENTATION.md
+   # Contains everything from introduction to technical details
+   ```
+
+2. **Study Examples:**
+   ```bash
+   # View JSON examples
+   cat examples/json/mine-site-example.json
+   cat examples/json/export-certificate-example.json
+   cat examples/json/lot-example.json
+   ```
+
+3. **Follow Implementation Guide:**
+   ```bash
+   # Read step-by-step guide
+   cat docs/implementation-guide.md
+   ```
+
+4. **Review Architecture:**
+   ```bash
+   # Understand system design
+   cat docs/architecture.md
+   ```
+
+5. **Use API Examples:**
+   ```bash
+   # See API request examples
+   cat examples/requests/api-request-examples.md
+   ```
+
+6. **Reference During Development:**
+   - Keep documentation open while coding
+   - Copy examples as starting points
+   - Reference code lists and formats
+   - Check conformance rules
+
+**Documentation Structure:**
+
+- **COMPLETE_DOCUMENTATION.md**: Single comprehensive document
+  - Introduction for non-technical readers
+  - Technical documentation
+  - API reference
+  - Implementation guide
+
+- **docs/architecture.md**: System architecture and design
+  - Design principles
+  - Architecture layers
+  - Data flow diagrams
+  - Component details
+
+- **docs/implementation-guide.md**: Step-by-step implementation
+  - Quick start
+  - Implementation steps
+  - Code examples
+  - Best practices
+
+- **examples/json/**: JSON data examples
+  - `mine-site-example.json`: Complete mine site example
+  - `export-certificate-example.json`: Export certificate example
+  - `lot-example.json`: Chain of Custody lot example
+  - `lot-transformation-example.json`: Lot transformation example
+
+- **examples/requests/**: API usage examples
+  - HTTP request examples
+  - cURL commands
+  - Response examples
+  - Error handling examples
+
+- **conformance/rules.md**: Conformance requirements
+  - Level 1-4 requirements
+  - Validation rules
+  - Certification process
+
+**Example Usage:**
+```javascript
+// Copy from examples/json/mine-site-example.json
+const mineSite = {
+  "icglr_id": "RW-1.9641+30.0619-00001",
+  "address_country": "RW",
+  "certification_status": 1,
+  // ... rest from example
+};
+
+// Use in your code
+const response = await fetch('/mine-sites', {
+  method: 'POST',
+  body: JSON.stringify(mineSite),
+  headers: { 'Content-Type': 'application/json' }
+});
+```
+
+**Key Benefits:**
+- Reduces learning curve
+- Provides working examples
+- Ensures correct implementation
+- Saves development time
+- Promotes best practices
+
 ### Repository Structure
 
 ```
