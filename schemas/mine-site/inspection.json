@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/mine-site/inspection.json",
+  "title": "MD.07 Inspection",
+  "description": "Inspection entity for mine site inspections",
+  "type": "object",
+  "required": [
+    "inspection_id",
+    "inspection_date",
+    "inspection_responsible",
+    "inspection_findings",
+    "inspection_report",
+    "inspection_purpose",
+    "inspection_results",
+    "inspector_name",
+    "inspector_position",
+    "government_agency"
+  ],
+  "properties": {
+    "inspection_id": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "Generated identifier, including the initials of the inspector name and the timestamp. Example: PS-2025-12-02-16-03"
+    },
+    "inspection_date": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "The dates of inspection of the mine site"
+    },
+    "inspection_responsible": {
+      "type": "string",
+      "description": "The agency and person responsible for the inspection"
+    },
+    "inspection_findings": {
+      "type": "string",
+      "description": "The finding of the inspection (i.e. mine site is Certified, un-Certified, or found to be Yellow Flagged)"
+    },
+    "inspection_report": {
+      "type": "string",
+      "description": "The Full Inspection Report of each inspection (file reference or URL)"
+    },
+    "inspection_purpose": {
+      "type": "string",
+      "description": "Inspection purpose - short text"
+    },
+    "inspection_results": {
+      "type": "string",
+      "description": "Inspection results - long text"
+    },
+    "inspector_name": {
+      "type": "string",
+      "description": "Inspector name - full name"
+    },
+    "inspector_position": {
+      "type": "string",
+      "description": "Inspector position - title or position"
+    },
+    "government_agency": {
+      "type": "string",
+      "description": "Government Agency - short text"
+    },
+    "government_id": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "Government identification number, if applicable"
+    }
+  }
+}
+

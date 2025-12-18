@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/core/common.json",
+  "title": "ICGLR Common Data Structures",
+  "description": "Common data structures used across ICGLR mining sector standards. Based on the semantic model defined in the ICGLR Data Sharing Protocol Standards.",
+  "definitions": {
+    "ICGLRMemberState": {
+      "type": "string",
+      "enum": ["AO", "BI", "CD", "CF", "CG", "KE", "RW", "SS", "SD", "TZ", "UG", "ZM"],
+      "description": "ICGLR member state ISO 3166-1 alpha-2 code"
+    },
+    "Date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "ISO 8601 date format (YYYY-MM-DD)"
+    },
+    "DateTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time format"
+    },
+    "Time": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}:[0-9]{2}$",
+      "description": "Time format (HH:mm:ss)"
+    },
+    "Decimal": {
+      "type": "number",
+      "description": "Decimal number"
+    },
+    "Identifier": {
+      "type": "string",
+      "description": "A finite sequence of characters that adhere to a format rule, subtype of String"
+    },
+    "String": {
+      "type": "string",
+      "description": "A finite sequence of characters"
+    },
+    "Geolocalization": {
+      "type": "object",
+      "description": "MD.06 Geolocalization - Geographic coordinates",
+      "required": ["latitude", "longitude"],
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Latitude in WGS 84 format, decimal degrees with 4 decimals"
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180,
+          "description": "Longitude in WGS 84 format, decimal degrees with 4 decimals"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "description": "MD.05 Address",
+      "required": ["country", "subnational_division_l1", "address_locality"],
+      "properties": {
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "An ISO 3166-1 country code. ISO 3166-1 alpha-2 – two-letter country codes. Can be any country, not limited to ICGLR member states (e.g., for importers from outside ICGLR region)"
+        },
+        "subnational_division_l1": {
+          "type": "string",
+          "description": "Subnational Division Level 1 Code using ISO 3166-2 format (e.g., CD-BU for Bas-Uélé, Lower Uele)"
+        },
+        "subnational_division_l1_text": {
+          "type": "string",
+          "description": "Subnational Division Level 1 text"
+        },
+        "subnational_division_l2": {
+          "type": "string",
+          "description": "Subnational Division Level 2"
+        },
+        "subnational_division_l3": {
+          "type": "string",
+          "description": "Subnational Division Level 3"
+        },
+        "subnational_division_l4": {
+          "type": "string",
+          "description": "Subnational Division Level 4"
+        },
+        "address_locality": {
+          "type": "string",
+          "description": "Locality as designated in UPU S42, ISO 19160-1"
+        }
+      }
+    },
+    "ContactDetails": {
+      "type": "object",
+      "description": "MD.09 Contact Details",
+      "required": ["legal_representative", "contact_phone_number", "contact_email"],
+      "properties": {
+        "legal_representative": {
+          "type": "string",
+          "description": "Legal representative name (First name and last name)"
+        },
+        "contact_phone_number": {
+          "type": "string"
+        },
+        "contact_email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "BusinessEntity": {
+      "type": "object",
+      "description": "MD.04 Business Entity",
+      "required": ["identifier", "name", "legal_address", "physical_address", "tin", "rdb_number", "rca_number", "contact_details"],
+      "properties": {
+        "identifier": {
+          "$ref": "#/definitions/Identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Legal name of the entity, as officially registered"
+        },
+        "legal_address": {
+          "$ref": "#/definitions/Address"
+        },
+        "physical_address": {
+          "$ref": "#/definitions/Address"
+        },
+        "tin": {
+          "$ref": "#/definitions/Identifier",
+          "description": "Tax ID Number in the country of registration"
+        },
+        "rdb_number": {
+          "$ref": "#/definitions/Identifier",
+          "description": "Business registration number"
+        },
+        "rca_number": {
+          "type": "string",
+          "description": "Other identifying information as required"
+        },
+        "contact_details": {
+          "$ref": "#/definitions/ContactDetails",
+          "description": "MD.09 Contact Details - Group of business terms holding contact details of entity"
+        }
+      }
+    },
+    "CertificationStatus": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "description": "MDC.01 Certification Status: 0=Blue (Uninspected), 1=Green (Certified), 2=Yellow (Yellow-Flagged), 3=Red (Un-Certified)"
+    },
+    "MiningActivityStatus": {
+      "type": "integer",
+      "enum": [0, 1, 2],
+      "description": "MDC.02 Mining Activity Status: 0=Abandoned, 1=Active, 2=Non-active"
+    },
+    "MineralCode": {
+      "type": "string",
+      "description": "MDC.03 Mineral - HS Code or IMA Code. For designated minerals: 7108.12.00 (Gold/IMA1960-A), 2609.00.00 (Cassiterite/IMA1960-001), 2611.00.00 (Wolframite/IMA2000-014), 2615.90.00 (Coltan/IMA1979-A)"
+    },
+    "LicenseType": {
+      "type": "string",
+      "enum": ["claim", "exploration_permit", "mining_license", "artisanal_permit", "unlicensed", "other"],
+      "description": "MDC.04 License Type"
+    },
+    "CoCRole": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4, 5, 6, 7, 8],
+      "description": "MDC.05 CoC Roles: 1=Miner, 2=Trader (in-country), 3=Shipper, 4=Processor, 5=Warehouse, 6=Importer, 7=Exporter, 8=Government"
+    },
+    "OriginatingOperation": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4, 5, 6, 7, 8],
+      "description": "MDC.06 Originating operations: 1=Production, 2=Purchase, 3=Combination, 4=Processing, 5=Transportation, 6=Storage/Warehousing, 7=Import, 8=Export"
+    },
+    "MineSiteIdFormat": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}-[+-]?[0-9]+\\.[0-9]{4}[+-][0-9]+\\.[0-9]{4}-[0-9]+$",
+      "description": "ICGLR Mine Site ID format: CC-[Lat]-[Long]-NNNNN (e.g., RW-1.9641+30.0619-12345)"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/chain-of-custody/tax.json",
+  "title": "MD.13 Tax",
+  "description": "Tax entity - Values and details of all taxes paid",
+  "type": "object",
+  "required": [
+    "tax_type",
+    "tax_amount",
+    "currency"
+  ],
+  "properties": {
+    "tax_type": {
+      "type": "string",
+      "description": "Textual description of the type of tax"
+    },
+    "tax_amount": {
+      "$ref": "../core/common.json#/definitions/Decimal",
+      "description": "Value of paid tax, expressed in the required currency"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "The currency in which the tax was expressed - Use Currency code of 3 letters (ISO 4217)"
+    }
+  }
+}
+

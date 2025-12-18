@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/mine-site/mine-site-location.json",
+  "title": "MD.08 Mine Site Location",
+  "description": "Mine site location information",
+  "type": "object",
+  "required": [
+    "geolocalization",
+    "national_cadaster_localization",
+    "local_geographic_designation"
+  ],
+  "properties": {
+    "geolocalization": {
+      "$ref": "../core/common.json#/definitions/Geolocalization",
+      "description": "MD.06 Geolocalization - Geographic localization in WGS 84 format, decimal degrees with 4 decimals"
+    },
+    "national_cadaster_localization": {
+      "type": "string",
+      "description": "National cadaster localization - Given in the terms used by the Member State national mining cadastre"
+    },
+    "local_geographic_designation": {
+      "$ref": "../core/common.json#/definitions/Address",
+      "description": "Local geographic designation - Given in local geographic terms (province/state, municipality/chefferie/district)"
+    },
+    "polygon": {
+      "type": "string",
+      "description": "A polygonal representation of the site, as an array of pairs of coordinates"
+    },
+    "altitude": {
+      "$ref": "../core/common.json#/definitions/Decimal",
+      "description": "Average altitude of the mine site in meters"
+    }
+  }
+}
+

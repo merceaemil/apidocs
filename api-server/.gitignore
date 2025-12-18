@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+src/generated/node_modules/
+
+# Database
+data/*.db
+data/*.db-journal
+data/schema.sql
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+src/generated/uploaded_files/
+uploaded_files/

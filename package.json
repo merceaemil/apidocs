@@ -1,0 +1,40 @@
+{
+  "name": "icglr-mining-data-sharing-protocol",
+  "version": "1.0.0",
+  "description": "ICGLR Mining Sector Data Sharing Protocol Standards - Technical Implementation",
+  "main": "index.js",
+  "scripts": {
+    "validate": "node conformance/validators/schema-validator.js",
+    "validate:mine-site": "node conformance/validators/schema-validator.js mine-site examples/json/mine-site-example.json",
+    "validate:mine-site-multiple": "node conformance/validators/schema-validator.js mine-site examples/json/mine-site-with-multiple-inspections-example.json",
+    "validate:export-certificate": "node conformance/validators/schema-validator.js export-certificate examples/json/export-certificate-example.json",
+    "validate:lot": "node conformance/validators/schema-validator.js lot examples/json/lot-example.json",
+    "validate:lot-transformation": "node conformance/validators/schema-validator.js lot examples/json/lot-transformation-example.json",
+    "validate:all": "npm run validate:mine-site && npm run validate:mine-site-multiple && npm run validate:export-certificate && npm run validate:lot && npm run validate:lot-transformation",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Linting not configured\""
+  },
+  "keywords": [
+    "icglr",
+    "mining",
+    "data-sharing",
+    "api",
+    "standard",
+    "interoperability"
+  ],
+  "author": "ICGLR Secretariat",
+  "license": "ICGLR",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icglr/mining-data-sharing-protocol.git"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

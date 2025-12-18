@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/mine-site/status-history.json",
+  "title": "MD.10 Status History",
+  "description": "Status history change record",
+  "type": "object",
+  "required": [
+    "date_of_change",
+    "new_status"
+  ],
+  "properties": {
+    "date_of_change": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "Date of status change"
+    },
+    "new_status": {
+      "$ref": "../core/common.json#/definitions/CertificationStatus",
+      "description": "The status acquired after the change"
+    }
+  }
+}
+

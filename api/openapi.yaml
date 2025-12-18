@@ -1,0 +1,971 @@
+openapi: 3.0.3
+info:
+  title: ICGLR Mining Sector Data Sharing Protocol API
+  description: |
+    API specification for the ICGLR Mining Sector Data Sharing Protocol Standards.
+    This API enables interoperability of reporting between ICGLR member states.
+    
+    Based on the semantic model defined in the ICGLR Data Sharing Protocol Standards.
+    
+    **Important**: This standard is designed for data exchange, not as a relational database schema.
+  version: 1.0.0
+  contact:
+    name: ICGLR Secretariat
+    url: https://icglr.org
+  license:
+    name: ICGLR Standard License
+    url: https://icglr.org/license
+
+servers:
+  - url: https://api.icglr.org/v1
+    description: ICGLR Production API
+  - url: https://api-staging.icglr.org/v1
+    description: ICGLR Staging API
+  - url: http://localhost:3000/
+    description: Local development server
+
+tags:
+  - name: Mine Sites
+    description: Mine site data management (MD.01)
+  - name: Export Certificates
+    description: ICGLR Export Certificate management (MD.03)
+  - name: Chain of Custody
+    description: Lot and Chain of Custody data (MD.12)
+  - name: Query
+    description: GraphQL-based flexible querying
+
+paths:
+  /mine-sites:
+    get:
+      tags:
+        - Mine Sites
+      summary: List mine sites
+      description: Retrieve a list of mine sites with optional filtering
+      operationId: listMineSites
+      parameters:
+        - name: address_country
+          in: query
+          description: Filter by ICGLR member state code
+          schema:
+            $ref: '#/components/schemas/ICGLRMemberState'
+        - name: certification_status
+          in: query
+          description: Filter by certification status (0=Blue, 1=Green, 2=Yellow, 3=Red)
+          schema:
+            type: integer
+            enum: [0, 1, 2, 3]
+        - name: activity_status
+          in: query
+          description: Filter by activity status (0=Abandoned, 1=Active, 2=Non-active)
+          schema:
+            type: integer
+            enum: [0, 1, 2]
+        - name: mineral
+          in: query
+          description: Filter by mineral code (HS Code or IMA Code)
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineSiteListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    post:
+      tags:
+        - Mine Sites
+      summary: Create mine site
+      description: Create a new mine site record
+      operationId: createMineSite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MineSite'
+          application/ld+json:
+            schema:
+              $ref: '#/components/schemas/MineSite'
+      responses:
+        '201':
+          description: Mine site created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineSite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /mine-sites/{icglr_id}:
+    get:
+      tags:
+        - Mine Sites
+      summary: Get mine site by ICGLR ID
+      description: Retrieve a specific mine site by its ICGLR identification number
+      operationId: getMineSite
+      parameters:
+        - name: icglr_id
+          in: path
+          required: true
+          description: "ICGLR Mine Site Identification Number (format: CC-[Lat]-[Long]-NNNNN)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineSite'
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/MineSite'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    put:
+      tags:
+        - Mine Sites
+      summary: Update mine site
+      description: Update an existing mine site
+      operationId: updateMineSite
+      parameters:
+        - name: icglr_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MineSite'
+      responses:
+        '200':
+          description: Mine site updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineSite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /export-certificates:
+    get:
+      tags:
+        - Export Certificates
+      summary: List export certificates
+      description: Retrieve export certificates with filtering options
+      operationId: listExportCertificates
+      parameters:
+        - name: issuing_country
+          in: query
+          description: Filter by issuing country
+          schema:
+            $ref: '#/components/schemas/ICGLRMemberState'
+        - name: identifier
+          in: query
+          description: Filter by certificate serial number
+          schema:
+            type: string
+        - name: lot_number
+          in: query
+          description: Filter by lot number
+          schema:
+            type: string
+        - name: type_of_ore
+          in: query
+          description: Filter by mineral code
+          schema:
+            type: string
+        - name: date_of_issuance_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_of_issuance_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportCertificateListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    post:
+      tags:
+        - Export Certificates
+      summary: Create export certificate
+      description: Submit a new ICGLR Export Certificate
+      operationId: createExportCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportCertificate'
+      responses:
+        '201':
+          description: Export certificate created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportCertificate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /export-certificates/{identifier}:
+    get:
+      tags:
+        - Export Certificates
+      summary: Get export certificate by identifier
+      description: Retrieve a specific export certificate by its serial number
+      operationId: getExportCertificate
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          description: Certificate serial number
+          schema:
+            type: string
+        - name: issuing_country
+          in: query
+          required: true
+          description: Issuing country code (required for unique identification)
+          schema:
+            $ref: '#/components/schemas/ICGLRMemberState'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportCertificate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /lots:
+    get:
+      tags:
+        - Chain of Custody
+      summary: List lots
+      description: Retrieve Chain of Custody lot records with filtering
+      operationId: listLots
+      parameters:
+        - name: mine_site_id
+          in: query
+          description: Filter by mine site ICGLR ID
+          schema:
+            type: string
+        - name: mineral
+          in: query
+          description: Filter by mineral code
+          schema:
+            type: string
+        - name: creator_role
+          in: query
+          description: Filter by CoC role code (1-8)
+          schema:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6, 7, 8]
+        - name: originating_operation
+          in: query
+          description: Filter by originating operation code (1-8)
+          schema:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6, 7, 8]
+        - name: lot_number
+          in: query
+          description: Filter by lot number
+          schema:
+            type: string
+        - name: timestamp_from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: timestamp_to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LotListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    post:
+      tags:
+        - Chain of Custody
+      summary: Create lot
+      description: Submit a new Chain of Custody lot record
+      operationId: createLot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lot'
+      responses:
+        '201':
+          description: Lot created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /lots/{lot_number}:
+    get:
+      tags:
+        - Chain of Custody
+      summary: Get lot by lot number
+      description: Retrieve a specific lot by its lot number
+      operationId: getLot
+      parameters:
+        - name: lot_number
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /graphql:
+    post:
+      tags:
+        - Query
+      summary: GraphQL query endpoint
+      description: |
+        Execute GraphQL queries for flexible data interrogation.
+        This endpoint allows querying APIs with different structures than the standard mandates.
+      operationId: graphqlQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: GraphQL query string
+                variables:
+                  type: object
+                  description: GraphQL query variables
+                operationName:
+                  type: string
+                  description: GraphQL operation name
+      responses:
+        '200':
+          description: Successful GraphQL response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health:
+    get:
+      summary: Health check
+      description: API health check endpoint
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    ICGLRMemberState:
+      type: string
+      enum: [AO, BI, CD, CF, CG, KE, RW, SS, SD, TZ, UG, ZM]
+      description: ICGLR member state ISO 3166-1 alpha-2 code
+    
+    Geolocalization:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: Latitude in WGS 84 format, decimal degrees with 4 decimals
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          description: Longitude in WGS 84 format, decimal degrees with 4 decimals
+    
+    Address:
+      type: object
+      required: [country, subnational_division_l1, address_locality]
+      properties:
+        country:
+          $ref: '#/components/schemas/ICGLRMemberState'
+        subnational_division_l1:
+          type: string
+          description: Subnational Division Level 1 Code using ISO 3166-2 format
+        subnational_division_l1_text:
+          type: string
+        subnational_division_l2:
+          type: string
+        subnational_division_l3:
+          type: string
+        subnational_division_l4:
+          type: string
+        address_locality:
+          type: string
+          description: Locality as designated in UPU S42, ISO 19160-1
+    
+    ContactDetails:
+      type: object
+      required: [legal_representative, contact_phone_number, contact_email]
+      properties:
+        legal_representative:
+          type: string
+        contact_phone_number:
+          type: string
+        contact_email:
+          type: string
+          format: email
+    
+    BusinessEntity:
+      type: object
+      required: [identifier, name, legal_address, physical_address, tin, rdb_number, rca_number, contact_details]
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        legal_address:
+          $ref: '#/components/schemas/Address'
+        physical_address:
+          $ref: '#/components/schemas/Address'
+        tin:
+          type: string
+        rdb_number:
+          type: string
+        rca_number:
+          type: string
+        contact_details:
+          $ref: '#/components/schemas/ContactDetails'
+    
+    MineSiteLocation:
+      type: object
+      required: [geolocalization, national_cadaster_localization, local_geographic_designation]
+      properties:
+        geolocalization:
+          $ref: '#/components/schemas/Geolocalization'
+        national_cadaster_localization:
+          type: string
+        local_geographic_designation:
+          $ref: '#/components/schemas/Address'
+        polygon:
+          type: string
+        altitude:
+          type: number
+    
+    License:
+      type: object
+      required: [license_type, license_id, owner, covered_commodities]
+      properties:
+        license_type:
+          type: string
+          enum: [claim, exploration_permit, mining_license, artisanal_permit, unlicensed, other]
+        license_id:
+          type: string
+        owner:
+          $ref: '#/components/schemas/BusinessEntity'
+        date_applied:
+          type: string
+          format: date
+        date_granted:
+          type: string
+          format: date
+        date_expiring:
+          type: string
+          format: date
+        license_status:
+          type: string
+        covered_commodities:
+          type: array
+          items:
+            type: string
+          minItems: 1
+    
+    Inspection:
+      type: object
+      required: [inspection_id, inspection_date, inspection_responsible, inspection_findings, inspection_report, inspection_purpose, inspection_results, inspector_name, inspector_position, government_agency]
+      properties:
+        inspection_id:
+          type: string
+        inspection_date:
+          type: string
+          format: date
+        inspection_responsible:
+          type: string
+        inspection_findings:
+          type: string
+        inspection_report:
+          type: string
+        inspection_purpose:
+          type: string
+        inspection_results:
+          type: string
+        inspector_name:
+          type: string
+        inspector_position:
+          type: string
+        government_agency:
+          type: string
+        government_id:
+          type: string
+    
+    StatusHistory:
+      type: object
+      required: [date_of_change, new_status]
+      properties:
+        date_of_change:
+          type: string
+          format: date
+        new_status:
+          type: integer
+          enum: [0, 1, 2, 3]
+    
+    MineSite:
+      type: object
+      required: [icglr_id, address_country, national_id, certification_status, activity_status, mine_site_location, mineral, license, owner]
+      properties:
+        icglr_id:
+          type: string
+          pattern: '^[A-Z]{2}-[+-]?[0-9]+\.[0-9]{4}[+-][0-9]+\.[0-9]{4}-[0-9]+$'
+          description: "ICGLR Identification number - Format: CC-[Lat]-[Long]-NNNNN"
+        address_country:
+          $ref: '#/components/schemas/ICGLRMemberState'
+        national_id:
+          type: string
+        certification_status:
+          type: integer
+          enum: [0, 1, 2, 3]
+          description: 0=Blue, 1=Green, 2=Yellow, 3=Red
+        activity_status:
+          type: integer
+          enum: [0, 1, 2]
+          description: 0=Abandoned, 1=Active, 2=Non-active
+        mine_site_location:
+          $ref: '#/components/schemas/MineSiteLocation'
+        mineral:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Mineral codes (HS Code or IMA Code)
+        license:
+          type: array
+          items:
+            $ref: '#/components/schemas/License'
+          minItems: 1
+        owner:
+          $ref: '#/components/schemas/BusinessEntity'
+        operator:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessEntity'
+        inspection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inspection'
+        status_history:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusHistory'
+    
+    MineSiteListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MineSite'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    Tag:
+      type: object
+      required: [identifier, issuer, issue_date, issue_time]
+      properties:
+        identifier:
+          type: string
+        issuer:
+          $ref: '#/components/schemas/BusinessEntity'
+        issue_date:
+          type: string
+          format: date
+        issue_time:
+          type: string
+          pattern: '^[0-9]{2}:[0-9]{2}:[0-9]{2}$'
+    
+    Tax:
+      type: object
+      required: [tax_type, tax_amount, currency]
+      properties:
+        tax_type:
+          type: string
+        tax_amount:
+          type: number
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+    
+    ExportCertificate:
+      type: object
+      required: [issuing_country, identifier, exporter, importer, lot_number, designated_mineral_description, type_of_ore, lot_weight, lot_weight_uom, lot_grade, mineral_origin, customs_value, date_of_shipment, member_state_issuing_authority, name_of_verifier, position_of_verifier, date_of_verification, name_of_validator, date_of_issuance, date_of_expiration, certificate_file]
+      properties:
+        issuing_country:
+          $ref: '#/components/schemas/ICGLRMemberState'
+        identifier:
+          type: string
+        exporter:
+          $ref: '#/components/schemas/BusinessEntity'
+        importer:
+          $ref: '#/components/schemas/BusinessEntity'
+        lot_number:
+          type: string
+        designated_mineral_description:
+          type: string
+        type_of_ore:
+          type: string
+        lot_weight:
+          type: number
+        lot_weight_uom:
+          type: string
+        lot_grade:
+          type: string
+        mineral_origin:
+          type: string
+          description: Country codes separated by space (e.g., 'CD BI RW')
+        customs_value:
+          type: string
+        date_of_shipment:
+          type: string
+          format: date
+        shipment_route:
+          type: string
+        transport_company:
+          type: string
+        member_state_issuing_authority:
+          type: string
+        name_of_verifier:
+          type: string
+        position_of_verifier:
+          type: string
+        id_of_verifier:
+          type: string
+        date_of_verification:
+          type: string
+          format: date
+        name_of_validator:
+          type: string
+        date_of_issuance:
+          type: string
+          format: date
+        date_of_expiration:
+          type: string
+          format: date
+        certificate_file:
+          type: string
+    
+    ExportCertificateListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExportCertificate'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    Lot:
+      type: object
+      required: [lot_number, timestamp, creator, mineral, concentration, mass, unit_of_measurement, creator_role, originating_operation, date_sealed, date_shipped]
+      properties:
+        lot_number:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        creator:
+          $ref: '#/components/schemas/BusinessEntity'
+        mineral:
+          type: string
+        concentration:
+          type: number
+        mass:
+          type: number
+        package_type:
+          type: string
+        unit_of_measurement:
+          type: string
+        mine_site_id:
+          type: string
+        creator_role:
+          type: array
+          items:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6, 7, 8]
+          minItems: 1
+        recipient:
+          $ref: '#/components/schemas/BusinessEntity'
+        originating_operation:
+          type: array
+          items:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6, 7, 8]
+          minItems: 1
+        input_lot:
+          type: array
+          items:
+            type: object
+            properties:
+              lot_number:
+                type: string
+        tag:
+          $ref: '#/components/schemas/Tag'
+        tax_paid:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tax'
+        date_sealed:
+          type: string
+          format: date
+        date_shipped:
+          type: string
+          format: date
+        purchase_number:
+          type: array
+          items:
+            type: string
+        purchase_date:
+          type: string
+          format: date
+        responsible_staff:
+          type: string
+        date_in:
+          type: string
+          format: date
+        transportation_method:
+          type: string
+        transportation_route:
+          type: string
+        transport_company:
+          type: string
+        export_certificate_id:
+          type: string
+    
+    LotListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lot'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+    
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request - validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "VALIDATION_ERROR"
+            message: "Request validation failed"
+            details:
+              field: "icglr_id"
+              reason: "Invalid format"
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "NOT_FOUND"
+            message: "Resource not found"
+    
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "CONFLICT"
+            message: "Resource already exists"
+    
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "INTERNAL_ERROR"
+            message: "An internal error occurred"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []

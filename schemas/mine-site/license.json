@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/mine-site/license.json",
+  "title": "MD.02 License",
+  "description": "Mining license entity",
+  "type": "object",
+  "required": [
+    "license_type",
+    "license_id",
+    "owner",
+    "covered_commodities"
+  ],
+  "properties": {
+    "license_type": {
+      "$ref": "../core/common.json#/definitions/LicenseType",
+      "description": "The type of mineral license covering the mine site"
+    },
+    "license_id": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "The identification number of the mining license, in the terms used by the national mineral claims systems"
+    },
+    "owner": {
+      "$ref": "../core/common.json#/definitions/BusinessEntity",
+      "description": "The owner of the mineral license"
+    },
+    "date_applied": {
+      "$ref": "../core/common.json#/definitions/Date"
+    },
+    "date_granted": {
+      "$ref": "../core/common.json#/definitions/Date"
+    },
+    "date_expiring": {
+      "$ref": "../core/common.json#/definitions/Date"
+    },
+    "license_status": {
+      "type": "string",
+      "description": "The license status, either Active or Non-Active (Expired or Revoked)"
+    },
+    "covered_commodities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "../core/common.json#/definitions/MineralCode"
+      },
+      "description": "Covered Commodities - minerals covered by this license"
+    }
+  }
+}
+

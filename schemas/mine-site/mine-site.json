@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/mine-site/mine-site.json",
+  "title": "MD.01 Mine Site",
+  "description": "Mine Site entity - Primary entity for ICGLR mining sector data sharing",
+  "type": "object",
+  "required": [
+    "icglr_id",
+    "address_country",
+    "national_id",
+    "certification_status",
+    "activity_status",
+    "mine_site_location",
+    "mineral",
+    "license",
+    "owner"
+  ],
+  "properties": {
+    "icglr_id": {
+      "$ref": "../core/common.json#/definitions/MineSiteIdFormat",
+      "description": "ICGLR Identification number - Format: CC-[Lat]-[Long]-NNNNN (e.g., RW-1.9641+30.0619-12345)"
+    },
+    "address_country": {
+      "$ref": "../core/common.json#/definitions/ICGLRMemberState",
+      "description": "The country where the Mine site is located"
+    },
+    "national_id": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "National Identification Number - A unique mine site identification number at the level of the country"
+    },
+    "certification_status": {
+      "$ref": "../core/common.json#/definitions/CertificationStatus",
+      "description": "Certification status: 0=Blue (Uninspected), 1=Green (Certified), 2=Yellow (Yellow-Flagged), 3=Red (Un-Certified)"
+    },
+    "activity_status": {
+      "$ref": "../core/common.json#/definitions/MiningActivityStatus",
+      "description": "Mining Activity Status: 0=Abandoned, 1=Active, 2=Non-active"
+    },
+    "mine_site_location": {
+      "$ref": "./mine-site-location.json",
+      "description": "MD.08 Mine Site Location"
+    },
+    "mineral": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "../core/common.json#/definitions/MineralCode"
+      },
+      "description": "The type or types of Mineral(s) produced at the mine, including Designated Minerals. Takes values from IMA codes. For designated minerals: IMA1960-A (Gold), IMA1960-001 (Cassiterite), IMA2000-014 (Wolframite), IMA1979-A (Coltan)"
+    },
+    "license": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "./license.json"
+      },
+      "description": "MD.02 License"
+    },
+    "owner": {
+      "$ref": "../core/common.json#/definitions/BusinessEntity",
+      "description": "MD.04 Business Entity - Owner"
+    },
+    "operator": {
+      "type": "array",
+      "items": {
+        "$ref": "../core/common.json#/definitions/BusinessEntity"
+      },
+      "description": "MD.04 Business Entity - The identification and full details of the Mine Operator/s if different from the owner"
+    },
+    "inspection": {
+      "type": "array",
+      "items": {
+        "$ref": "./inspection.json"
+      },
+      "description": "MD.07 Inspection"
+    },
+    "status_history": {
+      "type": "array",
+      "items": {
+        "$ref": "./status-history.json"
+      },
+      "description": "MD.10 Status History - Status change history"
+    }
+  }
+}
+

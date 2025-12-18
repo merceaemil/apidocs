@@ -1,0 +1,83 @@
+{
+  "lot_number": "LOT-RW-PROC-2024-001",
+  "timestamp": "2024-03-25T14:00:00Z",
+  "creator": {
+    "identifier": "COMP-RW-002",
+    "name": "Rwanda Processing Center",
+    "legal_address": {
+      "country": "RW",
+      "subnational_division_l1": "RW-02",
+      "subnational_division_l1_text": "Southern Province",
+      "address_locality": "Huye"
+    },
+    "physical_address": {
+      "country": "RW",
+      "subnational_division_l1": "RW-02",
+      "subnational_division_l1_text": "Southern Province",
+      "address_locality": "Huye"
+    },
+    "tin": "987654321",
+    "rdb_number": "RDB-2024-002",
+    "rca_number": "RCA-2024-002",
+    "contact_details": {
+      "legal_representative": "Alice Brown",
+      "contact_phone_number": "+250-788-654-321",
+      "contact_email": "contact@rwandaprocessing.rw"
+    }
+  },
+  "mineral": "IMA1960-001",
+  "concentration": 48.0,
+  "mass": 950.0,
+  "package_type": "container",
+  "unit_of_measurement": "KGM",
+  "creator_role": [4],
+  "recipient": {
+    "identifier": "COMP-BE-001",
+    "name": "Belgium Trading Company",
+    "legal_address": {
+      "country": "BE",
+      "subnational_division_l1": "BE-BRU",
+      "subnational_division_l1_text": "Brussels-Capital Region",
+      "address_locality": "Brussels"
+    },
+    "physical_address": {
+      "country": "BE",
+      "subnational_division_l1": "BE-BRU",
+      "subnational_division_l1_text": "Brussels-Capital Region",
+      "address_locality": "Brussels"
+    },
+    "tin": "BE123456789",
+    "rdb_number": "BE-RDB-001",
+    "rca_number": "BE-RCA-001",
+    "contact_details": {
+      "legal_representative": "Jane Smith",
+      "contact_phone_number": "+32-2-123-4567",
+      "contact_email": "contact@belgiumtrading.be"
+    }
+  },
+  "originating_operation": [4],
+  "input_lot": [
+    {
+      "lot_number": "LOT-RW-2024-001"
+    },
+    {
+      "lot_number": "LOT-RW-2024-002"
+    }
+  ],
+  "tax_paid": [
+    {
+      "tax_type": "Processing Tax",
+      "tax_amount": 2000.00,
+      "currency": "USD"
+    }
+  ],
+  "date_sealed": "2024-03-25",
+  "date_shipped": "2024-03-27",
+  "date_in": "2024-03-22",
+  "transportation_method": "Truck",
+  "transportation_route": "Huye to Kigali",
+  "transport_company": "East Africa Logistics",
+  "responsible_staff": "Alice Brown, Processing Manager",
+  "export_certificate_id": "RW-EXP-2024-001"
+}
+

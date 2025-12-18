@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://icglr.org/schemas/chain-of-custody/tag.json",
+  "title": "MD.11 Tag / Unique number",
+  "description": "Tag entity - A Tag that can be generated and attached to a Lot",
+  "type": "object",
+  "required": [
+    "identifier",
+    "issuer",
+    "issue_date",
+    "issue_time"
+  ],
+  "properties": {
+    "identifier": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "Tag Id - Unique ID of the tag (can be expressed visually as QR code, barcode)"
+    },
+    "issuer": {
+      "$ref": "../core/common.json#/definitions/BusinessEntity",
+      "description": "MD.04 Business Entity - The organization that issued the tag"
+    },
+    "issue_date": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "Date when the tag was created"
+    },
+    "issue_time": {
+      "$ref": "../core/common.json#/definitions/Time",
+      "description": "Time when the tag was created"
+    }
+  }
+}
+

@@ -1,0 +1,525 @@
+# ICGLR Mining Sector Data Sharing Protocol - GraphQL Schema
+# Based on the semantic model defined in ICGLR Data Sharing Protocol Standards
+# This schema enables flexible querying of APIs with different structures
+
+scalar Date
+scalar DateTime
+scalar Time
+scalar JSON
+
+# Common types
+type Geolocalization {
+  latitude: Float!
+  longitude: Float!
+}
+
+type Address {
+  country: ICGLRMemberState!
+  subnationalDivisionL1: String!
+  subnationalDivisionL1Text: String
+  subnationalDivisionL2: String
+  subnationalDivisionL3: String
+  subnationalDivisionL4: String
+  addressLocality: String!
+}
+
+enum ICGLRMemberState {
+  AO # Angola
+  BI # Burundi
+  CD # Democratic Republic of the Congo
+  CF # Central African Republic
+  CG # Republic of the Congo
+  KE # Kenya
+  RW # Rwanda
+  SS # South Sudan
+  SD # Sudan
+  TZ # Tanzania
+  UG # Uganda
+  ZM # Zambia
+}
+
+type ContactDetails {
+  legalRepresentative: String!
+  contactPhoneNumber: String!
+  contactEmail: String!
+}
+
+type BusinessEntity {
+  identifier: ID!
+  name: String!
+  legalAddress: Address!
+  physicalAddress: Address!
+  tin: String!
+  rdbNumber: String!
+  rcaNumber: String!
+  contactDetails: ContactDetails!
+}
+
+type MineSiteLocation {
+  geolocalization: Geolocalization!
+  nationalCadasterLocalization: String!
+  localGeographicDesignation: Address!
+  polygon: String
+  altitude: Float
+}
+
+type License {
+  licenseType: LicenseType!
+  licenseId: ID!
+  owner: BusinessEntity!
+  dateApplied: Date
+  dateGranted: Date
+  dateExpiring: Date
+  licenseStatus: String
+  coveredCommodities: [String!]!
+}
+
+enum LicenseType {
+  CLAIM
+  EXPLORATION_PERMIT
+  MINING_LICENSE
+  ARTISANAL_PERMIT
+  UNLICENSED
+  OTHER
+}
+
+type Inspection {
+  inspectionId: ID!
+  inspectionDate: Date!
+  inspectionResponsible: String!
+  inspectionFindings: String!
+  inspectionReport: String!
+  inspectionPurpose: String!
+  inspectionResults: String!
+  inspectorName: String!
+  inspectorPosition: String!
+  governmentAgency: String!
+  governmentId: String
+}
+
+type StatusHistory {
+  dateOfChange: Date!
+  newStatus: CertificationStatus!
+}
+
+enum CertificationStatus {
+  BLUE # 0 - Uninspected or Out of RCM scope
+  GREEN # 1 - Certified
+  YELLOW # 2 - Yellow-Flagged
+  RED # 3 - Un-Certified
+}
+
+enum MiningActivityStatus {
+  ABANDONED # 0
+  ACTIVE # 1
+  NON_ACTIVE # 2
+}
+
+# Primary Entities
+type MineSite {
+  icglrId: ID!
+  addressCountry: ICGLRMemberState!
+  nationalId: ID!
+  certificationStatus: CertificationStatus!
+  activityStatus: MiningActivityStatus!
+  mineSiteLocation: MineSiteLocation!
+  mineral: [String!]!
+  license: [License!]!
+  owner: BusinessEntity!
+  operator: [BusinessEntity!]
+  inspection: [Inspection!]
+  statusHistory: [StatusHistory!]
+}
+
+type ExportCertificate {
+  issuingCountry: ICGLRMemberState!
+  identifier: ID!
+  exporter: BusinessEntity!
+  importer: BusinessEntity!
+  lotNumber: ID!
+  designatedMineralDescription: String!
+  typeOfOre: String!
+  lotWeight: Float!
+  lotWeightUom: String!
+  lotGrade: String!
+  mineralOrigin: String!
+  customsValue: String!
+  dateOfShipment: Date!
+  shipmentRoute: String
+  transportCompany: String
+  memberStateIssuingAuthority: String!
+  nameOfVerifier: String!
+  positionOfVerifier: String!
+  idOfVerifier: String
+  dateOfVerification: Date!
+  nameOfValidator: String!
+  dateOfIssuance: Date!
+  dateOfExpiration: Date!
+  certificateFile: String!
+}
+
+type Tag {
+  identifier: ID!
+  issuer: BusinessEntity!
+  issueDate: Date!
+  issueTime: Time!
+}
+
+type Tax {
+  taxType: String!
+  taxAmount: Float!
+  currency: String!
+}
+
+enum CoCRole {
+  MINER # 1
+  TRADER # 2
+  SHIPPER # 3
+  PROCESSOR # 4
+  WAREHOUSE # 5
+  IMPORTER # 6
+  EXPORTER # 7
+  GOVERNMENT # 8
+}
+
+enum OriginatingOperation {
+  PRODUCTION # 1
+  PURCHASE # 2
+  COMBINATION # 3
+  PROCESSING # 4
+  TRANSPORTATION # 5
+  STORAGE_WAREHOUSING # 6
+  IMPORT # 7
+  EXPORT # 8
+}
+
+type Lot {
+  lotNumber: ID!
+  timestamp: DateTime!
+  creator: BusinessEntity!
+  mineral: String!
+  concentration: Float!
+  mass: Float!
+  packageType: String
+  unitOfMeasurement: String!
+  mineSiteId: String
+  creatorRole: [CoCRole!]!
+  recipient: BusinessEntity
+  originatingOperation: [OriginatingOperation!]!
+  inputLot: [LotReference!]
+  tag: Tag
+  taxPaid: [Tax!]
+  dateSealed: Date!
+  dateShipped: Date!
+  purchaseNumber: [String!]
+  purchaseDate: Date
+  responsibleStaff: String
+  dateIn: Date
+  transportationMethod: String
+  transportationRoute: String
+  transportCompany: String
+  exportCertificateId: String
+}
+
+type LotReference {
+  lotNumber: ID!
+}
+
+# Query root
+type Query {
+  # Mine Sites
+  mineSites(
+    addressCountry: ICGLRMemberState
+    certificationStatus: CertificationStatus
+    activityStatus: MiningActivityStatus
+    mineral: String
+    page: Int = 1
+    limit: Int = 20
+  ): MineSiteConnection!
+  
+  mineSite(icglrId: ID!): MineSite
+  
+  # Export Certificates
+  exportCertificates(
+    issuingCountry: ICGLRMemberState
+    identifier: String
+    lotNumber: String
+    typeOfOre: String
+    dateOfIssuanceFrom: Date
+    dateOfIssuanceTo: Date
+    page: Int = 1
+    limit: Int = 20
+  ): ExportCertificateConnection!
+  
+  exportCertificate(identifier: String!, issuingCountry: ICGLRMemberState!): ExportCertificate
+  
+  # Chain of Custody - Lots
+  lots(
+    mineSiteId: String
+    mineral: String
+    creatorRole: CoCRole
+    originatingOperation: OriginatingOperation
+    lotNumber: String
+    timestampFrom: DateTime
+    timestampTo: DateTime
+    page: Int = 1
+    limit: Int = 20
+  ): LotConnection!
+  
+  lot(lotNumber: ID!): Lot
+  
+  # Flexible querying for non-standard APIs
+  query(
+    endpoint: String!
+    query: String!
+    variables: JSON
+  ): JSON
+  
+  # Aggregations and analytics
+  lotSummary(
+    mineSiteId: String
+    timestampFrom: DateTime!
+    timestampTo: DateTime!
+    groupBy: [String!]
+  ): LotSummary!
+  
+  mineSiteCertificationStatus(
+    addressCountry: ICGLRMemberState
+  ): CertificationStatusSummary!
+}
+
+# Connection types for pagination
+type MineSiteConnection {
+  data: [MineSite!]!
+  pagination: Pagination!
+}
+
+type ExportCertificateConnection {
+  data: [ExportCertificate!]!
+  pagination: Pagination!
+}
+
+type LotConnection {
+  data: [Lot!]!
+  pagination: Pagination!
+}
+
+type Pagination {
+  page: Int!
+  limit: Int!
+  total: Int!
+  totalPages: Int!
+  hasNext: Boolean!
+  hasPrevious: Boolean!
+}
+
+# Aggregation types
+type LotSummary {
+  totalMass: Float!
+  totalTaxPaid: Float
+  byMineral: [MineralLot!]!
+  byOperation: [OperationLot!]!
+  period: Period!
+}
+
+type Period {
+  start: DateTime!
+  end: DateTime!
+}
+
+type MineralLot {
+  mineral: String!
+  totalMass: Float!
+  totalTax: Float
+}
+
+type OperationLot {
+  operation: OriginatingOperation!
+  count: Int!
+  totalMass: Float!
+}
+
+type CertificationStatusSummary {
+  country: ICGLRMemberState!
+  byStatus: [StatusCount!]!
+  total: Int!
+}
+
+type StatusCount {
+  status: CertificationStatus!
+  count: Int!
+}
+
+# Mutation root (for data submission)
+type Mutation {
+  # Mine Sites
+  createMineSite(input: MineSiteInput!): MineSite!
+  updateMineSite(icglrId: ID!, input: MineSiteInput!): MineSite!
+  deleteMineSite(icglrId: ID!): Boolean!
+  
+  # Export Certificates
+  createExportCertificate(input: ExportCertificateInput!): ExportCertificate!
+  updateExportCertificate(identifier: String!, issuingCountry: ICGLRMemberState!, input: ExportCertificateInput!): ExportCertificate!
+  
+  # Chain of Custody - Lots
+  createLot(input: LotInput!): Lot!
+  updateLot(lotNumber: ID!, input: LotInput!): Lot!
+}
+
+# Input types
+input AddressInput {
+  country: ICGLRMemberState!
+  subnationalDivisionL1: String!
+  subnationalDivisionL1Text: String
+  subnationalDivisionL2: String
+  subnationalDivisionL3: String
+  subnationalDivisionL4: String
+  addressLocality: String!
+}
+
+input ContactDetailsInput {
+  legalRepresentative: String!
+  contactPhoneNumber: String!
+  contactEmail: String!
+}
+
+input BusinessEntityInput {
+  identifier: ID!
+  name: String!
+  legalAddress: AddressInput!
+  physicalAddress: AddressInput!
+  tin: String!
+  rdbNumber: String!
+  rcaNumber: String!
+  contactDetails: ContactDetailsInput!
+}
+
+input GeolocalizationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input MineSiteLocationInput {
+  geolocalization: GeolocalizationInput!
+  nationalCadasterLocalization: String!
+  localGeographicDesignation: AddressInput!
+  polygon: String
+  altitude: Float
+}
+
+input LicenseInput {
+  licenseType: LicenseType!
+  licenseId: ID!
+  owner: BusinessEntityInput!
+  dateApplied: Date
+  dateGranted: Date
+  dateExpiring: Date
+  licenseStatus: String
+  coveredCommodities: [String!]!
+}
+
+input InspectionInput {
+  inspectionId: ID!
+  inspectionDate: Date!
+  inspectionResponsible: String!
+  inspectionFindings: String!
+  inspectionReport: String!
+  inspectionPurpose: String!
+  inspectionResults: String!
+  inspectorName: String!
+  inspectorPosition: String!
+  governmentAgency: String!
+  governmentId: String
+}
+
+input StatusHistoryInput {
+  dateOfChange: Date!
+  newStatus: CertificationStatus!
+}
+
+input MineSiteInput {
+  icglrId: ID!
+  addressCountry: ICGLRMemberState!
+  nationalId: ID!
+  certificationStatus: CertificationStatus!
+  activityStatus: MiningActivityStatus!
+  mineSiteLocation: MineSiteLocationInput!
+  mineral: [String!]!
+  license: [LicenseInput!]!
+  owner: BusinessEntityInput!
+  operator: [BusinessEntityInput!]
+  inspection: [InspectionInput!]
+  statusHistory: [StatusHistoryInput!]
+}
+
+input TagInput {
+  identifier: ID!
+  issuer: BusinessEntityInput!
+  issueDate: Date!
+  issueTime: Time!
+}
+
+input TaxInput {
+  taxType: String!
+  taxAmount: Float!
+  currency: String!
+}
+
+input ExportCertificateInput {
+  issuingCountry: ICGLRMemberState!
+  identifier: ID!
+  exporter: BusinessEntityInput!
+  importer: BusinessEntityInput!
+  lotNumber: ID!
+  designatedMineralDescription: String!
+  typeOfOre: String!
+  lotWeight: Float!
+  lotWeightUom: String!
+  lotGrade: String!
+  mineralOrigin: String!
+  customsValue: String!
+  dateOfShipment: Date!
+  shipmentRoute: String
+  transportCompany: String
+  memberStateIssuingAuthority: String!
+  nameOfVerifier: String!
+  positionOfVerifier: String!
+  idOfVerifier: String
+  dateOfVerification: Date!
+  nameOfValidator: String!
+  dateOfIssuance: Date!
+  dateOfExpiration: Date!
+  certificateFile: String!
+}
+
+input LotReferenceInput {
+  lotNumber: ID!
+}
+
+input LotInput {
+  lotNumber: ID!
+  timestamp: DateTime!
+  creator: BusinessEntityInput!
+  mineral: String!
+  concentration: Float!
+  mass: Float!
+  packageType: String
+  unitOfMeasurement: String!
+  mineSiteId: String
+  creatorRole: [CoCRole!]!
+  recipient: BusinessEntityInput
+  originatingOperation: [OriginatingOperation!]!
+  inputLot: [LotReferenceInput!]
+  tag: TagInput
+  taxPaid: [TaxInput!]
+  dateSealed: Date!
+  dateShipped: Date!
+  purchaseNumber: [String!]
+  purchaseDate: Date
+  responsibleStaff: String
+  dateIn: Date
+  transportationMethod: String
+  transportationRoute: String
+  transportCompany: String
+  exportCertificateId: String
+}
