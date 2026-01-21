@@ -1,73 +1,72 @@
 {
-  "issuing_country": "RW",
+  "issuingCountry": "RW",
   "identifier": "RW-EXP-2024-001",
   "exporter": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   },
   "importer": {
     "identifier": "COMP-BE-001",
     "name": "Belgium Trading Company",
-    "legal_address": {
+    "legalAddress": {
       "country": "BE",
-      "subnational_division_l1": "BE-BRU",
-      "subnational_division_l1_text": "Brussels-Capital Region",
-      "address_locality": "Brussels"
+      "subnationalDivisionL1": "BE-BRU",
+      "subnationalDivisionL1Text": "Brussels-Capital Region",
+      "addressLocalityText": "Brussels"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "BE",
-      "subnational_division_l1": "BE-BRU",
-      "subnational_division_l1_text": "Brussels-Capital Region",
-      "address_locality": "Brussels"
+      "subnationalDivisionL1": "BE-BRU",
+      "subnationalDivisionL1Text": "Brussels-Capital Region",
+      "addressLocalityText": "Brussels"
     },
     "tin": "BE123456789",
-    "rdb_number": "BE-RDB-001",
-    "rca_number": "BE-RCA-001",
-    "contact_details": {
-      "legal_representative": "Jane Smith",
-      "contact_phone_number": "+32-2-123-4567",
-      "contact_email": "contact@belgiumtrading.be"
+    "rdbNumber": "BE-RDB-001",
+    "rcaNumber": "BE-RCA-001",
+    "contactDetails": {
+      "legalRepresentative": "Jane Smith",
+      "contactPhoneNumber": "+3221234567",
+      "contactEmail": "contact@belgiumtrading.be"
     }
   },
-  "lot_number": "LOT-RW-2024-001",
-  "designated_mineral_description": "Cassiterite concentrate, 1000kg, 45% Sn",
-  "type_of_ore": "IMA1960-001",
-  "lot_weight": 1000.0,
-  "lot_weight_uom": "KGM",
-  "lot_grade": "45%",
-  "mineral_origin": "RW",
-  "customs_value": "USD 85000.00",
-  "date_of_shipment": "2024-04-15",
-  "shipment_route": "RW,KE,TZ",
-  "transport_company": "East Africa Logistics",
-  "member_state_issuing_authority": "Ministry of Trade and Industry, Rwanda",
-  "name_of_verifier": "Peter Smith",
-  "position_of_verifier": "Senior Mining Inspector",
-  "id_of_verifier": "GOV-RW-001",
-  "date_of_verification": "2024-04-10",
-  "name_of_validator": "Mary Johnson",
-  "date_of_issuance": "2024-04-12",
-  "date_of_expiration": "2024-07-11",
-  "certificate_file": "https://certificates.icglr.org/RW/RW-EXP-2024-001.pdf"
+  "lotNumber": "LOT-RW-2024-001",
+  "designatedMineralDescription": "Cassiterite concentrate, 1000kg, 45% Sn",
+  "typeOfOre": "2609.00.00",
+  "lotWeight": 1000.0,
+  "lotWeightUOM": "KGM",
+  "lotGrade": "45%",
+  "mineralOrigin": "RW",
+  "customsValue": "USD 85000.00",
+  "dateOfShipment": "2024-04-15",
+  "shipmentRoute": "RW;KE;TZ",
+  "transportCompany": "East Africa Logistics",
+  "memberStateIssuingAuthority": "Ministry of Trade and Industry, Rwanda",
+  "nameOfVerifier": "Peter Smith",
+  "positionOfVerifier": "Senior Mining Inspector",
+  "idOfVerifier": "GOV-RW-001",
+  "dateOfVerification": "2024-04-10",
+  "nameOfValidator": "Mary Johnson",
+  "dateOfIssuance": "2024-04-12",
+  "dateOfExpiration": "2024-07-11",
+  "certificateFile": "https://certificates.icglr.org/RW/RW-EXP-2024-001.pdf"
 }
-

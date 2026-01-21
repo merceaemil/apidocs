@@ -46,7 +46,7 @@ Tests that data structures conform to JSON schemas:
 - Data types correct
 - Enum values valid
 - Format validation (dates, emails, etc.)
-- **snake_case field names**
+- **camelCase field names**
 - **ICGLR ID format validation**
 - **Status code integers (not strings)**
 
@@ -77,7 +77,7 @@ Tests for data consistency:
 Tests for Chain of Custody functionality:
 - Lot creation and transformation
 - Input lot references (recursive)
-- Conditional requirements (mine_site_id and tag for Production)
+- Conditional requirements (mineSiteId and tag for Production)
 - CoC role validation
 - Originating operation validation
 - Tax payment tracking
@@ -98,7 +98,7 @@ When writing new tests:
 3. Test both success and failure cases
 4. Include edge cases
 5. Document test requirements
-6. **Test snake_case field names**
+6. **Test camelCase field names**
 7. **Test integer status codes**
 8. **Test ICGLR ID format**
 9. **Test mineral codes (HS/IMA)**

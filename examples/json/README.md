@@ -26,7 +26,7 @@ This directory contains JSON examples for the ICGLR Mining Sector Data Sharing P
 
 #### Lot - Chain of Custody (MD.12)
 - **`lot-example.json`** - Chain of Custody lot record with:
-  - Production operation (originating_operation: [1])
+  - Production operation (originatingOperation: [1])
   - Mine site reference
   - Tag information
   - Tax payments
@@ -64,12 +64,12 @@ CC-[Lat]-[Long]-NNNNN
 ```
 Example: `RW-1.9641+30.0619-00001`
 
-### 2. snake_case Naming
-All field names use snake_case:
-- `icglr_id`
-- `certification_status`
-- `mine_site_location`
-- `date_of_issuance`
+### 2. camelCase Naming
+All field names use camelCase:
+- `icglrId`
+- `certificationStatus`
+- `mineSiteLocation`
+- `dateOfIssuance`
 
 ### 3. Integer Status Codes
 Status values use integers for language independence:
@@ -104,7 +104,7 @@ Lot examples demonstrate:
 When creating new examples:
 
 1. **Follow the semantic model**: Use entities and attributes as defined in `DOCUMENTATION.txt`
-2. **Use snake_case**: All field names must use snake_case
+2. **Use camelCase**: All field names must use camelCase
 3. **Validate**: Always validate examples using the schema validator
 4. **Use correct formats**:
    - ICGLR ID: `CC-[Lat]-[Long]-NNNNN`

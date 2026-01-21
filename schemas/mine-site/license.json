@@ -5,38 +5,40 @@
   "description": "Mining license entity",
   "type": "object",
   "required": [
-    "license_type",
-    "license_id",
-    "owner",
-    "covered_commodities"
+    "licenseType",
+    "coveredCommodities"
   ],
   "properties": {
-    "license_type": {
+    "licenseType": {
       "$ref": "../core/common.json#/definitions/LicenseType",
-      "description": "The type of mineral license covering the mine site"
+      "description": "The type of mineral license covering the mine site (claim, exploration permit, mining license, artisanal permit, unlicensed, other type)"
     },
-    "license_id": {
+    "licenseId": {
       "$ref": "../core/common.json#/definitions/Identifier",
-      "description": "The identification number of the mining license, in the terms used by the national mineral claims systems"
+      "description": "The identification number of the mining license, in the terms used by the national mineral claims systems (if available, in the case of artisanal miners). The actual format is established and used at national level. Can miss only if the license type is 'unlicensed'"
     },
     "owner": {
       "$ref": "../core/common.json#/definitions/BusinessEntity",
-      "description": "The owner of the mineral license"
+      "description": "The owner of the mineral license. Can miss only if the license type is 'unlicensed'"
     },
-    "date_applied": {
-      "$ref": "../core/common.json#/definitions/Date"
+    "appliedDate": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "Date Applied"
     },
-    "date_granted": {
-      "$ref": "../core/common.json#/definitions/Date"
+    "grantedDate": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "Date Granted"
     },
-    "date_expiring": {
-      "$ref": "../core/common.json#/definitions/Date"
+    "expiringDate": {
+      "$ref": "../core/common.json#/definitions/Date",
+      "description": "Date expiring"
     },
-    "license_status": {
-      "type": "string",
-      "description": "The license status, either Active or Non-Active (Expired or Revoked)"
+    "licenseStatus": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "The license status, either 1 Active or 0 Non-Active (Expired or Revoked). The Active status can alternatively be determined from the difference of Date granted and Date expiring"
     },
-    "covered_commodities": {
+    "coveredCommodities": {
       "type": "array",
       "minItems": 1,
       "items": {
@@ -46,4 +48,3 @@
     }
   }
 }
-

@@ -72,7 +72,7 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
 - Enum constraints
 - Format validation (dates, emails, coordinates)
 - Reusable common definitions
-- **snake_case naming convention**
+- **camelCase naming convention**
 - **ICGLR ID format validation**: `CC-[Lat]-[Long]-NNNNN`
 - **Integer status codes** (language-independent)
 
@@ -83,18 +83,18 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
 **Endpoints Defined**:
 - **Mine Sites (MD.01)**:
   - `GET /mine-sites` - List with filtering
-  - `GET /mine-sites/{icglr_id}` - Get by ICGLR ID
+  - `GET /mine-sites/{icglrId}` - Get by ICGLR ID
   - `POST /mine-sites` - Create
-  - `PUT /mine-sites/{icglr_id}` - Update
+  - `PUT /mine-sites/{icglrId}` - Update
 
 - **Export Certificates (MD.03)**:
   - `GET /export-certificates` - List with filtering
-  - `GET /export-certificates/{identifier}` - Get by identifier (requires issuing_country)
+  - `GET /export-certificates/{identifier}` - Get by identifier (requires issuingCountry)
   - `POST /export-certificates` - Create
 
 - **Chain of Custody - Lots (MD.12)**:
   - `GET /lots` - List lots with filtering
-  - `GET /lots/{lot_number}` - Get by lot number
+  - `GET /lots/{lotNumber}` - Get by lot number
   - `POST /lots` - Create lot record
 
 - **GraphQL**:
@@ -105,7 +105,7 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
 
 **Features**:
 - Complete OpenAPI 3.0.3 specification
-- Request/response schemas with **snake_case naming**
+- Request/response schemas with **camelCase naming**
 - Authentication/authorization definitions
 - Error handling schemas
 - Pagination support
@@ -142,7 +142,7 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
 - **Level 1**: Basic conformance (REQUIRED)
   - JSON schema validation
   - **ICGLR ID format**: `CC-[Lat]-[Long]-NNNNN`
-  - **snake_case naming convention**
+  - **camelCase naming convention**
   - Geographic data (WGS84, 4 decimals)
   - Date/time formats (ISO 8601)
   - Member state codes (ISO 3166-1 alpha-2)
@@ -177,7 +177,7 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
 - Documentation requirements
 - Testing and certification process
 - **ICGLR ID format validation**
-- **snake_case validation**
+- **camelCase validation**
 
 ### ✅ 5. JSON-LD Model
 
@@ -189,7 +189,7 @@ The implementation is based on the ICGLR Data Sharing Protocol Standards semanti
   - Vocabulary mappings for all entities (MD.01 - MD.13)
   - Integration with Schema.org, Dublin Core, WGS84 Geo
   - All ICGLR-specific terms defined
-  - **snake_case field mappings**
+  - **camelCase field mappings**
 
 - **Vocabulary** (`json-ld/vocab/`):
   - Vocabulary documentation
@@ -269,7 +269,7 @@ All components align with the ICGLR Data Sharing Protocol Standards semantic mod
 - Primary entities: Mine Site, Export Certificate, Lot
 - Secondary entities: License, Business Entity, Address, etc.
 - Code lists: MDC.01 - MDC.06
-- Naming convention: **snake_case**
+- Naming convention: **camelCase**
 
 ### 3. ICGLR ID Format
 
@@ -291,8 +291,8 @@ Integer codes for all status values:
 
 Complete Chain of Custody tracking:
 - Lot entity (MD.12) supports all CoC operations
-- Recursive input_lot references
-- Conditional requirements (mine_site_id and tag for Production)
+- Recursive inputLot references
+- Conditional requirements (mineSiteId and tag for Production)
 - Tax payment tracking
 - Transformation support (1-to-1, 1-to-n, n-to-1, n-to-n)
 
@@ -427,7 +427,7 @@ Four conformance levels allow gradual adoption:
 - [x] Documentation complete
 - [x] Validation tools included
 - [x] Deployment guide provided
-- [x] **snake_case naming convention implemented**
+- [x] **camelCase naming convention implemented**
 - [x] **ICGLR ID format defined and validated**
 - [x] **Integer status codes implemented**
 - [x] **Chain of Custody support complete**

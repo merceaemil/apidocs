@@ -22,8 +22,8 @@
     },
     "Time": {
       "type": "string",
-      "pattern": "^[0-9]{2}:[0-9]{2}:[0-9]{2}$",
-      "description": "Time format (HH:mm:ss)"
+      "pattern": "^[0-9]{6}$",
+      "description": "Time format (hhmmss) - extended time: hhmmss, optionally add timezone if needed: hhmmss?(Z|±hhmm)"
     },
     "Decimal": {
       "type": "number",
@@ -59,88 +59,99 @@
     "Address": {
       "type": "object",
       "description": "MD.05 Address",
-      "required": ["country", "subnational_division_l1", "address_locality"],
+      "required": ["country", "addressLocalityText"],
       "properties": {
         "country": {
           "type": "string",
           "pattern": "^[A-Z]{2}$",
           "description": "An ISO 3166-1 country code. ISO 3166-1 alpha-2 – two-letter country codes. Can be any country, not limited to ICGLR member states (e.g., for importers from outside ICGLR region)"
         },
-        "subnational_division_l1": {
+        "subnationalDivisionL1": {
           "type": "string",
           "description": "Subnational Division Level 1 Code using ISO 3166-2 format (e.g., CD-BU for Bas-Uélé, Lower Uele)"
         },
-        "subnational_division_l1_text": {
+        "subnationalDivisionL1Text": {
           "type": "string",
           "description": "Subnational Division Level 1 text"
         },
-        "subnational_division_l2": {
+        "subnationalDivisionL2": {
           "type": "string",
           "description": "Subnational Division Level 2"
         },
-        "subnational_division_l3": {
+        "subnationalDivisionL3": {
           "type": "string",
           "description": "Subnational Division Level 3"
         },
-        "subnational_division_l4": {
+        "subnationalDivisionL4": {
           "type": "string",
           "description": "Subnational Division Level 4"
         },
-        "address_locality": {
+        "addressLocalityText": {
           "type": "string",
-          "description": "Locality as designated in UPU S42, ISO 19160-1"
+          "description": "Locality as free text"
+        },
+        "addressLocalityCode": {
+          "type": "string",
+          "description": "Locality as code, as designated in UPU S42, ISO 19160-1"
         }
       }
     },
     "ContactDetails": {
       "type": "object",
       "description": "MD.09 Contact Details",
-      "required": ["legal_representative", "contact_phone_number", "contact_email"],
+      "required": ["legalRepresentative", "contactPhoneNumber", "contactEmail"],
       "properties": {
-        "legal_representative": {
+        "legalRepresentative": {
           "type": "string",
           "description": "Legal representative name (First name and last name)"
         },
-        "contact_phone_number": {
-          "type": "string"
-        },
-        "contact_email": {
+        "contactPhoneNumber": {
           "type": "string",
-          "format": "email"
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "description": "E.164 phone format, starting with a plus sign (+), followed by the country code, and then the national number, with a maximum of 15 digits"
+        },
+        "contactEmail": {
+          "type": "string",
+          "format": "email",
+          "pattern": "^[\\w.\\-]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+          "description": "Contact email"
         }
       }
     },
     "BusinessEntity": {
       "type": "object",
       "description": "MD.04 Business Entity",
-      "required": ["identifier", "name", "legal_address", "physical_address", "tin", "rdb_number", "rca_number", "contact_details"],
+      "required": ["identifier", "name", "tin", "contactDetails"],
       "properties": {
         "identifier": {
-          "$ref": "#/definitions/Identifier"
+          "$ref": "#/definitions/Identifier",
+          "description": "Unique identifier"
         },
         "name": {
           "type": "string",
           "description": "Legal name of the entity, as officially registered"
         },
-        "legal_address": {
-          "$ref": "#/definitions/Address"
+        "legalAddress": {
+          "$ref": "#/definitions/Address",
+          "description": "Legal Address (0..1, optional). Either Legal Address or Physical Address should exist."
         },
-        "physical_address": {
-          "$ref": "#/definitions/Address"
+        "physicalAddress": {
+          "$ref": "#/definitions/Address",
+          "description": "Physical Address (0..1, optional). Either Legal Address or Physical Address should exist."
         },
         "tin": {
           "$ref": "#/definitions/Identifier",
-          "description": "Tax ID Number in the country of registration"
+          "description": "Tax ID Number in the country of registration. If not known, N/A can be used as value"
         },
-        "rdb_number": {
+        "rdbNumber": {
           "$ref": "#/definitions/Identifier",
           "description": "Business registration number"
         },
-        "rca_number": {
+        "rcaNumber": {
           "type": "string",
           "description": "Other identifying information as required"
         },
-        "contact_details": {
+        "contactDetails": {
           "$ref": "#/definitions/ContactDetails",
           "description": "MD.09 Contact Details - Group of business terms holding contact details of entity"
         }
@@ -158,7 +169,12 @@
     },
     "MineralCode": {
       "type": "string",
-      "description": "MDC.03 Mineral - HS Code or IMA Code. For designated minerals: 7108.12.00 (Gold/IMA1960-A), 2609.00.00 (Cassiterite/IMA1960-001), 2611.00.00 (Wolframite/IMA2000-014), 2615.90.00 (Coltan/IMA1979-A)"
+      "description": "MDC.03 Mineral - HS Code (primary) or IMA Code. For designated minerals: 7108.12.00 (Gold/IMA1960-A), 2609.00.00 (Cassiterite/IMA1960-001), 2611.00.00 (Wolframite/IMA2000-014), 2615.90.00 (Columbite-Tantalite/IMA1979-A)"
+    },
+    "UnitOfMeasurement": {
+      "type": "string",
+      "enum": ["TNE", "KGM"],
+      "description": "MDC.07 Unit of measurement - TNE (tonne), KGM (kilogram). The unit of measure shall be chosen from the lists in UN/ECE Recommendation N°. 20 'Codes for Units of Measure Used in International Trade'"
     },
     "LicenseType": {
       "type": "string",

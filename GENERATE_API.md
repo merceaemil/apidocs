@@ -203,7 +203,7 @@ curl http://localhost:3000/docs  # Swagger UI
 ## Notes
 
 - The generated API follows the ICGLR semantic model exactly
-- All field names use snake_case
+- All field names use camelCase
 - Status codes are integers (0, 1, 2, 3)
 - ICGLR ID format is validated automatically
 - Database schema matches JSON schemas

@@ -74,14 +74,14 @@ The API will be available at:
 All endpoints from `api/openapi.yaml` are automatically available:
 
 - `GET /v1/mine-sites` - List mine sites
-- `GET /v1/mine-sites/{icglr_id}` - Get mine site
+- `GET /v1/mine-sites/{icglrId}` - Get mine site
 - `POST /v1/mine-sites` - Create mine site
-- `PUT /v1/mine-sites/{icglr_id}` - Update mine site
+- `PUT /v1/mine-sites/{icglrId}` - Update mine site
 - `GET /v1/export-certificates` - List export certificates
 - `GET /v1/export-certificates/{identifier}` - Get export certificate
 - `POST /v1/export-certificates` - Create export certificate
 - `GET /v1/lots` - List lots
-- `GET /v1/lots/{lot_number}` - Get lot
+- `GET /v1/lots/{lotNumber}` - Get lot
 - `POST /v1/lots` - Create lot
 - `POST /v1/graphql` - GraphQL endpoint
 
@@ -92,10 +92,10 @@ The server uses SQLite for data storage. The database file is created at `data/i
 ### Database Schema
 
 The schema is automatically generated from JSON schemas:
-- `mine_sites` table
-- `export_certificates` table
+- `mineSites` table
+- `exportCertificates` table
 - `lots` table
-- `business_entities` table
+- `businessEntities` table
 - `licenses` table
 - `inspections` table
 - `tags` table
@@ -187,7 +187,7 @@ curl -X POST http://localhost:3000/v1/mine-sites \
   -d @../examples/json/mine-site-example.json
 
 # List mine sites
-curl http://localhost:3000/v1/mine-sites?address_country=RW
+curl http://localhost:3000/v1/mine-sites?addressCountry=RW
 
 # Get mine site
 curl http://localhost:3000/v1/mine-sites/RW-1.9641+30.0619-00001

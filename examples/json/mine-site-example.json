@@ -1,110 +1,112 @@
 {
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "national_id": "RW-MINE-2024-001",
-  "certification_status": 1,
-  "activity_status": 1,
-  "mine_site_location": {
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "nationalId": "RW-MINE-2024-001",
+  "certificationStatus": 1,
+  "activityStatus": 1,
+  "mineSiteLocation": {
     "geolocalization": {
       "latitude": -1.9641,
       "longitude": 30.0619
     },
-    "national_cadaster_localization": "Rwanda Mining Cadaster - Sector 12, Block 5",
-    "local_geographic_designation": {
+    "nationalCadasterLocalization": "Rwanda Mining Cadaster - Sector 12, Block 5",
+    "localGeographicDesignation": {
       "country": "RW",
-      "subnational_division_l1": "RW-02",
-      "subnational_division_l1_text": "Southern Province",
-      "subnational_division_l2": "Nyaruguru District",
-      "address_locality": "Muhanga"
+      "subnationalDivisionL1": "RW-02",
+      "subnationalDivisionL1Text": "Southern Province",
+      "subnationalDivisionL2": "Nyaruguru District",
+      "addressLocalityText": "Muhanga"
+    },
+    "polygon": {
+      "type": "Polygon",
+      "coordinates": [[[30.0619, -1.9641], [30.0623, -1.9641], [30.0623, -1.9637], [30.0619, -1.9637], [30.0619, -1.9641]]]
     },
     "altitude": 1500
   },
   "mineral": [
-    "IMA1960-001",
-    "IMA2000-014"
+    "7108.12.00",
+    "2611.00.00"
   ],
   "license": [
     {
-      "license_type": "mining_license",
-      "license_id": "RW-ML-2024-001",
+      "licenseType": "mining_license",
+      "licenseId": "RW-ML-2024-001",
       "owner": {
         "identifier": "COMP-RW-001",
         "name": "Rwanda Mining Corporation Ltd",
-        "legal_address": {
+        "legalAddress": {
           "country": "RW",
-          "subnational_division_l1": "RW-01",
-          "subnational_division_l1_text": "Kigali City",
-          "address_locality": "Kigali"
+          "subnationalDivisionL1": "RW-01",
+          "subnationalDivisionL1Text": "Kigali City",
+          "addressLocalityText": "Kigali"
         },
-        "physical_address": {
+        "physicalAddress": {
           "country": "RW",
-          "subnational_division_l1": "RW-01",
-          "subnational_division_l1_text": "Kigali City",
-          "address_locality": "Kigali"
+          "subnationalDivisionL1": "RW-01",
+          "subnationalDivisionL1Text": "Kigali City",
+          "addressLocalityText": "Kigali"
         },
         "tin": "123456789",
-        "rdb_number": "RDB-2024-001",
-        "rca_number": "RCA-2024-001",
-        "contact_details": {
-          "legal_representative": "John Doe",
-          "contact_phone_number": "+250-788-123-456",
-          "contact_email": "contact@rwandamining.rw"
+        "rdbNumber": "RDB-2024-001",
+        "rcaNumber": "RCA-2024-001",
+        "contactDetails": {
+          "legalRepresentative": "John Doe",
+          "contactPhoneNumber": "+250788123456",
+          "contactEmail": "contact@rwandamining.rw"
         }
       },
-      "date_granted": "2024-01-15",
-      "date_expiring": "2029-01-14",
-      "license_status": "Active",
-      "covered_commodities": [
-        "IMA1960-001",
-        "IMA2000-014"
+      "grantedDate": "2024-01-15",
+      "expiringDate": "2029-01-14",
+      "licenseStatus": 1,
+      "coveredCommodities": [
+        "7108.12.00",
+        "2611.00.00"
       ]
     }
   ],
   "owner": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   },
   "operator": [],
   "inspection": [
     {
-      "inspection_id": "PS-2024-03-15-10-30",
-      "inspection_date": "2024-03-15",
-      "inspection_responsible": "Ministry of Mines - Peter Smith",
-      "inspection_findings": "Certified",
-      "inspection_report": "https://reports.icglr.org/inspections/PS-2024-03-15-10-30.pdf",
-      "inspection_purpose": "Annual certification inspection",
-      "inspection_results": "Mine site meets all ICGLR certification requirements. No violations found.",
-      "inspector_name": "Peter Smith",
-      "inspector_position": "Senior Mining Inspector",
-      "government_agency": "Ministry of Mines, Rwanda",
-      "government_id": "GOV-RW-001"
+      "inspectionId": "PS-2024-03-15-10-30",
+      "inspectionDate": "2024-03-15",
+      "inspectionResult": 1,
+      "inspectionReport": "https://reports.icglr.org/inspections/PS-2024-03-15-10-30.pdf",
+      "inspectionPurpose": "Annual certification inspection",
+      "inspectionResults": "Mine site meets all ICGLR certification requirements. No violations found.",
+      "inspectorName": "Peter Smith",
+      "inspectorPosition": "Senior Mining Inspector",
+      "governmentAgency": "Ministry of Mines, Rwanda",
+      "governmentId": "GOV-RW-001"
     }
   ],
-  "status_history": [
+  "statusChange": [
     {
-      "date_of_change": "2024-03-15",
-      "new_status": 1
+      "dateOfChange": "2024-03-15",
+      "newStatus": 1
     }
   ]
 }
-

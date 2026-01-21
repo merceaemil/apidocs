@@ -19,9 +19,9 @@ An API must meet all Level 1 requirements to be considered conformant.
 
 #### 1.2 Identifier Structure
 
-- **REQUIRED**: Mine Sites MUST use `icglr_id` field with format `CC-[Lat]-[Long]-NNNNN`
+- **REQUIRED**: Mine Sites MUST use `icglrId` field with format `CC-[Lat]-[Long]-NNNNN`
 - **REQUIRED**: All identifiers MUST be unique within the system
-- **REQUIRED**: Field names MUST use snake_case convention
+- **REQUIRED**: Field names MUST use camelCase convention
 - **REQUIRED**: Mine Site ICGLR ID format: Country code (2 letters) + hyphen + latitude (4 decimals, no cardinal) + longitude (4 decimals, no cardinal) + hyphen + sequential number
 - **EXAMPLE**: `RW-1.9641+30.0619-00001`
 
@@ -36,8 +36,9 @@ An API must meet all Level 1 requirements to be considered conformant.
 #### 1.4 Date and Time Formats
 
 - **REQUIRED**: All dates MUST use ISO 8601 format (YYYY-MM-DD)
-- **REQUIRED**: All date-times MUST use ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
-- **REQUIRED**: Time zones MUST be specified (preferably UTC)
+- **REQUIRED**: All date-times MUST use ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) when a date-time is used
+- **REQUIRED**: When a semantic field is a Time (ISO 15000-5 primitive), it MUST use hhmmss (e.g., `103000`)
+- **REQUIRED**: Time zones MUST be specified (preferably UTC) when using date-times
 
 #### 1.5 ICGLR Member State Codes
 
@@ -53,9 +54,9 @@ An API must meet all Level 1 requirements to be considered conformant.
 
 #### 1.7 Naming Convention
 
-- **REQUIRED**: All technical field names MUST use snake_case convention
-- **REQUIRED**: Examples: `icglr_id`, `certification_status`, `mine_site_location`, `date_of_issuance`
-- **REQUIRED**: NO camelCase or PascalCase in field names
+- **REQUIRED**: All technical field names MUST use camelCase convention
+- **REQUIRED**: Examples: `icglrId`, `certificationStatus`, `mineSiteLocation`, `dateOfIssuance`
+- **REQUIRED**: NO snake_case or PascalCase in field names
 
 #### 1.8 Code Lists
 
@@ -63,7 +64,7 @@ An API must meet all Level 1 requirements to be considered conformant.
 - **REQUIRED**: Activity Status MUST use integer codes: 0=Abandoned, 1=Active, 2=Non-active
 - **REQUIRED**: CoC Roles MUST use integer codes: 1=Miner, 2=Trader, 3=Shipper, 4=Processor, 5=Warehouse, 6=Importer, 7=Exporter, 8=Government
 - **REQUIRED**: Originating Operations MUST use integer codes: 1=Production, 2=Purchase, 3=Combination, 4=Processing, 5=Transportation, 6=Storage/Warehousing, 7=Import, 8=Export
-- **REQUIRED**: Mineral codes MUST use HS Codes or IMA Codes (e.g., `IMA1960-001` for Cassiterite)
+- **REQUIRED**: Mineral codes MUST use HS Codes (primary) or IMA Codes (e.g., `7108.12.00` for Gold, `2609.00.00` for Cassiterite)
 
 ### Level 2: API Endpoint Conformance
 
@@ -78,18 +79,18 @@ An API must meet all Level 1 requirements to be considered conformant.
 
 **Mine Sites Endpoints (MD.01):**
 - **REQUIRED**: `GET /mine-sites` - List mine sites with filtering
-- **REQUIRED**: `GET /mine-sites/{icglr_id}` - Get specific mine site by ICGLR ID
+- **REQUIRED**: `GET /mine-sites/{icglrId}` - Get specific mine site by ICGLR ID
 - **REQUIRED**: `POST /mine-sites` - Create mine site
-- **RECOMMENDED**: `PUT /mine-sites/{icglr_id}` - Update mine site
+- **RECOMMENDED**: `PUT /mine-sites/{icglrId}` - Update mine site
 
 **Export Certificates Endpoints (MD.03):**
 - **REQUIRED**: `GET /export-certificates` - List export certificates with filtering
-- **REQUIRED**: `GET /export-certificates/{identifier}` - Get certificate (requires issuing_country query param)
+- **REQUIRED**: `GET /export-certificates/{identifier}` - Get certificate (requires `issuingCountry` query param)
 - **REQUIRED**: `POST /export-certificates` - Create export certificate
 
 **Chain of Custody - Lots Endpoints (MD.12):**
 - **REQUIRED**: `GET /lots` - List lots with filtering
-- **REQUIRED**: `GET /lots/{lot_number}` - Get specific lot by lot number
+- **REQUIRED**: `GET /lots/{lotNumber}` - Get specific lot by lot number
 - **REQUIRED**: `POST /lots` - Create lot record
 
 #### 2.3 Pagination
@@ -114,7 +115,7 @@ An API must meet all Level 1 requirements to be considered conformant.
 #### 2.4 Filtering
 
 - **REQUIRED**: List endpoints MUST support filtering as defined in OpenAPI spec
-- **REQUIRED**: Filter parameters MUST match OpenAPI parameter definitions (snake_case)
+- **REQUIRED**: Filter parameters MUST match OpenAPI parameter definitions (camelCase)
 - **REQUIRED**: Filtering MUST be case-insensitive for string fields
 - **REQUIRED**: Status filters MUST accept integer codes (0, 1, 2, 3 for certification; 0, 1, 2 for activity)
 - **REQUIRED**: Mineral filters MUST accept HS Codes or IMA Codes

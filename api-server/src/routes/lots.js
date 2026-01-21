@@ -11,13 +11,13 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      mine_site_id: req.query.mine_site_id,
+      mineSiteId: req.query.mineSiteId,
       mineral: req.query.mineral,
-      creator_role: req.query.creator_role ? parseInt(req.query.creator_role) : undefined,
-      originating_operation: req.query.originating_operation ? parseInt(req.query.originating_operation) : undefined,
-      lot_number: req.query.lot_number,
-      timestamp_from: req.query.timestamp_from,
-      timestamp_to: req.query.timestamp_to
+      creatorRole: req.query.creatorRole ? parseInt(req.query.creatorRole) : undefined,
+      originatingOperation: req.query.originatingOperation ? parseInt(req.query.originatingOperation) : undefined,
+      lotNumber: req.query.lotNumber,
+      dateRegistrationFrom: req.query.dateRegistrationFrom,
+      dateRegistrationTo: req.query.dateRegistrationTo
     };
 
     const page = parseInt(req.query.page) || 1;
@@ -31,9 +31,9 @@ router.get('/', (req, res, next) => {
 });
 
 // Get lot by ID
-router.get('/:lot_number', (req, res, next) => {
+router.get('/:lotNumber', (req, res, next) => {
   try {
-    const lot = lotsService.getById(req.params.lot_number);
+    const lot = lotsService.getById(req.params.lotNumber);
     res.json(lot);
   } catch (error) {
     next(error);

@@ -5,18 +5,17 @@
   "description": "Status history change record",
   "type": "object",
   "required": [
-    "date_of_change",
-    "new_status"
+    "dateOfChange",
+    "newStatus"
   ],
   "properties": {
-    "date_of_change": {
+    "dateOfChange": {
       "$ref": "../core/common.json#/definitions/Date",
       "description": "Date of status change"
     },
-    "new_status": {
+    "newStatus": {
       "$ref": "../core/common.json#/definitions/CertificationStatus",
       "description": "The status acquired after the change"
     }
   }
 }
-

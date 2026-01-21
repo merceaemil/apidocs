@@ -11,12 +11,12 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      issuing_country: req.query.issuing_country,
+      issuingCountry: req.query.issuingCountry,
       identifier: req.query.identifier,
-      lot_number: req.query.lot_number,
-      type_of_ore: req.query.type_of_ore,
-      date_of_issuance_from: req.query.date_of_issuance_from,
-      date_of_issuance_to: req.query.date_of_issuance_to
+      lotNumber: req.query.lotNumber,
+      typeOfOre: req.query.typeOfOre,
+      dateOfIssuanceFrom: req.query.dateOfIssuanceFrom,
+      dateOfIssuanceTo: req.query.dateOfIssuanceTo
     };
 
     const page = parseInt(req.query.page) || 1;
@@ -32,17 +32,17 @@ router.get('/', (req, res, next) => {
 // Get export certificate by ID
 router.get('/:identifier', (req, res, next) => {
   try {
-    if (!req.query.issuing_country) {
+    if (!req.query.issuingCountry) {
       return res.status(400).json({
         code: 'VALIDATION_ERROR',
-        message: 'issuing_country query parameter is required',
+        message: 'issuingCountry query parameter is required',
         timestamp: new Date().toISOString()
       });
     }
 
     const certificate = exportCertificatesService.getById(
       req.params.identifier,
-      req.query.issuing_country
+      req.query.issuingCountry
     );
     res.json(certificate);
   } catch (error) {

@@ -11,77 +11,85 @@ const insertOrGetBusinessEntity = mineSitesService.insertOrGetBusinessEntity;
 const getBusinessEntity = mineSitesService.getBusinessEntity;
 
 function reconstructLot(row) {
-  const creator = getBusinessEntity(row.creator_id);
-  const recipient = row.recipient_id ? getBusinessEntity(row.recipient_id) : null;
-  const tagIssuer = getBusinessEntity(row.tag_issuer_id);
+  const creator = getBusinessEntity(row.creatorId);
+  const recipient = row.recipientId ? getBusinessEntity(row.recipientId) : null;
+  const tagIssuer = getBusinessEntity(row.tagIssuerId);
 
   // Get creator roles
   const creatorRoles = db.prepare(`
-    SELECT role_code FROM lot_creator_roles WHERE lot_number = ?
-  `).all(row.lot_number).map(r => r.role_code);
+    SELECT roleCode FROM lotCreatorRoles WHERE lotNumber = ?
+  `).all(row.lotNumber).map(r => r.roleCode);
 
   // Get originating operations
   const originatingOperations = db.prepare(`
-    SELECT operation_code FROM lot_originating_operations WHERE lot_number = ?
-  `).all(row.lot_number).map(r => r.operation_code);
+    SELECT operationCode FROM lotOriginatingOperations WHERE lotNumber = ?
+  `).all(row.lotNumber).map(r => r.operationCode);
 
   // Get input lots
   const inputLots = db.prepare(`
-    SELECT input_lot_number FROM lot_input_lots WHERE lot_number = ?
-  `).all(row.lot_number).map(r => ({ lot_number: r.input_lot_number }));
+    SELECT inputLotNumber FROM lotInputLots WHERE lotNumber = ?
+  `).all(row.lotNumber).map(r => ({ lotNumber: r.inputLotNumber }));
 
   // Get tag
   const tagRow = db.prepare(`
-    SELECT t.*, be.identifier as issuer_identifier
+    SELECT t.*
     FROM tags t
-    JOIN business_entities be ON t.issuer_id = be.identifier
     WHERE t.identifier = ?
-  `).get(row.tag_identifier);
+  `).get(row.tagIdentifier);
 
   const tag = tagRow ? {
     identifier: tagRow.identifier,
-    issuer: getBusinessEntity(tagRow.issuer_identifier),
-    issue_date: tagRow.issue_date,
-    issue_time: tagRow.issue_time
+    issuer: getBusinessEntity(tagRow.issuerId),
+    issueDate: tagRow.issueDate,
+    issueTime: tagRow.issueTime
   } : null;
 
   // Get taxes
   const taxes = db.prepare(`
     SELECT t.* FROM taxes t
-    JOIN lot_taxes lt ON t.id = lt.tax_id
-    WHERE lt.lot_number = ?
-  `).all(row.lot_number).map(taxRow => ({
-    tax_type: taxRow.tax_type,
-    tax_amount: taxRow.tax_amount,
-    currency: taxRow.currency
+    JOIN lotTaxes lt ON t.id = lt.taxId
+    WHERE lt.lotNumber = ?
+  `).all(row.lotNumber).map(taxRow => ({
+    taxType: taxRow.taxType,
+    taxAmount: taxRow.taxAmount,
+    currency: taxRow.currency,
+    taxAuthority: taxRow.taxAuthority || null,
+    taxPaidDate: taxRow.taxPaidDate || null,
+    receiptReference: taxRow.receiptReference || null
   }));
 
+  // Parse dateRegistration and timeRegistration
+  const dateRegistration = row.dateRegistration;
+  const timeRegistration = row.timeRegistration;
+
   return {
-    lot_number: row.lot_number,
-    timestamp: row.timestamp,
+    lotNumber: row.lotNumber,
+    dateRegistration: dateRegistration,
+    timeRegistration: timeRegistration,
     creator: creator,
     mineral: row.mineral,
     concentration: row.concentration,
     mass: row.mass,
-    package_type: row.package_type,
-    unit_of_measurement: row.unit_of_measurement,
-    mine_site_id: row.mine_site_id,
-    creator_role: creatorRoles,
-    recipient: recipient,
-    originating_operation: originatingOperations,
-    input_lot: inputLots,
-    tag: tag,
-    tax_paid: taxes,
-    date_sealed: row.date_sealed,
-    date_shipped: row.date_shipped,
-    purchase_number: null, // TODO: Store purchase_number
-    purchase_date: row.purchase_date,
-    responsible_staff: row.responsible_staff,
-    date_in: row.date_in,
-    transportation_method: row.transportation_method,
-    transportation_route: row.transportation_route,
-    transport_company: row.transport_company,
-    export_certificate_id: row.export_certificate_id
+    packageType: row.packageType || null,
+    nrOfPackages: row.nrOfPackages || null,
+    unitOfMeasurement: row.unitOfMeasurement,
+    mineSiteId: row.mineSiteId || null,
+    creatorRole: creatorRoles,
+    recipient: recipient || null,
+    originatingOperation: originatingOperations,
+    inputLot: inputLots,
+    tag: tag || null,
+    taxPaid: taxes,
+    dateSealed: row.dateSealed || null,
+    dateShipped: row.dateShipped || null,
+    purchaseNumber: row.purchaseNumber || null,
+    purchaseDate: row.purchaseDate || null,
+    responsibleStaff: row.responsibleStaff || null,
+    dateIn: row.dateIn || null,
+    transportationMethod: row.transportationMethod || null,
+    transportationRoute: row.transportationRoute || null,
+    transportCompany: row.transportCompany || null,
+    exportCertificateId: row.exportCertificateId || null
   };
 }
 
@@ -91,39 +99,39 @@ class LotsService {
     const conditions = [];
     const values = [];
 
-    if (filters.mine_site_id) {
-      conditions.push('mine_site_id = ?');
-      values.push(filters.mine_site_id);
+    if (filters.mineSiteId) {
+      conditions.push('mineSiteId = ?');
+      values.push(filters.mineSiteId);
     }
     if (filters.mineral) {
       conditions.push('mineral = ?');
       values.push(filters.mineral);
     }
-    if (filters.lot_number) {
-      conditions.push('lot_number = ?');
-      values.push(filters.lot_number);
+    if (filters.lotNumber) {
+      conditions.push('lotNumber = ?');
+      values.push(filters.lotNumber);
     }
-    if (filters.timestamp_from) {
-      conditions.push('timestamp >= ?');
-      values.push(filters.timestamp_from);
+    if (filters.dateRegistrationFrom) {
+      conditions.push('dateRegistration >= ?');
+      values.push(filters.dateRegistrationFrom);
     }
-    if (filters.timestamp_to) {
-      conditions.push('timestamp <= ?');
-      values.push(filters.timestamp_to);
+    if (filters.dateRegistrationTo) {
+      conditions.push('dateRegistration <= ?');
+      values.push(filters.dateRegistrationTo);
     }
 
     if (conditions.length > 0) {
       sql += ' AND ' + conditions.join(' AND ');
     }
 
-    // Filter by creator_role if specified
-    if (filters.creator_role) {
+    // Filter by creatorRole if specified
+    if (filters.creatorRole) {
       const lotsWithRole = db.prepare(`
-        SELECT DISTINCT lot_number FROM lot_creator_roles WHERE role_code = ?
-      `).all(filters.creator_role).map(r => r.lot_number);
+        SELECT DISTINCT lotNumber FROM lotCreatorRoles WHERE roleCode = ?
+      `).all(filters.creatorRole).map(r => r.lotNumber);
       
       if (lotsWithRole.length > 0) {
-        conditions.push('lot_number IN (' + lotsWithRole.map(() => '?').join(',') + ')');
+        conditions.push('lotNumber IN (' + lotsWithRole.map(() => '?').join(',') + ')');
         values.push(...lotsWithRole);
       } else {
         // No lots match, return empty
@@ -134,19 +142,19 @@ class LotsService {
       }
     }
 
-    // Filter by originating_operation if specified
-    if (filters.originating_operation) {
+    // Filter by originatingOperation if specified
+    if (filters.originatingOperation) {
       const lotsWithOp = db.prepare(`
-        SELECT DISTINCT lot_number FROM lot_originating_operations WHERE operation_code = ?
-      `).all(filters.originating_operation).map(r => r.lot_number);
+        SELECT DISTINCT lotNumber FROM lotOriginatingOperations WHERE operationCode = ?
+      `).all(filters.originatingOperation).map(r => r.lotNumber);
       
       if (lotsWithOp.length > 0) {
-        if (!conditions.includes('lot_number IN')) {
-          conditions.push('lot_number IN (' + lotsWithOp.map(() => '?').join(',') + ')');
+        if (!conditions.includes('lotNumber IN')) {
+          conditions.push('lotNumber IN (' + lotsWithOp.map(() => '?').join(',') + ')');
           values.push(...lotsWithOp);
         } else {
           // Intersect with existing filter
-          const existing = values.filter((v, i) => conditions[i]?.includes('lot_number IN'));
+          const existing = values.filter((v, i) => conditions[i]?.includes('lotNumber IN'));
           // Simplified: just use the more restrictive filter
         }
       } else {
@@ -180,7 +188,7 @@ class LotsService {
   }
 
   getById(lotNumber) {
-    const row = db.prepare('SELECT * FROM lots WHERE lot_number = ?').get(lotNumber);
+    const row = db.prepare('SELECT * FROM lots WHERE lotNumber = ?').get(lotNumber);
     if (!row) {
       const error = new Error('Lot not found');
       error.code = 'NOT_FOUND';
@@ -211,107 +219,117 @@ class LotsService {
       // Insert tag if present
       if (data.tag) {
         db.prepare(`
-          INSERT OR IGNORE INTO tags (identifier, issuer_id, issue_date, issue_time)
+          INSERT OR IGNORE INTO tags (identifier, issuerId, issueDate, issueTime)
           VALUES (?, ?, ?, ?)
         `).run(
           data.tag.identifier,
           data.tag.issuer.identifier,
-          data.tag.issue_date,
-          data.tag.issue_time || null
+          data.tag.issueDate,
+          data.tag.issueTime || null
         );
       }
 
       // Insert taxes if present
       const taxIds = [];
-      if (data.tax_paid && data.tax_paid.length > 0) {
+      if (data.taxPaid && data.taxPaid.length > 0) {
         const insertTax = db.prepare(`
-          INSERT INTO taxes (tax_type, tax_amount, currency) VALUES (?, ?, ?)
+          INSERT INTO taxes (taxType, taxAmount, currency, taxAuthority, taxPaidDate, receiptReference) VALUES (?, ?, ?, ?, ?, ?)
         `);
-        data.tax_paid.forEach(tax => {
-          const result = insertTax.run(tax.tax_type, tax.tax_amount, tax.currency);
+        data.taxPaid.forEach(tax => {
+          const result = insertTax.run(
+            tax.taxType, 
+            tax.taxAmount, 
+            tax.currency,
+            tax.taxAuthority || null,
+            tax.taxPaidDate || null,
+            tax.receiptReference || null
+          );
           taxIds.push(result.lastInsertRowid);
         });
       }
 
-      // Insert lot
+      // Insert lot (using dateRegistration and timeRegistration directly)
       db.prepare(`
         INSERT INTO lots 
-        (lot_number, timestamp, creator_id, mineral, concentration, mass, package_type,
-         unit_of_measurement, mine_site_id, recipient_id, tag_identifier, tag_issuer_id,
-         tag_issue_date, tag_issue_time, date_sealed, date_shipped, purchase_date,
-         responsible_staff, date_in, transportation_method, transportation_route,
-         transport_company, export_certificate_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (lotNumber, dateRegistration, timeRegistration, creatorId, mineral, concentration, mass, packageType,
+         unitOfMeasurement, mineSiteId, recipientId, tagIdentifier, tagIssuerId,
+         tagIssueDate, tagIssueTime, dateSealed, dateShipped, purchaseNumber, purchaseDate,
+         responsibleStaff, dateIn, transportationMethod, transportationRoute,
+         transportCompany, exportCertificateId, nrOfPackages)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
-        data.lot_number,
-        data.timestamp,
+        data.lotNumber,
+        data.dateRegistration,
+        data.timeRegistration,
         data.creator.identifier,
         data.mineral,
         data.concentration,
         data.mass,
-        data.package_type || null,
-        data.unit_of_measurement,
-        data.mine_site_id || null,
+        data.packageType || null,
+        data.unitOfMeasurement,
+        data.mineSiteId || null,
         data.recipient?.identifier || null,
         data.tag?.identifier || null,
         data.tag?.issuer?.identifier || null,
-        data.tag?.issue_date || null,
-        data.tag?.issue_time || null,
-        data.date_sealed,
-        data.date_shipped,
-        data.purchase_date || null,
-        data.responsible_staff || null,
-        data.date_in || null,
-        data.transportation_method || null,
-        data.transportation_route || null,
-        data.transport_company || null,
-        data.export_certificate_id || null
+        data.tag?.issueDate || null,
+        data.tag?.issueTime || null,
+        data.dateSealed || null,
+        data.dateShipped || null,
+        data.purchaseNumber || null,
+        data.purchaseDate || null,
+        data.responsibleStaff || null,
+        data.dateIn || null,
+        data.transportationMethod || null,
+        data.transportationRoute || null,
+        data.transportCompany || null,
+        data.exportCertificateId || null,
+        data.nrOfPackages || null
       );
 
       // Insert creator roles
-      if (data.creator_role && data.creator_role.length > 0) {
+      if (data.creatorRole && data.creatorRole.length > 0) {
         const insertRole = db.prepare(`
-          INSERT INTO lot_creator_roles (lot_number, role_code) VALUES (?, ?)
+          INSERT INTO lotCreatorRoles (lotNumber, roleCode) VALUES (?, ?)
         `);
-        data.creator_role.forEach(role => {
-          insertRole.run(data.lot_number, role);
+        data.creatorRole.forEach(role => {
+          insertRole.run(data.lotNumber, role);
         });
       }
 
       // Insert originating operations
-      if (data.originating_operation && data.originating_operation.length > 0) {
+      if (data.originatingOperation && data.originatingOperation.length > 0) {
         const insertOp = db.prepare(`
-          INSERT INTO lot_originating_operations (lot_number, operation_code) VALUES (?, ?)
+          INSERT INTO lotOriginatingOperations (lotNumber, operationCode) VALUES (?, ?)
         `);
-        data.originating_operation.forEach(op => {
-          insertOp.run(data.lot_number, op);
+        data.originatingOperation.forEach(op => {
+          insertOp.run(data.lotNumber, op);
         });
       }
 
       // Insert input lots
-      if (data.input_lot && data.input_lot.length > 0) {
+      if (data.inputLot && data.inputLot.length > 0) {
         const insertInput = db.prepare(`
-          INSERT INTO lot_input_lots (lot_number, input_lot_number) VALUES (?, ?)
+          INSERT INTO lotInputLots (lotNumber, inputLotNumber) VALUES (?, ?)
         `);
-        data.input_lot.forEach(input => {
-          insertInput.run(data.lot_number, input.lot_number);
+        data.inputLot.forEach(input => {
+          insertInput.run(data.lotNumber, input.lotNumber);
         });
       }
 
       // Link taxes
       if (taxIds.length > 0) {
         const linkTax = db.prepare(`
-          INSERT INTO lot_taxes (lot_number, tax_id) VALUES (?, ?)
+          INSERT INTO lotTaxes (lotNumber, taxId) VALUES (?, ?)
         `);
         taxIds.forEach(taxId => {
-          linkTax.run(data.lot_number, taxId);
+          linkTax.run(data.lotNumber, taxId);
         });
       }
     });
 
     transaction();
 
-    return this.getById(data.lot_number);
+    return this.getById(data.lotNumber);
   }
 }
 

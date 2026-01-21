@@ -5,38 +5,38 @@
   "description": "Mine Site entity - Primary entity for ICGLR mining sector data sharing",
   "type": "object",
   "required": [
-    "icglr_id",
-    "address_country",
-    "national_id",
-    "certification_status",
-    "activity_status",
-    "mine_site_location",
+    "icglrId",
+    "addressCountry",
+    "nationalId",
+    "certificationStatus",
+    "activityStatus",
+    "mineSiteLocation",
     "mineral",
     "license",
     "owner"
   ],
   "properties": {
-    "icglr_id": {
+    "icglrId": {
       "$ref": "../core/common.json#/definitions/MineSiteIdFormat",
       "description": "ICGLR Identification number - Format: CC-[Lat]-[Long]-NNNNN (e.g., RW-1.9641+30.0619-12345)"
     },
-    "address_country": {
+    "addressCountry": {
       "$ref": "../core/common.json#/definitions/ICGLRMemberState",
       "description": "The country where the Mine site is located"
     },
-    "national_id": {
+    "nationalId": {
       "$ref": "../core/common.json#/definitions/Identifier",
       "description": "National Identification Number - A unique mine site identification number at the level of the country"
     },
-    "certification_status": {
+    "certificationStatus": {
       "$ref": "../core/common.json#/definitions/CertificationStatus",
       "description": "Certification status: 0=Blue (Uninspected), 1=Green (Certified), 2=Yellow (Yellow-Flagged), 3=Red (Un-Certified)"
     },
-    "activity_status": {
+    "activityStatus": {
       "$ref": "../core/common.json#/definitions/MiningActivityStatus",
       "description": "Mining Activity Status: 0=Abandoned, 1=Active, 2=Non-active"
     },
-    "mine_site_location": {
+    "mineSiteLocation": {
       "$ref": "./mine-site-location.json",
       "description": "MD.08 Mine Site Location"
     },
@@ -46,7 +46,7 @@
       "items": {
         "$ref": "../core/common.json#/definitions/MineralCode"
       },
-      "description": "The type or types of Mineral(s) produced at the mine, including Designated Minerals. Takes values from IMA codes. For designated minerals: IMA1960-A (Gold), IMA1960-001 (Cassiterite), IMA2000-014 (Wolframite), IMA1979-A (Coltan)"
+      "description": "The type or types of Mineral(s) produced at the mine, including Designated Minerals. Takes values strictly from the HS Code classification. For designated minerals: 7108.12.00 (Gold), 2609.00.00 (Cassiterite), 2611.00.00 (Wolframite), 2615.90.00 (Columbite-Tantalite/Coltan)"
     },
     "license": {
       "type": "array",
@@ -54,7 +54,7 @@
       "items": {
         "$ref": "./license.json"
       },
-      "description": "MD.02 License"
+      "description": "MD.02 License - Group of terms describing the license and its details. Every mine site has a License field, even when the mine site is unlicensed."
     },
     "owner": {
       "$ref": "../core/common.json#/definitions/BusinessEntity",
@@ -74,12 +74,12 @@
       },
       "description": "MD.07 Inspection"
     },
-    "status_history": {
+    "statusChange": {
       "type": "array",
       "items": {
         "$ref": "./status-history.json"
       },
-      "description": "MD.10 Status History - Status change history"
+      "description": "MD.10 Status History - The history of status changes"
     }
   }
 }

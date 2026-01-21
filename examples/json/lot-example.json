@@ -1,105 +1,112 @@
 {
-  "lot_number": "LOT-RW-2024-001",
-  "timestamp": "2024-03-20T10:30:00Z",
+  "lotNumber": "LOT-RW-2024-001",
+  "dateRegistration": "2024-03-20",
+  "timeRegistration": "103000",
   "creator": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "subnational_division_l1_text": "Kigali City",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "subnationalDivisionL1Text": "Kigali City",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   },
-  "mineral": "IMA1960-001",
+  "mineral": "7108.12.00",
   "concentration": 45.5,
   "mass": 1000.0,
-  "package_type": "bag",
-  "unit_of_measurement": "KGM",
-  "mine_site_id": "RW-1.9641+30.0619-00001",
-  "creator_role": [1],
+  "packageType": "bag",
+  "nrOfPackages": 1,
+  "unitOfMeasurement": "KGM",
+  "mineSiteId": "RW-1.9641+30.0619-00001",
+  "creatorRole": [1],
   "recipient": {
     "identifier": "COMP-RW-002",
     "name": "Rwanda Processing Center",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-02",
-      "subnational_division_l1_text": "Southern Province",
-      "address_locality": "Huye"
+      "subnationalDivisionL1": "RW-02",
+      "subnationalDivisionL1Text": "Southern Province",
+      "addressLocalityText": "Huye"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-02",
-      "subnational_division_l1_text": "Southern Province",
-      "address_locality": "Huye"
+      "subnationalDivisionL1": "RW-02",
+      "subnationalDivisionL1Text": "Southern Province",
+      "addressLocalityText": "Huye"
     },
     "tin": "987654321",
-    "rdb_number": "RDB-2024-002",
-    "rca_number": "RCA-2024-002",
-    "contact_details": {
-      "legal_representative": "Alice Brown",
-      "contact_phone_number": "+250-788-654-321",
-      "contact_email": "contact@rwandaprocessing.rw"
+    "rdbNumber": "RDB-2024-002",
+    "rcaNumber": "RCA-2024-002",
+    "contactDetails": {
+      "legalRepresentative": "Alice Brown",
+      "contactPhoneNumber": "+250788654321",
+      "contactEmail": "contact@rwandaprocessing.rw"
     }
   },
-  "originating_operation": [1],
+  "originatingOperation": [1],
   "tag": {
     "identifier": "TAG-RW-2024-001",
     "issuer": {
       "identifier": "GOV-RW-001",
       "name": "Ministry of Mines, Rwanda",
-      "legal_address": {
+      "legalAddress": {
         "country": "RW",
-        "subnational_division_l1": "RW-01",
-        "subnational_division_l1_text": "Kigali City",
-        "address_locality": "Kigali"
+        "subnationalDivisionL1": "RW-01",
+        "subnationalDivisionL1Text": "Kigali City",
+        "addressLocalityText": "Kigali"
       },
-      "physical_address": {
+      "physicalAddress": {
         "country": "RW",
-        "subnational_division_l1": "RW-01",
-        "subnational_division_l1_text": "Kigali City",
-        "address_locality": "Kigali"
+        "subnationalDivisionL1": "RW-01",
+        "subnationalDivisionL1Text": "Kigali City",
+        "addressLocalityText": "Kigali"
       },
       "tin": "GOV-001",
-      "rdb_number": "GOV-RDB-001",
-      "rca_number": "GOV-RCA-001",
-      "contact_details": {
-        "legal_representative": "Government Representative",
-        "contact_phone_number": "+250-788-000-000",
-        "contact_email": "mines@gov.rw"
+      "rdbNumber": "GOV-RDB-001",
+      "rcaNumber": "GOV-RCA-001",
+      "contactDetails": {
+        "legalRepresentative": "Government Representative",
+        "contactPhoneNumber": "+250788000000",
+        "contactEmail": "mines@gov.rw"
       }
     },
-    "issue_date": "2024-03-20",
-    "issue_time": "10:30:00"
+    "issueDate": "2024-03-20",
+    "issueTime": "103000"
   },
-  "tax_paid": [
+  "taxPaid": [
     {
-      "tax_type": "Mining Royalty",
-      "tax_amount": 5000.00,
-      "currency": "USD"
+      "taxType": "Mining Royalty",
+      "taxAmount": 5000.00,
+      "currency": "USD",
+      "taxAuthority": "Ministry of Mines",
+      "taxPaidDate": "2024-03-20",
+      "receiptReference": "REC-2024-001"
     },
     {
-      "tax_type": "Export Tax",
-      "tax_amount": 2500.00,
-      "currency": "USD"
+      "taxType": "Export Tax",
+      "taxAmount": 2500.00,
+      "currency": "USD",
+      "taxAuthority": "Rwanda Revenue Authority",
+      "taxPaidDate": "2024-03-20",
+      "receiptReference": "REC-2024-002"
     }
   ],
-  "date_sealed": "2024-03-20",
-  "date_shipped": "2024-03-22",
-  "responsible_staff": "John Doe, Site Manager"
+  "dateSealed": "2024-03-20",
+  "dateShipped": "2024-03-22",
+  "responsibleStaff": "John Doe, Site Manager"
 }
-

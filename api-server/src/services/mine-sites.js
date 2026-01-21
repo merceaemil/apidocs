@@ -10,24 +10,24 @@ const validator = require('../../../conformance/validators/schema-validator');
 function insertOrGetAddress(address) {
   const existing = db.prepare(`
     SELECT id FROM addresses 
-    WHERE country = ? AND subnational_division_l1 = ? AND address_locality = ?
-  `).get(address.country, address.subnational_division_l1, address.address_locality);
+    WHERE country = ? AND subnationalDivisionL1 = ? AND addressLocalityText = ?
+  `).get(address.country, address.subnationalDivisionL1, address.addressLocalityText);
 
   if (existing) return existing.id;
 
   const result = db.prepare(`
     INSERT INTO addresses 
-    (country, subnational_division_l1, subnational_division_l1_text, 
-     subnational_division_l2, subnational_division_l3, subnational_division_l4, address_locality)
+    (country, subnationalDivisionL1, subnationalDivisionL1Text, 
+     subnationalDivisionL2, subnationalDivisionL3, subnationalDivisionL4, addressLocalityText)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(
     address.country,
-    address.subnational_division_l1,
-    address.subnational_division_l1_text || null,
-    address.subnational_division_l2 || null,
-    address.subnational_division_l3 || null,
-    address.subnational_division_l4 || null,
-    address.address_locality
+    address.subnationalDivisionL1,
+    address.subnationalDivisionL1Text || null,
+    address.subnationalDivisionL2 || null,
+    address.subnationalDivisionL3 || null,
+    address.subnationalDivisionL4 || null,
+    address.addressLocalityText
   );
 
   return result.lastInsertRowid;
@@ -36,19 +36,19 @@ function insertOrGetAddress(address) {
 // Helper: Insert or get contact details ID
 function insertOrGetContactDetails(contactDetails) {
   const existing = db.prepare(`
-    SELECT id FROM contact_details WHERE contact_email = ?
-  `).get(contactDetails.contact_email);
+    SELECT id FROM contactDetails WHERE contactEmail = ?
+  `).get(contactDetails.contactEmail);
 
   if (existing) return existing.id;
 
   const result = db.prepare(`
-    INSERT INTO contact_details 
-    (legal_representative, contact_phone_number, contact_email)
+    INSERT INTO contactDetails 
+    (legalRepresentative, contactPhoneNumber, contactEmail)
     VALUES (?, ?, ?)
   `).run(
-    contactDetails.legal_representative,
-    contactDetails.contact_phone_number,
-    contactDetails.contact_email
+    contactDetails.legalRepresentative,
+    contactDetails.contactPhoneNumber,
+    contactDetails.contactEmail
   );
 
   return result.lastInsertRowid;
@@ -72,18 +72,18 @@ function insertOrGetGeolocalization(geolocalization) {
 // Helper: Insert or get business entity
 function insertOrGetBusinessEntity(entity) {
   const existing = db.prepare(`
-    SELECT identifier FROM business_entities WHERE identifier = ?
+    SELECT identifier FROM businessEntities WHERE identifier = ?
   `).get(entity.identifier);
 
   if (existing) return entity.identifier;
 
-  const legalAddressId = insertOrGetAddress(entity.legal_address);
-  const physicalAddressId = insertOrGetAddress(entity.physical_address);
-  const contactDetailsId = insertOrGetContactDetails(entity.contact_details);
+  const legalAddressId = insertOrGetAddress(entity.legalAddress);
+  const physicalAddressId = insertOrGetAddress(entity.physicalAddress);
+  const contactDetailsId = insertOrGetContactDetails(entity.contactDetails);
 
   db.prepare(`
-    INSERT INTO business_entities 
-    (identifier, name, legal_address_id, physical_address_id, tin, rdb_number, rca_number, contact_details_id)
+    INSERT INTO businessEntities 
+    (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     entity.identifier,
@@ -91,8 +91,8 @@ function insertOrGetBusinessEntity(entity) {
     legalAddressId,
     physicalAddressId,
     entity.tin,
-    entity.rdb_number,
-    entity.rca_number,
+    entity.rdbNumber || null,
+    entity.rcaNumber || null,
     contactDetailsId
   );
 
@@ -103,19 +103,19 @@ function insertOrGetBusinessEntity(entity) {
 function getBusinessEntity(identifier) {
   const entity = db.prepare(`
     SELECT be.*, 
-           la.country as legal_country, la.subnational_division_l1 as legal_l1, 
-           la.subnational_division_l1_text as legal_l1_text,
-           la.subnational_division_l2 as legal_l2, la.subnational_division_l3 as legal_l3,
-           la.subnational_division_l4 as legal_l4, la.address_locality as legal_locality,
-           pa.country as physical_country, pa.subnational_division_l1 as physical_l1,
-           pa.subnational_division_l1_text as physical_l1_text,
-           pa.subnational_division_l2 as physical_l2, pa.subnational_division_l3 as physical_l3,
-           pa.subnational_division_l4 as physical_l4, pa.address_locality as physical_locality,
-           cd.legal_representative, cd.contact_phone_number, cd.contact_email
-    FROM business_entities be
-    JOIN addresses la ON be.legal_address_id = la.id
-    JOIN addresses pa ON be.physical_address_id = pa.id
-    JOIN contact_details cd ON be.contact_details_id = cd.id
+           la.country as legalCountry, la.subnationalDivisionL1 as legalL1, 
+           la.subnationalDivisionL1Text as legalL1Text,
+           la.subnationalDivisionL2 as legalL2, la.subnationalDivisionL3 as legalL3,
+           la.subnationalDivisionL4 as legalL4, la.addressLocalityText as legalLocality,
+           pa.country as physicalCountry, pa.subnationalDivisionL1 as physicalL1,
+           pa.subnationalDivisionL1Text as physicalL1Text,
+           pa.subnationalDivisionL2 as physicalL2, pa.subnationalDivisionL3 as physicalL3,
+           pa.subnationalDivisionL4 as physicalL4, pa.addressLocalityText as physicalLocality,
+           cd.legalRepresentative, cd.contactPhoneNumber, cd.contactEmail
+    FROM businessEntities be
+    JOIN addresses la ON be.legalAddressId = la.id
+    JOIN addresses pa ON be.physicalAddressId = pa.id
+    JOIN contactDetails cd ON be.contactDetailsId = cd.id
     WHERE be.identifier = ?
   `).get(identifier);
 
@@ -124,160 +124,159 @@ function getBusinessEntity(identifier) {
   return {
     identifier: entity.identifier,
     name: entity.name,
-    legal_address: {
-      country: entity.legal_country,
-      subnational_division_l1: entity.legal_l1,
-      subnational_division_l1_text: entity.legal_l1_text,
-      subnational_division_l2: entity.legal_l2,
-      subnational_division_l3: entity.legal_l3,
-      subnational_division_l4: entity.legal_l4,
-      address_locality: entity.legal_locality
+    legalAddress: {
+      country: entity.legalCountry,
+      subnationalDivisionL1: entity.legalL1,
+      subnationalDivisionL1Text: entity.legalL1Text,
+      subnationalDivisionL2: entity.legalL2,
+      subnationalDivisionL3: entity.legalL3,
+      subnationalDivisionL4: entity.legalL4,
+      addressLocalityText: entity.legalLocality
     },
-    physical_address: {
-      country: entity.physical_country,
-      subnational_division_l1: entity.physical_l1,
-      subnational_division_l1_text: entity.physical_l1_text,
-      subnational_division_l2: entity.physical_l2,
-      subnational_division_l3: entity.physical_l3,
-      subnational_division_l4: entity.physical_l4,
-      address_locality: entity.physical_locality
+    physicalAddress: {
+      country: entity.physicalCountry,
+      subnationalDivisionL1: entity.physicalL1,
+      subnationalDivisionL1Text: entity.physicalL1Text,
+      subnationalDivisionL2: entity.physicalL2,
+      subnationalDivisionL3: entity.physicalL3,
+      subnationalDivisionL4: entity.physicalL4,
+      addressLocalityText: entity.physicalLocality
     },
     tin: entity.tin,
-    rdb_number: entity.rdb_number,
-    rca_number: entity.rca_number,
-    contact_details: {
-      legal_representative: entity.legal_representative,
-      contact_phone_number: entity.contact_phone_number,
-      contact_email: entity.contact_email
+    rdbNumber: entity.rdbNumber || null,
+    rcaNumber: entity.rcaNumber || null,
+    contactDetails: {
+      legalRepresentative: entity.legalRepresentative,
+      contactPhoneNumber: entity.contactPhoneNumber,
+      contactEmail: entity.contactEmail
     }
   };
 }
 
 // Helper: Reconstruct mine site from database
 function reconstructMineSite(row) {
-  const owner = getBusinessEntity(row.owner_id);
+  const owner = getBusinessEntity(row.ownerId);
   
   // Get minerals
   const minerals = db.prepare(`
-    SELECT mineral_code FROM mine_site_minerals WHERE mine_site_id = ?
-  `).all(row.icglr_id).map(r => r.mineral_code);
+    SELECT mineralCode FROM mineSiteMinerals WHERE mineSiteId = ?
+  `).all(row.icglrId).map(r => r.mineralCode);
 
   // Get mine site location (simplified - assumes one location per mine site)
-  // Note: The schema doesn't have a direct link from mine_sites to mine_site_locations
-  // This is a limitation - you may need to add a location_id column to mine_sites
+  // Note: The schema doesn't have a direct link from mineSites to mineSiteLocations
+  // This is a limitation - you may need to add a locationId column to mineSites
   // For now, we'll try to find a location that might be associated
   const locationRow = db.prepare(`
     SELECT msl.*, g.latitude, g.longitude,
-           a.country, a.subnational_division_l1, a.subnational_division_l1_text,
-           a.subnational_division_l2, a.subnational_division_l3, a.subnational_division_l4,
-           a.address_locality
-    FROM mine_site_locations msl
-    JOIN geolocalizations g ON msl.geolocalization_id = g.id
-    JOIN addresses a ON msl.local_geographic_designation_id = a.id
+           a.country, a.subnationalDivisionL1, a.subnationalDivisionL1Text,
+           a.subnationalDivisionL2, a.subnationalDivisionL3, a.subnationalDivisionL4,
+           a.addressLocalityText
+    FROM mineSiteLocations msl
+    JOIN geolocalizations g ON msl.geolocalizationId = g.id
+    JOIN addresses a ON msl.localGeographicDesignationId = a.id
     LIMIT 1
   `).get();
 
-  // For now, we'll need to store location_id in mine_sites table or query differently
+  // For now, we'll need to store locationId in mineSites table or query differently
   // This is a simplified version - you may need to adjust based on your schema
   const location = locationRow ? {
     geolocalization: {
       latitude: locationRow.latitude,
       longitude: locationRow.longitude
     },
-    national_cadaster_localization: locationRow.national_cadaster_localization,
-    local_geographic_designation: {
+    nationalCadasterLocalization: locationRow.nationalCadasterLocalization,
+    localGeographicDesignation: {
       country: locationRow.country,
-      subnational_division_l1: locationRow.subnational_division_l1,
-      subnational_division_l1_text: locationRow.subnational_division_l1_text,
-      subnational_division_l2: locationRow.subnational_division_l2,
-      subnational_division_l3: locationRow.subnational_division_l3,
-      subnational_division_l4: locationRow.subnational_division_l4,
-      address_locality: locationRow.address_locality
+      subnationalDivisionL1: locationRow.subnationalDivisionL1,
+      subnationalDivisionL1Text: locationRow.subnationalDivisionL1Text,
+      subnationalDivisionL2: locationRow.subnationalDivisionL2,
+      subnationalDivisionL3: locationRow.subnationalDivisionL3,
+      subnationalDivisionL4: locationRow.subnationalDivisionL4,
+      addressLocalityText: locationRow.addressLocalityText
     },
-    polygon: locationRow.polygon,
+    polygon: locationRow.polygon ? JSON.parse(locationRow.polygon) : undefined,
     altitude: locationRow.altitude
   } : null;
 
   // Get licenses
   const licenses = db.prepare(`
-    SELECT l.* FROM licenses l WHERE l.owner_id = ?
-  `).all(row.owner_id).map(licenseRow => {
-    const licenseOwner = getBusinessEntity(licenseRow.owner_id);
+    SELECT l.* FROM licenses l WHERE l.ownerId = ?
+  `).all(row.ownerId).map(licenseRow => {
+    const licenseOwner = getBusinessEntity(licenseRow.ownerId);
     return {
-      license_type: licenseRow.license_type,
-      license_id: licenseRow.license_id,
+      licenseType: licenseRow.licenseType,
+      licenseId: licenseRow.licenseId,
       owner: licenseOwner,
-      date_applied: licenseRow.date_applied,
-      date_granted: licenseRow.date_granted,
-      date_expiring: licenseRow.date_expiring,
-      license_status: licenseRow.license_status,
-      covered_commodities: [] // TODO: Get from license_commodities junction table
+      appliedDate: licenseRow.appliedDate,
+      grantedDate: licenseRow.grantedDate,
+      expiringDate: licenseRow.expiringDate,
+      licenseStatus: licenseRow.licenseStatus,
+      coveredCommodities: [] // TODO: Implement license commodities junction table
     };
   });
 
   // Get inspections
   const inspections = db.prepare(`
-    SELECT * FROM inspections WHERE inspection_id IN (
-      SELECT inspection_id FROM inspections LIMIT 10
+    SELECT * FROM inspections WHERE inspectionId IN (
+      SELECT inspectionId FROM inspections LIMIT 10
     )
   `).all().map(inspectionRow => ({
-    inspection_id: inspectionRow.inspection_id,
-    inspection_date: inspectionRow.inspection_date,
-    inspection_responsible: inspectionRow.inspection_responsible,
-    inspection_findings: inspectionRow.inspection_findings,
-    inspection_report: inspectionRow.inspection_report,
-    inspection_purpose: inspectionRow.inspection_purpose,
-    inspection_results: inspectionRow.inspection_results,
-    inspector_name: inspectionRow.inspector_name,
-    inspector_position: inspectionRow.inspector_position,
-    government_agency: inspectionRow.government_agency,
-    government_id: inspectionRow.government_id
+    inspectionId: inspectionRow.inspectionId,
+    inspectionDate: inspectionRow.inspectionDate,
+    inspectionResult: inspectionRow.inspectionResult,
+    inspectionReport: inspectionRow.inspectionReport,
+    inspectionPurpose: inspectionRow.inspectionPurpose,
+    inspectionResults: inspectionRow.inspectionResults,
+    inspectorName: inspectionRow.inspectorName,
+    inspectorPosition: inspectionRow.inspectorPosition,
+    governmentAgency: inspectionRow.governmentAgency,
+    governmentId: inspectionRow.governmentId
   }));
 
   // Get status history
   const statusHistory = db.prepare(`
-    SELECT date_of_change, new_status 
-    FROM status_history WHERE mine_site_id = ?
-    ORDER BY date_of_change DESC
-  `).all(row.icglr_id).map(sh => ({
-    date_of_change: sh.date_of_change,
-    new_status: sh.new_status
+    SELECT dateOfChange, newStatus 
+    FROM statusHistory WHERE mineSiteId = ?
+    ORDER BY dateOfChange DESC
+  `).all(row.icglrId).map(sh => ({
+    dateOfChange: sh.dateOfChange,
+    newStatus: sh.newStatus
   }));
 
   return {
-    icglr_id: row.icglr_id,
-    address_country: row.address_country,
-    national_id: row.national_id,
-    certification_status: row.certification_status,
-    activity_status: row.activity_status,
-    mine_site_location: location,
+    icglrId: row.icglrId,
+    addressCountry: row.addressCountry,
+    nationalId: row.nationalId,
+    certificationStatus: row.certificationStatus,
+    activityStatus: row.activityStatus,
+    mineSiteLocation: location,
     mineral: minerals,
     license: licenses,
     owner: owner,
     operator: [], // TODO: Implement operator relationship
     inspection: inspections,
-    status_history: statusHistory
+    statusChange: statusHistory
   };
 }
 
 class MineSitesService {
   // List mine sites with filtering and pagination
   list(filters = {}, page = 1, limit = 20) {
-    let sql = 'SELECT * FROM mine_sites WHERE 1=1';
+    let sql = 'SELECT * FROM mineSites WHERE 1=1';
     const conditions = [];
     const values = [];
 
-    if (filters.address_country) {
-      conditions.push('address_country = ?');
-      values.push(filters.address_country);
+    if (filters.addressCountry) {
+      conditions.push('addressCountry = ?');
+      values.push(filters.addressCountry);
     }
-    if (filters.certification_status !== undefined) {
-      conditions.push('certification_status = ?');
-      values.push(filters.certification_status);
+    if (filters.certificationStatus !== undefined) {
+      conditions.push('certificationStatus = ?');
+      values.push(filters.certificationStatus);
     }
-    if (filters.activity_status !== undefined) {
-      conditions.push('activity_status = ?');
-      values.push(filters.activity_status);
+    if (filters.activityStatus !== undefined) {
+      conditions.push('activityStatus = ?');
+      values.push(filters.activityStatus);
     }
 
     if (conditions.length > 0) {
@@ -316,7 +315,7 @@ class MineSitesService {
 
   // Get mine site by ICGLR ID
   getById(icglrId) {
-    const row = db.prepare('SELECT * FROM mine_sites WHERE icglr_id = ?').get(icglrId);
+    const row = db.prepare('SELECT * FROM mineSites WHERE icglrId = ?').get(icglrId);
     if (!row) {
       const error = new Error('Mine site not found');
       error.code = 'NOT_FOUND';
@@ -338,7 +337,7 @@ class MineSitesService {
     }
 
     // Check if exists
-    const existing = db.prepare('SELECT icglr_id FROM mine_sites WHERE icglr_id = ?').get(data.icglr_id);
+    const existing = db.prepare('SELECT icglrId FROM mineSites WHERE icglrId = ?').get(data.icglrId);
     if (existing) {
       const error = new Error('Mine site already exists');
       error.code = 'CONFLICT';
@@ -355,45 +354,45 @@ class MineSitesService {
 
       // Insert mine site location
       let locationId = null;
-      if (data.mine_site_location) {
-        const geoId = insertOrGetGeolocalization(data.mine_site_location.geolocalization);
-        const addressId = insertOrGetAddress(data.mine_site_location.local_geographic_designation);
+      if (data.mineSiteLocation) {
+        const geoId = insertOrGetGeolocalization(data.mineSiteLocation.geolocalization);
+        const addressId = insertOrGetAddress(data.mineSiteLocation.localGeographicDesignation);
         
         const locationResult = db.prepare(`
-          INSERT INTO mine_site_locations 
-          (geolocalization_id, national_cadaster_localization, local_geographic_designation_id, polygon, altitude)
+          INSERT INTO mineSiteLocations 
+          (geolocalizationId, nationalCadasterLocalization, localGeographicDesignationId, polygon, altitude)
           VALUES (?, ?, ?, ?, ?)
         `).run(
           geoId,
-          data.mine_site_location.national_cadaster_localization,
+          data.mineSiteLocation.nationalCadasterLocalization || null,
           addressId,
-          data.mine_site_location.polygon || null,
-          data.mine_site_location.altitude || null
+          data.mineSiteLocation.polygon ? JSON.stringify(data.mineSiteLocation.polygon) : null,
+          data.mineSiteLocation.altitude || null
         );
         locationId = locationResult.lastInsertRowid;
       }
 
       // Insert mine site
       db.prepare(`
-        INSERT INTO mine_sites 
-        (icglr_id, address_country, national_id, certification_status, activity_status, owner_id)
+        INSERT INTO mineSites 
+        (icglrId, addressCountry, nationalId, certificationStatus, activityStatus, ownerId)
         VALUES (?, ?, ?, ?, ?, ?)
       `).run(
-        data.icglr_id,
-        data.address_country,
-        data.national_id,
-        data.certification_status,
-        data.activity_status,
+        data.icglrId,
+        data.addressCountry,
+        data.nationalId,
+        data.certificationStatus,
+        data.activityStatus,
         data.owner.identifier
       );
 
       // Insert minerals
       if (data.mineral && data.mineral.length > 0) {
         const insertMineral = db.prepare(`
-          INSERT INTO mine_site_minerals (mine_site_id, mineral_code) VALUES (?, ?)
+          INSERT INTO mineSiteMinerals (mineSiteId, mineralCode) VALUES (?, ?)
         `);
         data.mineral.forEach(mineral => {
-          insertMineral.run(data.icglr_id, mineral);
+          insertMineral.run(data.icglrId, mineral);
         });
       }
 
@@ -403,16 +402,16 @@ class MineSitesService {
           insertOrGetBusinessEntity(license.owner);
           db.prepare(`
             INSERT INTO licenses 
-            (license_type, license_id, owner_id, date_applied, date_granted, date_expiring, license_status)
+            (licenseType, licenseId, ownerId, appliedDate, grantedDate, expiringDate, licenseStatus)
             VALUES (?, ?, ?, ?, ?, ?, ?)
           `).run(
-            license.license_type,
-            license.license_id,
+            license.licenseType,
+            license.licenseId,
             license.owner.identifier,
-            license.date_applied || null,
-            license.date_granted || null,
-            license.date_expiring || null,
-            license.license_status || null
+            license.appliedDate || null,
+            license.grantedDate || null,
+            license.expiringDate || null,
+            license.licenseStatus ?? null
           );
         });
       }
@@ -421,43 +420,42 @@ class MineSitesService {
       if (data.inspection && data.inspection.length > 0) {
         const insertInspection = db.prepare(`
           INSERT INTO inspections 
-          (inspection_id, inspection_date, inspection_responsible, inspection_findings,
-           inspection_report, inspection_purpose, inspection_results, inspector_name, inspector_position,
-           government_agency, government_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (inspectionId, inspectionDate, inspectionResult,
+           inspectionReport, inspectionPurpose, inspectionResults,
+           inspectorName, inspectorPosition, governmentAgency, governmentId)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         data.inspection.forEach(inspection => {
           insertInspection.run(
-            inspection.inspection_id,
-            inspection.inspection_date,
-            inspection.inspection_responsible,
-            inspection.inspection_findings,
-            inspection.inspection_report,
-            inspection.inspection_purpose,
-            inspection.inspection_results,
-            inspection.inspector_name,
-            inspection.inspector_position,
-            inspection.government_agency,
-            inspection.government_id || null
+            inspection.inspectionId,
+            inspection.inspectionDate,
+            inspection.inspectionResult,
+            inspection.inspectionReport || null,
+            inspection.inspectionPurpose || null,
+            inspection.inspectionResults || null,
+            inspection.inspectorName,
+            inspection.inspectorPosition,
+            inspection.governmentAgency,
+            inspection.governmentId || null
           );
         });
       }
 
       // Insert status history
-      if (data.status_history && data.status_history.length > 0) {
+      if (data.statusChange && data.statusChange.length > 0) {
         const insertStatus = db.prepare(`
-          INSERT INTO status_history (mine_site_id, date_of_change, new_status)
+          INSERT INTO statusHistory (mineSiteId, dateOfChange, newStatus)
           VALUES (?, ?, ?)
         `);
-        data.status_history.forEach(status => {
-          insertStatus.run(data.icglr_id, status.date_of_change, status.new_status);
+        data.statusChange.forEach(status => {
+          insertStatus.run(data.icglrId, status.dateOfChange, status.newStatus);
         });
       }
     });
 
     transaction();
 
-    return this.getById(data.icglr_id);
+    return this.getById(data.icglrId);
   }
 
   // Update mine site
@@ -475,14 +473,14 @@ class MineSitesService {
 
     // Update basic fields
     db.prepare(`
-      UPDATE mine_sites 
-      SET address_country = ?, national_id = ?, certification_status = ?, activity_status = ?, owner_id = ?
-      WHERE icglr_id = ?
+      UPDATE mineSites 
+      SET addressCountry = ?, nationalId = ?, certificationStatus = ?, activityStatus = ?, ownerId = ?
+      WHERE icglrId = ?
     `).run(
-      data.address_country,
-      data.national_id,
-      data.certification_status,
-      data.activity_status,
+      data.addressCountry,
+      data.nationalId,
+      data.certificationStatus,
+      data.activityStatus,
       data.owner.identifier,
       icglrId
     );

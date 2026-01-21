@@ -63,8 +63,8 @@ Defined in `core/common.json`:
 ## Key Features
 
 ### Naming Convention
-- All field names use **snake_case**
-- Examples: `icglr_id`, `certification_status`, `mine_site_location`
+- All technical field names use **camelCase**
+- Examples: `icglrId`, `certificationStatus`, `mineSiteLocation`
 
 ### Identifier Formats
 - **Mine Site ID**: `CC-[Lat]-[Long]-NNNNN` (e.g., `RW-1.9641+30.0619-00001`)
@@ -107,10 +107,10 @@ Schemas use `$ref` to reference shared definitions:
 
 ```json
 {
-  "icglr_id": {
+  "icglrId": {
     "$ref": "../core/common.json#/definitions/MineSiteIdFormat"
   },
-  "certification_status": {
+  "certificationStatus": {
     "$ref": "../core/common.json#/definitions/CertificationStatus"
   }
 }

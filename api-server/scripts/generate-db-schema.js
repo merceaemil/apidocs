@@ -38,6 +38,13 @@ const sqlPath = path.join(dataDir, 'schema.sql');
 fs.writeFileSync(sqlPath, sql);
 console.log(`  SQL saved to: ${sqlPath}`);
 
+// Recreate database so schema changes (e.g. column additions) are applied.
+// We generate CREATE TABLE IF NOT EXISTS statements, so without recreating,
+// existing tables would not be altered.
+if (fs.existsSync(dbPath)) {
+  fs.unlinkSync(dbPath);
+}
+
 // Create/connect to database
 const db = new Database(dbPath);
 

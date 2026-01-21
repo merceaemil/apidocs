@@ -184,9 +184,9 @@ class JsonSchemaToSql {
       }
     }
 
-    // Also check by property name patterns (for $ref cases)
-    if (propName === 'legal_address' || propName === 'physical_address' || 
-        propName.endsWith('_address') || (propName.includes('address') && !propName.includes('_id'))) {
+    if (propName === 'legalAddress' || propName === 'physicalAddress' || 
+        propName.endsWith('Address') ||
+        (propName.includes('address') && !propName.includes('Id'))) {
       if (entityDefinitions.Address) {
         return {
           isReference: true,
@@ -196,17 +196,18 @@ class JsonSchemaToSql {
       }
     }
 
-    if (propName === 'contact_details' || propName.endsWith('_contact_details')) {
+    if (propName === 'contactDetails' ||  
+        propName.endsWith('ContactDetails')) {
       if (entityDefinitions.ContactDetails) {
         return {
           isReference: true,
           entityName: 'contactdetails',
-          tableName: 'contact_details'
+          tableName: 'contactDetails'
         };
       }
     }
 
-    if (propName === 'geolocalization' || propName.endsWith('_geolocalization')) {
+    if (propName === 'geolocalization' || propName.endsWith('Geolocalization')) {
       if (entityDefinitions.Geolocalization) {
         return {
           isReference: true,
@@ -216,8 +217,8 @@ class JsonSchemaToSql {
       }
     }
 
-    // Check local_geographic_designation (it's an Address)
-    if (propName === 'local_geographic_designation' || propName.endsWith('_local_geographic_designation')) {
+    if (propName === 'localGeographicDesignation' ||
+        propName.endsWith('LocalGeographicDesignation')) {
       if (entityDefinitions.Address) {
         return {
           isReference: true,
@@ -233,12 +234,14 @@ class JsonSchemaToSql {
   getTableNameForEntity(entityName) {
     const tableNames = {
       'address': 'addresses',
-      'businessentity': 'business_entities',
-      'contactdetails': 'contact_details',
+      'businessentity': 'businessEntities',
+      'contactdetails': 'contactDetails',
       'geolocalization': 'geolocalizations',
-      'minesitelocation': 'mine_site_locations'
+      'minesitelocation': 'mineSiteLocations'
     };
-    return tableNames[entityName.toLowerCase()] || this.snakeCase(entityName) + 's';
+    // Convert entity name to camelCase table name
+    const camelName = this.camelCase(entityName);
+    return tableNames[entityName.toLowerCase()] || camelName.charAt(0).toLowerCase() + camelName.slice(1) + 's';
   }
 
   // Flatten nested object properties into columns
@@ -303,10 +306,11 @@ class JsonSchemaToSql {
       const referenceInfo = this.shouldBeReference(propName, resolvedSchema, commonSchema);
       if (referenceInfo && referenceInfo.isReference) {
         // Create foreign key reference instead of flattening
-        const refColumnName = this.snakeCase(fullPropName) + '_id';
+        const refColumnName = this.camelCase(fullPropName) + 'Id';
+        const refType = referenceInfo.tableName === 'businessEntities' ? 'TEXT' : 'INTEGER';
         columns.push({
           name: refColumnName,
-          type: 'INTEGER',
+          type: refType,
           required: isRequired,
           isReference: true,
           referenceTable: referenceInfo.tableName,
@@ -317,10 +321,11 @@ class JsonSchemaToSql {
         const nestedRefInfo = this.shouldBeReference('', resolvedSchema, commonSchema);
         if (nestedRefInfo && nestedRefInfo.isReference) {
           // Create foreign key reference for nested entity
-          const refColumnName = this.snakeCase(fullPropName) + '_id';
+          const refColumnName = this.camelCase(fullPropName) + 'Id';
+          const refType = nestedRefInfo.tableName === 'businessEntities' ? 'TEXT' : 'INTEGER';
           columns.push({
             name: refColumnName,
-            type: 'INTEGER',
+            type: refType,
             required: isRequired,
             isReference: true,
             referenceTable: nestedRefInfo.tableName,
@@ -336,7 +341,7 @@ class JsonSchemaToSql {
         const sqlType = this.getSqlType(resolvedSchema, fullPropName);
         if (sqlType) {
           columns.push({
-            name: this.snakeCase(fullPropName),
+            name: this.camelCase(fullPropName),
             type: sqlType,
             required: isRequired
           });
@@ -391,21 +396,44 @@ class JsonSchemaToSql {
       if (col.isReference && col.referenceTable) {
         // Entity reference (Address, BusinessEntity, ContactDetails, Geolocalization, etc.)
         // Use correct primary key for each table
-        const refColumn = col.referenceTable === 'business_entities' ? 'identifier' : 'id';
+        const refColumn =
+          col.referenceTable === 'businessEntities' ? 'identifier' :
+          col.referenceTable === 'mineSites' ? 'icglrId' :
+          col.referenceTable === 'lots' ? 'lotNumber' :
+          col.referenceTable === 'tags' ? 'identifier' :
+          col.referenceTable === 'inspections' ? 'inspectionId' :
+          col.referenceTable === 'exportCertificates' ? 'exportCertificateId' :
+          'id';
         foreignKeys.push(`FOREIGN KEY (${col.name}) REFERENCES ${col.referenceTable}(${refColumn})`);
-      } else if (col.name.endsWith('_identifier') || (col.name.endsWith('_id') && col.name !== 'icglr_id' && !col.isReference)) {
+      } else if (col.name.endsWith('Identifier') || (col.name.endsWith('Id') && col.name !== 'icglrId' && !col.isReference)) {
         const refTable = this.getReferencedTable(col.name);
         if (refTable) {
           // Use correct primary key column for each table
-          const refColumn = refTable === 'mine_sites' ? 'icglr_id' : 
-                          refTable === 'lots' ? 'lot_number' :
+          const refColumn = refTable === 'mineSites' ? 'icglrId' : 
+                          refTable === 'lots' ? 'lotNumber' :
                           refTable === 'tags' ? 'identifier' :
-                          refTable === 'inspections' ? 'inspection_id' :
-                          refTable === 'business_entities' ? 'identifier' :
+                          refTable === 'inspections' ? 'inspectionId' :
+                          refTable === 'businessEntities' ? 'identifier' :
+                          refTable === 'exportCertificates' ? 'exportCertificateId' :
                           'identifier';
           foreignKeys.push(`FOREIGN KEY (${col.name}) REFERENCES ${refTable}(${refColumn})`);
         }
       }
+    }
+
+    // Special-case: exportCertificates gets a combined key column that acts as PK.
+    // NOTE: Some SQLite builds disallow generated columns as PRIMARY KEY, so this is a
+    // normal TEXT column populated by application code as `${issuingCountry}:${identifier}`.
+    // This keeps the DB aligned with the semantic "issuingCountry + identifier" identity,
+    // while allowing other tables to reference a single FK column.
+    if (tableName === 'exportCertificates') {
+      // Add before other columns so it appears near the top of the table definition.
+      // Using ':' avoids ambiguity vs '-' if identifier contains dashes.
+      columns.unshift(
+        `exportCertificateId TEXT PRIMARY KEY`
+      );
+      // Ensure the semantic composite identity is also enforced.
+      columns.push(`UNIQUE (identifier, issuingCountry)`);
     }
 
     let sql = `CREATE TABLE IF NOT EXISTS ${tableName} (\n`;
@@ -416,7 +444,7 @@ class JsonSchemaToSql {
     
     // Handle composite primary keys
     if (Array.isArray(primaryKey)) {
-      const pkColumns = primaryKey.map(pk => this.snakeCase(pk)).join(', ');
+      const pkColumns = primaryKey.map(pk => this.camelCase(pk)).join(', ');
       allColumns.push(`PRIMARY KEY (${pkColumns})`);
     }
     
@@ -436,12 +464,35 @@ class JsonSchemaToSql {
       return 'TEXT';
     }
 
+    // Special-case: GeoJSON polygon is modeled as an object in JSON Schema,
+    // but stored as JSON text in SQLite.
+    if (
+      schema.type === 'object' &&
+      (propName === 'polygon' || propName.endsWith('polygon') || propName.endsWith('Polygon'))
+    ) {
+      return 'TEXT';
+    }
+
     if (schema.type === 'string') {
-      if (propName.includes('date') || propName.includes('Date')) {
+      // Prefer explicit JSON Schema formats when present
+      if (schema.format === 'date') {
         return 'DATE';
-      } else if (propName.includes('time') || propName.includes('Time')) {
+      }
+      if (schema.format === 'date-time') {
         return 'DATETIME';
       }
+
+      // Our Time primitive is hhmmss (no schema.format), so store as TEXT
+      // (do NOT store as DATETIME because it is not an ISO datetime).
+      if (propName.includes('time') || propName.includes('Time')) {
+        return 'TEXT';
+      }
+
+      // Heuristic fallback for date-like fields that don't have schema.format
+      if (propName.includes('date') || propName.includes('Date')) {
+        return 'DATE';
+      }
+
       return 'TEXT';
     } else if (schema.type === 'integer' || schema.type === 'number') {
       // Use REAL for coordinates (latitude/longitude)
@@ -452,7 +503,8 @@ class JsonSchemaToSql {
     } else if (schema.type === 'boolean') {
       return 'INTEGER';
     } else if (schema.type === 'array') {
-      return null; // Handled separately
+      // Arrays are generally handled via junction tables / separate tables in this project.
+      return null;
     } else if (schema.type === 'object') {
       // For nested objects, we flatten them, so return null here
       // The flattening will handle the nested properties
@@ -464,15 +516,18 @@ class JsonSchemaToSql {
 
   getPrimaryKey(tableName) {
     const primaryKeys = {
-      'mine_sites': 'icglr_id',
-      'business_entities': 'identifier',
-      'lots': 'lot_number',
+      'mineSites': 'icglrId',
+      'businessEntities': 'identifier',
+      'lots': 'lotNumber',
       'tags': 'identifier',
-      'inspections': 'inspection_id',
-      'export_certificates': ['identifier', 'issuing_country'],
+      'inspections': 'inspectionId',
+      // Export Certificates are uniquely identified by (issuingCountry, identifier).
+      // For DB-level FK simplicity, we expose a generated combined key exportCertificateId
+      // and use that as the primary key.
+      'exportCertificates': 'exportCertificateId',
       'licenses': 'id',
       'taxes': 'id',
-      'status_history': 'id'
+      'statusHistory': 'id'
     };
     return primaryKeys[tableName] || null;
   }
@@ -481,19 +536,25 @@ class JsonSchemaToSql {
     if (propName.includes('owner') || propName.includes('exporter') || 
         propName.includes('importer') || propName.includes('creator') || 
         propName.includes('recipient')) {
-      return 'business_entities';
-    } else if (propName.includes('mine_site')) {
-      return 'mine_sites';
-    } else if (propName.includes('lot') && !propName.includes('lot_number')) {
+      return 'businessEntities';
+    } else if (propName.includes('mineSite')) {
+      return 'mineSites';
+    } else if (propName.includes('lot') && !propName.includes('lotNumber')) {
       return 'lots';
-    } else if (propName.includes('export_certificate')) {
-      return 'export_certificates';
+    } else if (propName.includes('exportCertificate')) {
+      return 'exportCertificates';
     }
     return null;
   }
 
-  snakeCase(str) {
-    return str.replace(/([A-Z])/g, '_$1').toLowerCase().replace(/^_/, '');
+  // Keep camelCase as-is (no conversion needed since schemas already use camelCase)
+  camelCase(str) {
+    // If already camelCase, return as-is
+    // If snake_case, convert to camelCase
+    if (str.includes('_')) {
+      return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    }
+    return str;
   }
 
   // Generate all tables
@@ -543,11 +604,11 @@ class JsonSchemaToSql {
 
     // Generate tables
     if (mineSiteSchema) {
-      const result = this.generateDDL(mineSiteSchema, 'mine_sites');
+      const result = this.generateDDL(mineSiteSchema, 'mineSites');
       if (result) this.tables.push(result);
     }
     if (exportCertSchema) {
-      const result = this.generateDDL(exportCertSchema, 'export_certificates');
+      const result = this.generateDDL(exportCertSchema, 'exportCertificates');
       if (result) this.tables.push(result);
     }
     if (lotSchema) {
@@ -555,7 +616,7 @@ class JsonSchemaToSql {
       if (result) this.tables.push(result);
     }
     if (businessEntitySchema) {
-      const result = this.generateDDL(businessEntitySchema, 'business_entities');
+      const result = this.generateDDL(businessEntitySchema, 'businessEntities');
       if (result) this.tables.push(result);
     }
 
@@ -609,26 +670,26 @@ class JsonSchemaToSql {
       }
     }
     
-    // Generate status_history table (add mine_site_id column)
+    // Generate statusHistory table (add mineSiteId column)
     if (statusHistorySchema) {
-      // Add mine_site_id to the schema for foreign key relationship
+      // Add mineSiteId to the schema for foreign key relationship
       const enhancedSchema = {
         ...statusHistorySchema,
         properties: {
           ...statusHistorySchema.properties,
-          mine_site_id: {
+          mineSiteId: {
             type: 'string',
             description: 'Reference to mine site ICGLR ID'
           }
         },
-        required: [...(statusHistorySchema.required || []), 'mine_site_id']
+        required: [...(statusHistorySchema.required || []), 'mineSiteId']
       };
-      const result = this.generateDDL(enhancedSchema, 'status_history');
+      const result = this.generateDDL(enhancedSchema, 'statusHistory');
       if (result) {
         // Ensure id column exists
         if (!result.sql.includes('id INTEGER')) {
-          result.sql = result.sql.replace('CREATE TABLE IF NOT EXISTS status_history (', 
-            'CREATE TABLE IF NOT EXISTS status_history (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,');
+          result.sql = result.sql.replace('CREATE TABLE IF NOT EXISTS statusHistory (', 
+            'CREATE TABLE IF NOT EXISTS statusHistory (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,');
         }
         this.tables.push(result);
       }
@@ -665,7 +726,7 @@ class JsonSchemaToSql {
     if (commonSchema.definitions.ContactDetails) {
       const contactTable = this.generateTableFromDefinition(
         commonSchema.definitions.ContactDetails,
-        'contact_details'
+        'contactDetails'
       );
       if (contactTable) tables.push(contactTable);
     }
@@ -683,8 +744,8 @@ class JsonSchemaToSql {
     // Note: MineSiteLocation contains geolocalization and address references
     for (const [key, schema] of Object.entries(this.schemas)) {
       if (key.includes('mine-site-location.json')) {
-        // MineSiteLocation has geolocalization and local_geographic_designation as references
-        const locationTable = this.generateTableFromDefinition(schema, 'mine_site_locations', true);
+        // MineSiteLocation has geolocalization and localGeographicDesignation as references
+        const locationTable = this.generateTableFromDefinition(schema, 'mineSiteLocations', true);
         if (locationTable) tables.push(locationTable);
         break;
       }
@@ -742,10 +803,11 @@ class JsonSchemaToSql {
       // Check if this should be a reference (always check for entity tables)
       const refInfo = this.shouldBeReference(propName, resolvedSchema, commonSchema);
       if (refInfo && refInfo.isReference) {
-        const refColumnName = this.snakeCase(propName) + '_id';
+        const refColumnName = this.camelCase(propName) + 'Id';
         const isRequired = schema.required && schema.required.includes(propName);
-        const refColumn = refInfo.tableName === 'business_entities' ? 'identifier' : 'id';
-        columns.push(`${refColumnName} INTEGER ${isRequired ? 'NOT NULL' : 'NULL'}`);
+        const refColumn = refInfo.tableName === 'businessEntities' ? 'identifier' : 'id';
+        const refType = refInfo.tableName === 'businessEntities' ? 'TEXT' : 'INTEGER';
+        columns.push(`${refColumnName} ${refType} ${isRequired ? 'NOT NULL' : 'NULL'}`);
         foreignKeys.push(`FOREIGN KEY (${refColumnName}) REFERENCES ${refInfo.tableName}(${refColumn})`);
         continue;
       }
@@ -755,7 +817,7 @@ class JsonSchemaToSql {
 
       const isRequired = schema.required && schema.required.includes(propName);
       
-      let columnDef = `${this.snakeCase(propName)} ${sqlType}`;
+      let columnDef = `${this.camelCase(propName)} ${sqlType}`;
       
       if (!isRequired) {
         columnDef += ' NULL';
@@ -806,18 +868,18 @@ PRAGMA foreign_keys = ON;
     // First: entity tables, then main tables, then secondary tables
     const tableOrder = [
       'addresses',
-      'contact_details',
+      'contactDetails',
       'geolocalizations',
-      'mine_site_locations',
-      'business_entities',
-      'mine_sites',
-      'export_certificates',
+      'mineSiteLocations',
+      'businessEntities',
+      'mineSites',
+      'exportCertificates',
       'lots',
       'licenses',
       'inspections',
       'tags',
       'taxes',
-      'status_history'
+      'statusHistory'
     ];
     
     const tablesByName = {};
@@ -849,90 +911,90 @@ PRAGMA foreign_keys = ON;
     sql += `-- Junction tables for many-to-many relationships\n\n`;
     
     // Mine site minerals
-    sql += `CREATE TABLE IF NOT EXISTS mine_site_minerals (
-  mine_site_id TEXT NOT NULL,
-  mineral_code TEXT NOT NULL,
-  PRIMARY KEY (mine_site_id, mineral_code),
-  FOREIGN KEY (mine_site_id) REFERENCES mine_sites(icglr_id)
+    sql += `CREATE TABLE IF NOT EXISTS mineSiteMinerals (
+  mineSiteId TEXT NOT NULL,
+  mineralCode TEXT NOT NULL,
+  PRIMARY KEY (mineSiteId, mineralCode),
+  FOREIGN KEY (mineSiteId) REFERENCES mineSites(icglrId)
 );
 
 `;
 
     // Lot creator roles
-    sql += `CREATE TABLE IF NOT EXISTS lot_creator_roles (
-  lot_number TEXT NOT NULL,
-  role_code INTEGER NOT NULL CHECK(role_code BETWEEN 1 AND 8),
-  PRIMARY KEY (lot_number, role_code),
-  FOREIGN KEY (lot_number) REFERENCES lots(lot_number)
+    sql += `CREATE TABLE IF NOT EXISTS lotCreatorRoles (
+  lotNumber TEXT NOT NULL,
+  roleCode INTEGER NOT NULL CHECK(roleCode BETWEEN 1 AND 8),
+  PRIMARY KEY (lotNumber, roleCode),
+  FOREIGN KEY (lotNumber) REFERENCES lots(lotNumber)
 );
 
 `;
 
     // Lot originating operations
-    sql += `CREATE TABLE IF NOT EXISTS lot_originating_operations (
-  lot_number TEXT NOT NULL,
-  operation_code INTEGER NOT NULL CHECK(operation_code BETWEEN 1 AND 8),
-  PRIMARY KEY (lot_number, operation_code),
-  FOREIGN KEY (lot_number) REFERENCES lots(lot_number)
+    sql += `CREATE TABLE IF NOT EXISTS lotOriginatingOperations (
+  lotNumber TEXT NOT NULL,
+  operationCode INTEGER NOT NULL CHECK(operationCode BETWEEN 1 AND 8),
+  PRIMARY KEY (lotNumber, operationCode),
+  FOREIGN KEY (lotNumber) REFERENCES lots(lotNumber)
 );
 
 `;
 
     // Lot input lots (recursive)
-    sql += `CREATE TABLE IF NOT EXISTS lot_input_lots (
-  lot_number TEXT NOT NULL,
-  input_lot_number TEXT NOT NULL,
-  PRIMARY KEY (lot_number, input_lot_number),
-  FOREIGN KEY (lot_number) REFERENCES lots(lot_number),
-  FOREIGN KEY (input_lot_number) REFERENCES lots(lot_number)
+    sql += `CREATE TABLE IF NOT EXISTS lotInputLots (
+  lotNumber TEXT NOT NULL,
+  inputLotNumber TEXT NOT NULL,
+  PRIMARY KEY (lotNumber, inputLotNumber),
+  FOREIGN KEY (lotNumber) REFERENCES lots(lotNumber),
+  FOREIGN KEY (inputLotNumber) REFERENCES lots(lotNumber)
 );
 
 `;
 
     // Status history table (if not already generated)
-    if (!tablesByName['status_history']) {
-      sql += `CREATE TABLE IF NOT EXISTS status_history (
+    if (!tablesByName['statusHistory']) {
+      sql += `CREATE TABLE IF NOT EXISTS statusHistory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  mine_site_id TEXT NOT NULL,
-  date_of_change DATE NOT NULL,
-  new_status INTEGER NOT NULL CHECK(new_status IN (0, 1, 2, 3)),
-  FOREIGN KEY (mine_site_id) REFERENCES mine_sites(icglr_id)
+  mineSiteId TEXT NOT NULL,
+  dateOfChange DATE NOT NULL,
+  newStatus INTEGER NOT NULL CHECK(newStatus IN (0, 1, 2, 3)),
+  FOREIGN KEY (mineSiteId) REFERENCES mineSites(icglrId)
 );
 
-CREATE INDEX IF NOT EXISTS idx_status_history_mine_site_id ON status_history(mine_site_id);
-CREATE INDEX IF NOT EXISTS idx_status_history_date_of_change ON status_history(date_of_change);
+CREATE INDEX IF NOT EXISTS idx_statusHistory_mineSiteId ON statusHistory(mineSiteId);
+CREATE INDEX IF NOT EXISTS idx_statusHistory_dateOfChange ON statusHistory(dateOfChange);
 
 `;
     }
 
     // License commodities junction table
-    sql += `CREATE TABLE IF NOT EXISTS license_commodities (
-  license_id INTEGER NOT NULL,
-  mineral_code TEXT NOT NULL,
-  PRIMARY KEY (license_id, mineral_code),
-  FOREIGN KEY (license_id) REFERENCES licenses(id)
+    sql += `CREATE TABLE IF NOT EXISTS licenseCommodities (
+  licenseId INTEGER NOT NULL,
+  mineralCode TEXT NOT NULL,
+  PRIMARY KEY (licenseId, mineralCode),
+  FOREIGN KEY (licenseId) REFERENCES licenses(id)
 );
 
 `;
 
     // Lot tags junction table
-    sql += `CREATE TABLE IF NOT EXISTS lot_tags (
-  lot_number TEXT NOT NULL,
-  tag_identifier TEXT NOT NULL,
-  PRIMARY KEY (lot_number, tag_identifier),
-  FOREIGN KEY (lot_number) REFERENCES lots(lot_number),
-  FOREIGN KEY (tag_identifier) REFERENCES tags(identifier)
+    sql += `CREATE TABLE IF NOT EXISTS lotTags (
+  lotNumber TEXT NOT NULL,
+  tagIdentifier TEXT NOT NULL,
+  PRIMARY KEY (lotNumber, tagIdentifier),
+  FOREIGN KEY (lotNumber) REFERENCES lots(lotNumber),
+  FOREIGN KEY (tagIdentifier) REFERENCES tags(identifier)
 );
 
 `;
 
     // Lot taxes junction table
-    sql += `CREATE TABLE IF NOT EXISTS lot_taxes (
-  lot_number TEXT NOT NULL,
-  tax_id INTEGER NOT NULL,
-  PRIMARY KEY (lot_number, tax_id),
-  FOREIGN KEY (lot_number) REFERENCES lots(lot_number),
-  FOREIGN KEY (tax_id) REFERENCES taxes(id)
+    sql += `CREATE TABLE IF NOT EXISTS lotTaxes (
+  lotNumber TEXT NOT NULL,
+  taxId INTEGER NOT NULL,
+  PRIMARY KEY (lotNumber, taxId),
+  FOREIGN KEY (lotNumber) REFERENCES lots(lotNumber),
+  FOREIGN KEY (taxId) REFERENCES taxes(id)
 );
 
 `;

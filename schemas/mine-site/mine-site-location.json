@@ -5,31 +5,69 @@
   "description": "Mine site location information",
   "type": "object",
   "required": [
-    "geolocalization",
-    "national_cadaster_localization",
-    "local_geographic_designation"
+    "geolocalization"
   ],
   "properties": {
     "geolocalization": {
       "$ref": "../core/common.json#/definitions/Geolocalization",
-      "description": "MD.06 Geolocalization - Geographic localization in WGS 84 format, decimal degrees with 4 decimals"
+      "description": "MD.06 Geolocalization - Geographic localization of the mine site in WGS 84 format. Given in latitude and longitude (degrees, minutes, seconds) WGS 84 format. In decimal degree format, with 4 decimals"
     },
-    "national_cadaster_localization": {
+    "nationalCadasterLocalization": {
       "type": "string",
       "description": "National cadaster localization - Given in the terms used by the Member State national mining cadastre"
     },
-    "local_geographic_designation": {
+    "localGeographicDesignation": {
       "$ref": "../core/common.json#/definitions/Address",
       "description": "Local geographic designation - Given in local geographic terms (province/state, municipality/chefferie/district)"
     },
     "polygon": {
-      "type": "string",
-      "description": "A polygonal representation of the site, as an array of pairs of coordinates"
+      "type": "object",
+      "description": "A polygonal representation of the site, as an alternative to or supplementing the point coordinates. Array of pairs of coordinates, formatted as GeoJSON (RFC 7946) Polygon with coordinates in WGS84 using up to 4 decimals, each position given as [longitude, latitude]. Example: {\"type\":\"Polygon\",\"coordinates\":[[[30.0619,-1.9641],[30.0623,-1.9641],[30.0623,-1.9637],[30.0619,-1.9637],[30.0619,-1.9641]]]}",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Polygon"],
+          "description": "GeoJSON type - must be 'Polygon'"
+        },
+        "coordinates": {
+          "type": "array",
+          "description": "GeoJSON Polygon coordinates - array of linear rings, where each ring is an array of [longitude, latitude] positions. The first ring is the exterior ring, subsequent rings are holes.",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "description": "Linear ring - array of [longitude, latitude] positions. Must have at least 4 positions and should be closed (first and last position identical).",
+            "minItems": 4,
+            "items": {
+              "type": "array",
+              "description": "Position as [longitude, latitude] in WGS84. IMPORTANT: First element is longitude (-180 to 180), second element is latitude (-90 to 90). Example: [30.0619, -1.9641]",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": "number",
+                  "description": "Longitude in decimal degrees (WGS84). Must be between -180 and 180.",
+                  "minimum": -180,
+                  "maximum": 180,
+                  "multipleOf": 0.0001
+                },
+                {
+                  "type": "number",
+                  "description": "Latitude in decimal degrees (WGS84). Must be between -90 and 90.",
+                  "minimum": -90,
+                  "maximum": 90,
+                  "multipleOf": 0.0001
+                }
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "altitude": {
       "$ref": "../core/common.json#/definitions/Decimal",
-      "description": "Average altitude of the mine site in meters"
+      "description": "Average altitude of the mine site. Given in meters, as a number"
     }
   }
 }
-

@@ -27,28 +27,28 @@
     "id": "@id",
     "type": "@type",
     
-    "icglr_id": {
+    "icglrId": {
       "@id": "icglr:icglrId",
       "@type": "xsd:string",
       "@container": "@id"
     },
-    "address_country": {
+    "addressCountry": {
       "@id": "icglr:addressCountry",
       "@type": "xsd:string"
     },
-    "national_id": {
+    "nationalId": {
       "@id": "icglr:nationalId",
       "@type": "xsd:string"
     },
-    "certification_status": {
+    "certificationStatus": {
       "@id": "icglr:certificationStatus",
       "@type": "xsd:integer"
     },
-    "activity_status": {
+    "activityStatus": {
       "@id": "icglr:activityStatus",
       "@type": "xsd:integer"
     },
-    "mine_site_location": {
+    "mineSiteLocation": {
       "@id": "icglr:mineSiteLocation",
       "@type": "icglr:MineSiteLocation"
     },
@@ -72,8 +72,8 @@
       "@id": "icglr:inspection",
       "@type": "@id"
     },
-    "status_history": {
-      "@id": "icglr:statusHistory",
+    "statusChange": {
+      "@id": "icglr:statusChange",
       "@type": "@id"
     },
     
@@ -89,48 +89,48 @@
       "@id": "geo:long",
       "@type": "xsd:decimal"
     },
-    "national_cadaster_localization": {
+    "nationalCadasterLocalization": {
       "@id": "icglr:nationalCadasterLocalization",
       "@type": "xsd:string"
     },
-    "local_geographic_designation": {
+    "localGeographicDesignation": {
       "@id": "icglr:localGeographicDesignation",
       "@type": "icglr:Address"
     },
     "polygon": {
       "@id": "icglr:polygon",
-      "@type": "xsd:string"
+      "@type": "@json"
     },
     "altitude": {
       "@id": "geo:alt",
       "@type": "xsd:decimal"
     },
     
-    "license_type": {
+    "licenseType": {
       "@id": "icglr:licenseType",
       "@type": "xsd:string"
     },
-    "license_id": {
+    "licenseId": {
       "@id": "icglr:licenseId",
       "@type": "xsd:string"
     },
-    "date_applied": {
-      "@id": "icglr:dateApplied",
+    "appliedDate": {
+      "@id": "icglr:appliedDate",
       "@type": "xsd:date"
     },
-    "date_granted": {
+    "grantedDate": {
       "@id": "icglr:dateGranted",
       "@type": "xsd:date"
     },
-    "date_expiring": {
+    "expiringDate": {
       "@id": "icglr:dateExpiring",
       "@type": "xsd:date"
     },
-    "license_status": {
+    "licenseStatus": {
       "@id": "icglr:licenseStatus",
       "@type": "xsd:string"
     },
-    "covered_commodities": {
+    "coveredCommodities": {
       "@id": "icglr:coveredCommodities",
       "@type": "@id"
     },
@@ -139,28 +139,28 @@
       "@id": "schema:addressCountry",
       "@type": "xsd:string"
     },
-    "subnational_division_l1": {
+    "subnationalDivisionL1": {
       "@id": "icglr:subnationalDivisionL1",
       "@type": "xsd:string"
     },
-    "subnational_division_l1_text": {
+    "subnationalDivisionL1Text": {
       "@id": "icglr:subnationalDivisionL1Text",
       "@type": "xsd:string"
     },
-    "subnational_division_l2": {
+    "subnationalDivisionL2": {
       "@id": "icglr:subnationalDivisionL2",
       "@type": "xsd:string"
     },
-    "subnational_division_l3": {
+    "subnationalDivisionL3": {
       "@id": "icglr:subnationalDivisionL3",
       "@type": "xsd:string"
     },
-    "subnational_division_l4": {
+    "subnationalDivisionL4": {
       "@id": "icglr:subnationalDivisionL4",
       "@type": "xsd:string"
     },
-    "address_locality": {
-      "@id": "schema:addressLocality",
+    "addressLocalityText": {
+      "@id": "icglr:addressLocalityText",
       "@type": "xsd:string"
     },
     
@@ -172,11 +172,11 @@
       "@id": "schema:name",
       "@type": "xsd:string"
     },
-    "legal_address": {
+    "legalAddress": {
       "@id": "icglr:legalAddress",
       "@type": "icglr:Address"
     },
-    "physical_address": {
+    "physicalAddress": {
       "@id": "icglr:physicalAddress",
       "@type": "icglr:Address"
     },
@@ -184,87 +184,83 @@
       "@id": "icglr:tin",
       "@type": "xsd:string"
     },
-    "rdb_number": {
+    "rdbNumber": {
       "@id": "icglr:rdbNumber",
       "@type": "xsd:string"
     },
-    "rca_number": {
+    "rcaNumber": {
       "@id": "icglr:rcaNumber",
       "@type": "xsd:string"
     },
-    "contact_details": {
+    "contactDetails": {
       "@id": "icglr:contactDetails",
       "@type": "icglr:ContactDetails"
     },
     
-    "legal_representative": {
+    "legalRepresentative": {
       "@id": "icglr:legalRepresentative",
       "@type": "xsd:string"
     },
-    "contact_phone_number": {
+    "contactPhoneNumber": {
       "@id": "schema:telephone",
       "@type": "xsd:string"
     },
-    "contact_email": {
+    "contactEmail": {
       "@id": "schema:email",
       "@type": "xsd:string"
     },
     
-    "inspection_id": {
+    "inspectionId": {
       "@id": "icglr:inspectionId",
       "@type": "xsd:string"
     },
-    "inspection_date": {
+    "inspectionDate": {
       "@id": "icglr:inspectionDate",
       "@type": "xsd:date"
     },
-    "inspection_responsible": {
-      "@id": "icglr:inspectionResponsible",
-      "@type": "xsd:string"
+    "inspectionResult": {
+      "@id": "icglr:inspectionResult",
+      "@type": "xsd:integer"
     },
-    "inspection_findings": {
-      "@id": "icglr:inspectionFindings",
-      "@type": "xsd:string"
-    },
-    "inspection_report": {
+    "inspectionReport": {
       "@id": "icglr:inspectionReport",
       "@type": "xsd:anyURI"
     },
-    "inspection_purpose": {
+    "inspectionPurpose": {
       "@id": "icglr:inspectionPurpose",
       "@type": "xsd:string"
     },
-    "inspection_results": {
+    "inspectionResults": {
       "@id": "icglr:inspectionResults",
       "@type": "xsd:string"
     },
-    "inspector_name": {
+    "inspectorName": {
       "@id": "icglr:inspectorName",
       "@type": "xsd:string"
     },
-    "inspector_position": {
+    "inspectorPosition": {
       "@id": "icglr:inspectorPosition",
       "@type": "xsd:string"
     },
-    "government_agency": {
+    "governmentAgency": {
       "@id": "icglr:governmentAgency",
       "@type": "xsd:string"
     },
-    "government_id": {
+    "governmentId": {
       "@id": "icglr:governmentId",
       "@type": "xsd:string"
     },
     
-    "date_of_change": {
+    "dateOfChange": {
       "@id": "icglr:dateOfChange",
       "@type": "xsd:date"
     },
-    "new_status": {
+    "newStatus": {
       "@id": "icglr:newStatus",
       "@type": "xsd:integer"
     },
     
-    "issuing_country": {
+    "issuingCountry": {
       "@id": "icglr:issuingCountry",
       "@type": "xsd:string"
     },
@@ -276,83 +272,83 @@
       "@id": "icglr:importer",
       "@type": "icglr:BusinessEntity"
     },
-    "lot_number": {
+    "lotNumber": {
       "@id": "icglr:lotNumber",
       "@type": "xsd:string"
     },
-    "designated_mineral_description": {
+    "designatedMineralDescription": {
       "@id": "icglr:designatedMineralDescription",
       "@type": "xsd:string"
     },
-    "type_of_ore": {
+    "typeOfOre": {
       "@id": "icglr:typeOfOre",
       "@type": "xsd:string"
     },
-    "lot_weight": {
+    "lotWeight": {
       "@id": "icglr:lotWeight",
       "@type": "xsd:decimal"
     },
-    "lot_weight_uom": {
+    "lotWeightUOM": {
       "@id": "icglr:lotWeightUOM",
       "@type": "xsd:string"
     },
-    "lot_grade": {
+    "lotGrade": {
       "@id": "icglr:lotGrade",
       "@type": "xsd:string"
     },
-    "mineral_origin": {
+    "mineralOrigin": {
       "@id": "icglr:mineralOrigin",
       "@type": "xsd:string"
     },
-    "customs_value": {
+    "customsValue": {
       "@id": "icglr:customsValue",
       "@type": "xsd:string"
     },
-    "date_of_shipment": {
+    "dateOfShipment": {
       "@id": "icglr:dateOfShipment",
       "@type": "xsd:date"
     },
-    "shipment_route": {
+    "shipmentRoute": {
       "@id": "icglr:shipmentRoute",
       "@type": "xsd:string"
     },
-    "transport_company": {
+    "transportCompany": {
       "@id": "icglr:transportCompany",
       "@type": "xsd:string"
     },
-    "member_state_issuing_authority": {
+    "memberStateIssuingAuthority": {
       "@id": "icglr:memberStateIssuingAuthority",
       "@type": "xsd:string"
     },
-    "name_of_verifier": {
+    "nameOfVerifier": {
       "@id": "icglr:nameOfVerifier",
       "@type": "xsd:string"
     },
-    "position_of_verifier": {
+    "positionOfVerifier": {
       "@id": "icglr:positionOfVerifier",
       "@type": "xsd:string"
     },
-    "id_of_verifier": {
+    "idOfVerifier": {
       "@id": "icglr:idOfVerifier",
       "@type": "xsd:string"
     },
-    "date_of_verification": {
+    "dateOfVerification": {
       "@id": "icglr:dateOfVerification",
       "@type": "xsd:date"
     },
-    "name_of_validator": {
+    "nameOfValidator": {
       "@id": "icglr:nameOfValidator",
       "@type": "xsd:string"
     },
-    "date_of_issuance": {
+    "dateOfIssuance": {
       "@id": "icglr:dateOfIssuance",
       "@type": "xsd:date"
     },
-    "date_of_expiration": {
+    "dateOfExpiration": {
       "@id": "icglr:dateOfExpiration",
       "@type": "xsd:date"
     },
-    "certificate_file": {
+    "certificateFile": {
       "@id": "icglr:certificateFile",
       "@type": "xsd:anyURI"
     },
@@ -373,15 +369,15 @@
       "@id": "schema:weight",
       "@type": "xsd:decimal"
     },
-    "package_type": {
+    "packageType": {
       "@id": "icglr:packageType",
       "@type": "xsd:string"
     },
-    "unit_of_measurement": {
+    "unitOfMeasurement": {
       "@id": "schema:unitCode",
       "@type": "xsd:string"
     },
-    "creator_role": {
+    "creatorRole": {
       "@id": "icglr:creatorRole",
       "@type": "@id"
     },
@@ -389,11 +385,11 @@
       "@id": "icglr:recipient",
       "@type": "icglr:BusinessEntity"
     },
-    "originating_operation": {
+    "originatingOperation": {
       "@id": "icglr:originatingOperation",
       "@type": "@id"
     },
-    "input_lot": {
+    "inputLot": {
       "@id": "icglr:inputLot",
       "@type": "@id"
     },
@@ -401,52 +397,52 @@
       "@id": "icglr:tag",
       "@type": "icglr:Tag"
     },
-    "tax_paid": {
+    "taxPaid": {
       "@id": "icglr:taxPaid",
       "@type": "@id"
     },
-    "date_sealed": {
+    "dateSealed": {
       "@id": "icglr:dateSealed",
       "@type": "xsd:date"
     },
-    "date_shipped": {
+    "dateShipped": {
       "@id": "icglr:dateShipped",
       "@type": "xsd:date"
     },
-    "purchase_number": {
+    "purchaseNumber": {
       "@id": "icglr:purchaseNumber",
       "@type": "@id"
     },
-    "purchase_date": {
+    "purchaseDate": {
       "@id": "icglr:purchaseDate",
       "@type": "xsd:date"
     },
-    "responsible_staff": {
+    "responsibleStaff": {
       "@id": "icglr:responsibleStaff",
       "@type": "xsd:string"
     },
-    "date_in": {
+    "dateIn": {
       "@id": "icglr:dateIn",
       "@type": "xsd:date"
     },
-    "transportation_method": {
+    "transportationMethod": {
       "@id": "icglr:transportationMethod",
       "@type": "xsd:string"
     },
-    "transportation_route": {
+    "transportationRoute": {
       "@id": "icglr:transportationRoute",
       "@type": "xsd:string"
     },
-    "export_certificate_id": {
+    "exportCertificateId": {
       "@id": "icglr:exportCertificateId",
       "@type": "xsd:string"
     },
     
-    "issue_date": {
+    "issueDate": {
       "@id": "icglr:issueDate",
       "@type": "xsd:date"
     },
-    "issue_time": {
+    "issueTime": {
       "@id": "icglr:issueTime",
       "@type": "xsd:time"
     },
@@ -455,11 +451,11 @@
       "@type": "icglr:BusinessEntity"
     },
     
-    "tax_type": {
+    "taxType": {
       "@id": "icglr:taxType",
       "@type": "xsd:string"
     },
-    "tax_amount": {
+    "taxAmount": {
       "@id": "icglr:taxAmount",
       "@type": "xsd:decimal"
     },

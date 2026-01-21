@@ -1,0 +1,1653 @@
+Data Sharing Protocol Standards 
+for Mine site identifiers, ICGLR Certificates, Commodity descriptors, Audit summaries and CoC
+
+
+
+Author: Daniel Homorodean
+Table of contents
+Table of contents	1
+1. Technical terms, acronyms and abbreviations	2
+2. Preliminaries	3
+3. General considerations	4
+4. Proposed approach	6
+5. Conventions, entities, attributes and value sets	7
+6. Process of establishing the core data model	10
+7. The proposed Core Data Model. Data entities and their attributes	11
+7.1. MD.01 Mine Site	11
+7.1.2. Formatting of the Mine Site Identification Number	13
+7.1.3. Mine site attributes formatting observations	15
+7.2. MD.02 License	16
+7.3. MD.03 Export Certificate	16
+7.4. MD.04 Business Entity	23
+7.5. MD05.Address	24
+7.6. MD.06 Geolocalization	25
+7.7. MD.07 Inspection	25
+7.8. MD.08 Mine Site Location	27
+7.9. MD09. Contact Details	28
+7.10. MD.10 Status History	28
+7.11. MD.11 Tag / Unique number	29
+7.12. MD.12 Lot	29
+7.13. MD.13 Tax	35
+7.14. Code lists	35
+7.14.1. MDC.01 Certification status	35
+7.14.2. MDC.02 Mining Activity Status	36
+7.14.3. MDC.03 Mineral	36
+7.14.4. MDC.04 License Type	38
+7.14.5 MDC.05 CoC Roles	38
+7.14.6 MDC.06 Originating operations	39
+8. Considerations on the adoption, implementation and lifecycle of the standard	39
+Technical terms, acronyms and abbreviations
+
+English
+French
+Description or explanation
+ICGLR - International Conference on the Great Lakes Region
+CIRGL - Conférence Internationale sur la Région des Grands Lacs
+The International Conference on the Great Lakes Region (ICGLR) is an intergovernmental organization of the countries of the African Great Lakes region composed of 12 Member States: Angola, Burundi, Central African Republic, Republic of Congo, Democratic Republic of Congo, Kenya, Rwanda, Republic of South Sudan, Sudan, Tanzania, Uganda and Zambia
+RDBMF - Regional Database of Mineral Flows
+BDRFM - Base de données régionale des minerais
+The RDBMF (Regional Database on Mineral Flows) of the International Conference on the Great Lakes Region (ICGLR) is a digital platform designed to track and monitor the trade of minerals within the Great Lakes Region. It is a key component of the Regional Certification Mechanism (RCM) and supports transparency in the mineral supply chain.
+NMD - National Minerals Database
+BDNM - Base de données nationale sur les minéraux
+The technical data storage facility and the application that is used to manage it at country level, implemented by each ICGLR member state.
+RCM - Regional Certification Mechanism
+MRC - Mécanisme régional de certification
+The ICGLR Regional Certification Mechanism (RCM) is a regional due diligence and certification system for the ICGLR’s designated minerals (3TG: tin, tantalum, tungsten and gold). It combines mine-site inspection/validation, chain-of-custody tracking, export certification and audits to help ensure mineral supply chains do not support armed groups or abusive/illegal security actors, and to promote transparent, responsible mineral trade in the Great Lakes Region.
+Coc - Chain of Custody
+CdP - Chaîne de possession
+A record of the sequence of individuals or entities which have
+custody of Designated Minerals as they move through the upstream supply chain, as well as associated records of the Lot(s) being moved, and the actions performed on the Lot(s) at any given point in the chain (production, combination, transportation, export, etc.) This process concludes with the issuance of an ICGLR Certificate for the export of Designated Minerals.
+API - application programming interface 
+API - interface de programmation d'application (same acronym is used)
+An application programming interface (API) is a connection between computers or between computer programs. It is a type of software interface, offering a service to other pieces of software.
+Business terms
+Termes métier
+The human-readable name of a concept (entity, attribute, code list item) as used in day-to-day business communication. It reflects the shared meaning agreed by domain stakeholders and is expressed in natural language (not constrained by system or implementation rules). The business term is the primary label for the concept in the vocabulary and is used in documentation, forms, policies, and stakeholder discussions.
+Technical term
+Identifiant technique
+The machine-oriented identifier for the same concept, used in implementations (APIs, schemas, databases). It follows agreed naming and formatting rules (e.g., camelCase, snake_case), is stable, and is designed to be unambiguous and tool-friendly. The technical term maps 1:1 to a business term/definition, but may differ in wording due to technical constraints (length, reserved words, character set).
+camelCase
+camelCase ( caseChameau)
+Camel case (stylized autologically as camelCase or CamelCase) is the practice used in programming of writing phrases without spaces or punctuation and with capitalized words.
+snake_case
+snake_case
+Snake case (sometimes stylized autologically as snake_case) is the naming convention in which each space is replaced with an underscore (_) character, and words are written in lowercase. It is a commonly used naming convention in computing, for example for variable and subroutine names, and for filenames.
+
+Preliminaries
+
+The development of the present standard proposal was prepared through a set of activities, including analysis of the existing documentation and information collection from the ICGLR member states. The standard was developed in two phases:
+October 2024-March 2025, including only a subset of data entities ( Mine site, Inspection, License, Export Certificate), being presented, discussed and validated by the ICGLR Technical Working Group in the meeting held in Lusaka, 18-20 March 2025.
+And
+October 2025-December 2025, extending the coverage to all data entities referred in the RCM manual, in particular covering the entire Chain of Custody.
+
+The initial study was focused on the set of documents developed by ICGLR, in particular the following:
+
+Manual of the Regional Certification Mechanism (RCM) of the International Conference on the Great Lakes Region (ICGLR)
+ICGLR Appendices to the Manual of the Regional Certification Mechanism
+Data Transfer Procedures for Regional Database for Mineral Flows developed in 2016
+The set of documents developed in 2016 through ELL-IPIS for the RDBMF, including High-Level Requirements Definition for the ICGLR Regional Mineral Tracking Database, ICGLR Regional Mineral Database_Detailed Requirements, ICGLR_RDBMF_TransferProcedures
+
+The analysis included a direct engagement with the ICGLR member states, represented by the appointees in the Technical Committee.
+A data collection form, as a survey that can either be filled by each Member State independently, or can be completed through a direct interview with the representative of Arxia. In practice, some preferred to fill out the survey individually, others to answer directly through the interview. 
+The form collected information about the existence of data models, standards or other forms that regulate the structure and format of the data that is collected and stored and the actual data structure of each of the relevant entities defined in the RCM, in the form that they are collected and stored at the level of each country, to the extent that this is specified and known.
+
+Further discussions were organized during and after the Technical Working Group in the meeting held in Lusaka, 18-20 March 2025, with input from the member states and from the ICGLR secretariat technical team, all observations being considered and integrated in the present form of the standard.
+
+General considerations
+
+Establishing a data model that facilitates the sharing of information from ICGLR member states to a central data repository, and could be used as support for the sharing of information within the ICGLR member states and systems is a strategic endeavor with long-term implications, as well as direct short term impact on the implementation of the data sharing solution system. 
+
+Having discussed directly with representatives of the ICGLR member states, it can be concluded that there is no standardization in place related to the mining data models used at the level of the countries, between countries, or between countries and ICGLR. 
+
+While the Regional Minerals Database was aimed as the collector of information, in practice this cannot be attained in the current status of data management, lack of uniformous digitalization and lack of data standardization. Manual data input record-by-record and import of Excel are inefficient methods that are not sustainable and are not proven to be viable in practice. In addition, in many mine-site and field contexts, real-time reporting cannot be assumed due to low bandwidth or intermittent connectivity. Therefore, the data exchange approach should support offline data capture with secure local storage, followed by batch synchronization once connectivity is available, including automated validation, de-duplication, and error handling during sync to preserve data quality and auditability.
+
+The member states have voiced their need to benefit from a standardized data model that can be applied not only to the data exchange required for the reporting and data consolidation of specific data as required by the RCM, but also to have a standard that can also be used internally in-country, to facilitate the interoperability between the systems run by the state ( such as the mining cadaster, the national minerals database, the systems of the private actors active in the CoC). 
+However, it should be avoided to have a proliferation of national data models which would not be compatible with each other and that would diverge from an accepted data model at the level of ICGLR. 
+Therefore, the standardization should cover the following dimensions:
+
+Data storage at the level of ICGLR, for consistency, audit, and control of data sharing
+Data acquisition from the systems of the member states, in an automated way
+Systems interoperability at the level of each country
+
+During the interviews with the countries, it was also revealed that the current data structures used by the systems and processes for data collection at the level of each country are not in strict adherence with the data fields of the RCM. While most information required by RCM can be reconstructed for reporting purposes, the national systems capture and store additional data related to the main data entities described in the RCM.
+
+Having two different data models, one for internal (national) use, and one for external reporting to ICGLR, is feasible, as long as all information required by the latter is included in the former, and such an approach requires a data mapping process when the data is prepared to be reported to ICGLR. However, a more effective approach would be to stove for compatibility between the models.
+
+This can be achieved by establishing rules for data model derivation and extension, from a common model to a country model, such localization of standards being a common practice in technical standardization.
+
+The member states mentioned that they would gladly adhere to a common data model that they can implement directly into their national minerals database following the model of the regional minerals database and add, if required, additional fields that have meaning only in the national context, or restrict by specification the way certain data fields are used in order to comply with the national regulations and practices.
+
+It could also be envisioned that the ICGLR data model can directly extend the specific requirements of the RCM by including data attributes that are commonly used in practice, that are useful for all or most countries and that could be harmonized, to allow a direct semantic interoperability between the national and the regional systems.
+
+Such data entities and attributes that are useful for all or most countries can be further identified. Some of them, for illustrative purposes, are:
+
+For the Mine Site, countries would like to retain in the same data format other minerals that might not be included in the short list of designated minerals.
+For the License, countries would like to include data attributes that are not required specifically by RCM but need to be collected and made available, including publicly through the mining cadastre applications, such as: Date Applied, Date Granted, Date expiring, Covered Commodities, and Surface.
+
+The technical specifications for the Regional Minerals Database also illustrate the need or opportunity to add additional attributes to the fields defined by RCM. 
+For example, the RMD technical specification mentions that a Mine Site Location can be given as “Polygon”, an array of geographic coordinates that encompass the mine site. The RCM does not include this variant.
+
+However, the technical specification of the RMD, developed in 2016, has gone beyond the RCM in trying to be comprehensive for the wider scope of potential future data processing and visualisation, and stems from a very technical logic of thought, based on the structure of a relational SQL-based database, which can create in the same time limitations and complications for data collection and data management. 
+Our proposed approach is focused on a pure semantic method, that can be used as a full ontology, independent of the technical means of representation and allowing different technologies to be used for data storage, transmission, visualization and processing. 
+
+Proposed approach
+
+The proposed approach aims to set the basis for the development of a comprehensive technical standard for the representation and exchange of mining-related information, that can be used:
+
+By ICGLR and for exchange between member states and ICGLR, and respectively with 3rd parties
+By member states, to allow interoperability between systems at the national level
+By other parties, that collect, process, or distribute mining-related information
+
+The approach follows internationally recognized standardization rules as set out in the ISO/IEC Directives (Part 1: procedures for technical work; Part 2: principles and rules for drafting) and the corresponding CEN-CENELEC Internal Regulations (Part 2: common rules for standardization work; Part 3: structure and drafting rules, aligned with ISO/IEC Directives Part 2).
+The technical mapping is not in the scope of this assignment, but indications regarding the approach are given.
+
+The development of the semantic standard considers the following:
+The data model follows an ontological approach, describing entities and their attributes, and the relationships between them. 
+Each entity includes attributes and other entities. An entity is a data structure that on its own has attributes, and can be seen as independent data structure, that can be included by other entities, in the present or in the future (for example, the Export Certificate is an entity, under whose structure we find attributes such as Serial Number, Issuing Country, and we find references to entities, for example Exporter and Importer are entities of type Business Entity).
+Each attribute has a Data Type, which clearly defines the format of the data. All data types must take value, as much as possible, from a list of specified Primitive Types, that are defined in ISO 15000-5:2014, Annex B
+Each attribute or sub-entity has at least the following information: Cardinality, Name, Description, Semantic Data Type. They may also have Usage information and Rules to be applied, if they are necessary to either provide instructions on how to establish the value of the attribute or restrict the way it is used, such as for example in terms of format, values, size of the set of characters etc.
+
+Conventions, entities, attributes and value sets
+
+The Cardinality takes value from the following discrete variants:
+1..1 - required, only once (at least one occurrence, at most one occurrence)
+0..1 - optional, only once ( at most one occurrence, or none at all)
+0..n - any number of occurrences, or none at all
+1..n - any number of occurrences, at least one 
+1..X - at most X specific number of occurrences, at least one
+
+For example:
+Serial Number on a Certificate is 1..1 - required, only once
+Inspection on a Mine Site is 0..n - any number, but can be none 
+Designated Minerals on a Mine Site is 1..4 - at least one, at most 4
+
+The number of the Primitive Data Types to be used should be kept to a minimum.
+The Primitive types are defined and should be identified, to the extent possible, from ISO 15000-5:2014, Annex B
+
+The following will be used:
+Primitive type
+Definition
+Representation rule
+Example
+Date
+Time point representing a calendar day on a time scale consisting of an origin and a succession of calendar [ISO 8601:2004]. Should use the “Calendar date complete representation”, without time of the day. Should be represented as YYYY-MM-DD
+YYYY-MM-DD 
+2024-12-22
+Time
+Time point representing a time of day on a 24-hour clock following[ISO 8601]
+Use extended time: hhmmss, optionally add timezone if needed: hhmmss?(Z|±hhmm)
+See additional note below for the use of timezone.
+083200
+Decimal
+A subset of the real numbers, which can be represented by decimal numerals.
+The decimal indicator as a period. No indicator should be used for thousands or 1000x multipliers. Visual display in user interfaces can format the numbers as expected by users
+12423.33
+String
+A finite sequence of characters.
+
+
+abcde!23
+Identifier
+A finite sequence of characters that adhere to a format rule, subtype of String
+
+
+AB123
+File
+Describes a file that can or needs to be attached
+Mime type and size of file should be indicated specifically and should be validated at submit 
+
+
+Geocoordinate
+A geographic coordinate 
+Using the WGS 84 format with 4 decimals, not using cardinal points ( N/S/W/E) but - and + signs
+-1.9641,+30.0619
+
+
+It should be noted that the specified format is directly transcribable in the technical representation, but can be formatted for visualisation in ways most appropriate for the consumption of the final user.
+
+Thus, the format for date is YYYY-MM-DD. This might not be the familiar representation for all final users, thus a software application that might implement the standard might transform, for visualisation purposes, the format into another date representation.
+When a type does not contain inherent restrictions related to its size, such as for example String being “A finite sequence of characters”, the technical implementation will require that a restriction is imposed by a rule. Such restriction can either be set in the semantic standard if it is truly justified, or in implementation instructions. The semantic standard should not be restricted by the potential technical means of implementation because it does not restrict such means.Therefore, at the level of the standard we could impose content or format rules, but we should not impose sizes. In technical implementation instructions, it would be advisable to impose sizes, such as “String should have a maximum length of 300 characters”, as this will transpose to the definition of a field of a database, that needs to be specifically restricted due to the needs of storage and technical processing.
+
+The time representation is contextually used in the case of data records 
+
+The data model described in this document should be sufficient for the representation at the level of ICGLR and in relation with the member states of the data structures of the entities Mine Site and ICGLR Export Certificate. 
+This model might not be however sufficient for the internal usage in a country that might want to adopt the model for a more extensive purpose, such as for example to provide a single-source-of-truth and a source data register for the National mining cadaster, for the mining related data that cover also other minerals aside from the 4 designated ones, etc. 
+The standard representation done for ICGLR could thus be further used by each member country, or for any other country if the data model is made available to them, for any purpose of interest, provided that at least one of the following is applied:
+
+The national mining data is technically mapped to the ICGLR data model for the purpose of interoperability with the ICGLR Regional Minerals Database
+The ICGLR data model is Extended by the country, through the addition of new Entities and Attributes, but without altering in any way the main semantic data set defined by the ICGLR data model. Thus the ICGLR data model is seen as the “Core Model” that could be further extended.
+The ICGLR data model is Derived by the country, through additions and documented exceptions that need to be applied in the context of the internal data acquisition, processing and exchange in the country. Such exceptions might challenge or compromise the native interoperability with the main data model and should be technically treated whenever the data needs to be exchanged with a system that is fully compatible with ICGLR data model
+The country might develop Usage Specifications that impose additional rules on the data formatting, data size or the values that can be taken by certain attributes. This process of adapting the Core Model to the specificity of the country is a normality, required from the perspective of adhering to the specific regulatory requirements active in the country and to the envisioned technical implementation architecture, the way the IT systems are or will be implemented and are or will communicate with each other at internal level in the country. Such Usage Specification should not break the compatibility with the Core Model.
+
+The semantic representation of the Core Model is not dependent on the technology of implementation.
+The Regional Minerals Database might choose an SQL-based data representation, which is perfectly suitable for the Core Model.
+The APIs might use a JSON representation or a JSON-LD that carries information on the context and relations between entities. 
+In case of lack of direct technical real time connection between the systems that exchange data, the technical format of choice could be XML, based on a custom defined schema.
+Any format that will be used should also allow the semantic validation through a Validator component that checks the compatibility of the exchanged data set with the semantic model at the level of its application, either as a core model by ICGLR, or as a core model with implementation specific rules at the level of a country.
+
+In the scope of the assignment, we will use the notion of Entities, Attributes and Value sets to describe the semantic model of the components of interest.
+We have two primary Entities, that are not included in other entities.
+
+These primary entities are Mine Site, Export Certificate, Lot.
+The primary entities reference secondary entities. We name secondary entities those data structures that have attributes of their own, that can be referenced by different entities and/or  that can be repeatedly referenced by another entity.
+
+Following the RCM, we have identified the following secondary entities:
+License
+Business Entity
+Address
+Geolocalization 
+Inspection
+Mine Site Location
+Contact Details
+Status History
+Tag
+Tax
+
+The Secondary entities could be nested. Thus for example:
+Mine Site HAS Mine Site Location, while Mine Site Location HAS Geolocalization AND HAS Address.
+
+Some attributes might not simply take any value allowed by a primitive type, but need to take a discrete value from a specific list, based on specific rules.
+These lists of potential values are specifically defined in the data model as Code Lists, and form together a Code Directory.
+These Code Lists are:
+Certification Status
+Mining Activity Status
+Mineral
+License type
+CoC roles
+Originating operations
+
+The modeling of data specific to the Chain of Custody is centered on the “Lot” entity, which includes all the possible data attributes occurring during all phases in the CoC (explicited in the list of “Originating operations”) and can be recorded by all CoC actors (explicited in the list of “CoC Roles”). The “Lot” provides a compact, normalized data model, that can be used in technical implementation to reconstitute the lifecycle of a lot in the CoC by backtracking based on the originating operation and the input lot(s). The compact model supports any type of lot-to-lot transformation in the CoC, be it 1-to-1, 1-to-n, n-to-1 or n-to-n. 
+The technical transposition of the semantic model of the Lot entity is intended to be primarily used for data capturing, data reporting and transmitting, through API, for example as JSON or XML. It is not intended to illustrate directly a structure of a relational database table(s), although the model of one can be derived from it.
+
+Process of establishing the core data model
+
+The core data model was established following the RCM, including the Appendixes, the documentation related to the Regional minerals database, specifically the technical specification developed in 2016 that proposes the data structure of the database, and information collected from the member states, either through the direct interviews or through direct observation of the public resources made available by the states, such as for example the Mining Cadasters provided as web portals with free access. 
+
+Each Attribute of each Entity is identified by a “Business term”, that describes uniquely the significance of the attribute. The “Business term” has a human-readable and has a direct  correspondence in a “Technical term”, that is to the extent possible the transcription of the business term in “snake_case”.
+The usage of a specific case for the technical term is a convention that is taken specifically for each standard, as there is no general universal rule applicable. The case should be compatible with the potential technical formats that are going to be used as representation for the standardized entities. 
+The present standard does not specify, not restrict, the usage of a specific technical format. Therefore, the formatting and case of the technical term should not restrict in any way the usage of certain technical formats.
+In perspective, the most suitable technical formats for the representation of the entities described in this standard would be JSON ( including JSON-LD) or XML.
+Of the cases that are usually employed for the representation of technical terms, we consider primarily the following 3 ones: camelCase, PascalCase, snake_case.
+As convention, we will use further camelCase, as being the most human-readable and being the choice of other standardization initiatives, for example those developed under the https://spdci.org/
+The entities including the technical terms are presented in the Annex.
+
+7. The proposed Core Data Model. Data entities and their attributes
+
+In the following, the proposed semantic model is presented. For each attribute and entity, additional information will be provided in support of the justification of the choices being made:
+
+All Entities, primary and secondary, are numbered, from MD.01 to MD.11 ( MD = Mining Data, a convention internal to this document, that can be replaced in the future)
+All Code Lists are numbered, from MDC.01 to MDC.04 ( MDC = Mining Data Codes, a convention internal to this document)
+
+
+7.1. MD.01 Mine Site
+
+Cardinality
+Technical term
+Business term
+Description
+Usage note
+Semantic data type
+1..1
+icglrId
+ICGLR Identification number
+A unique mine site identification number to be used at the level of ICGLR member states
+Unique combination of digits and letters from the standard Latin alphabet,automatically generated (see details below)
+Identifier
+1..1
+addressCountry
+Country
+The country where the Mine site is located
+ISO 3166-1 alpha-2 – two-letter country codes 
+Identifier
+1..1
+nationalId
+National Identification Number
+A unique mine site identification number at the level of the country
+
+
+Identifier
+1..1
+certificationStatus
+Certification status
+The current status of the mine: Certified (Green), un-Certified (Red), or Yellow-Flagged, Not inspected (Blue)
+Should be: 1,2,3 ( corresponding to Green, Yellow, Red) and 0 can be used additionally for new mines which were not yet inspected. A site has a blue status either because it is not yet inspected or because the validity (green status) has expired after one year and the Government has not yet inspected the mine site. However, the blue status can be valid for 3 years otherwise, the mine site turns red
+MDC.01 Certification Status
+1..1
+activityStatus
+Activity status
+Mining Activity Status (Active, Non-active, Abandoned)
+1 - active, 2- non-active, 0 -abandoned
+MDC.02 Mining Activity Status
+1..1
+mineSiteLocation
+Mine Site Location
+Geographic location of the mine site
+
+
+MD.08 Mine Site Location
+1..n
+mineral
+Minerals
+The type or types of Mineral(s) produced at the mine, including Designated Minerals
+takes values strictly from the HS Code classification.
+In case of a designated mineral takes value from the list of 4 values 7108.12.00
+2609.00.00
+2611.00.00
+2615.90.00
+representing the HS Codes for gold, cassiterite, wolframite, and coltan
+MDC.03 Mineral
+1..n
+license
+License
+Group of terms describing the license and its details
+Every mine site has a License field, even when the mine site is unlicensed. This is illustrated by the license type attribute of License entity
+MD.02 License
+1..1
+owner
+Owner
+
+
+
+
+MD.04 Business Entity
+0..n
+operator
+Operator
+The identification and full details of the Mine Operator/s if different from the owner
+
+
+MD.04 Business Entity
+0..n
+inspection
+Inspection
+
+
+
+
+MD.07 Inspection
+0..n
+statusChange
+Status change
+The history of status changes
+Status history change
+MD.10 Status History
+
+
+7.1.2. Formatting of the Mine Site Identification Number
+
+The format of the Mine Site Identification Number needs to be established such as to allow unequivocal identification of the mine site in the ICGLR Regional Minerals Database. According to the RCM, the obligation of keeping a Mine Site list is established at the level of the member country, with the Identification number being a required field. However, there are no expressed rules on how the identifiers should be formatted.
+Based on country-level regulations, procedures or practice, the identifiers are following a formula that allows their unique identification in a register. However, the use of identifiers should be a convention at the level of ICGLR, for the purpose of providing unique correct determination of the information.
+Mine site related information is updated by the member country whenever the attributes related to the mine site are changed, such as 
+When the Certification Status is changed
+When the Activity Status is changed
+When the associated Licenses are changed
+When the owner is changed
+When a new inspection occurs
+Therefore when data is transmitted from Country to ICGLR, the mine site needs to be clearly identifiable. 
+
+While it could be possible to use a formatting convention at the time of data acquisition or update in the Regional Minerals Database, such as appending to the country-based custom format a prefix formed by the 2-letter country code based ISO 3166-1 Alpha-2, such a practice would establish a dependency from the technical implementation of the data transfer and storage, which is creating risks and is against good practices in terms of data model standardization.
+Identification should not require the processing through a technical system, since as of 2025 it is not feasible to consider a technical uniformity of the way to register data at the country level. Thus, the convention of establishing identifiers should be “offline-friendly”
+
+Therefore, the Mine Site Identification number should be stored in exactly the same way at the country level and ICGLR level, with the country initially transmitting the full mine site record, and subsequently updating the required information that might change, allowing a direct identification of the record based on the ID.
+Such, we can say that the Mine Site Identification Number is actually an “ICGLR Mine Site Identification Number”, since the scope of its usage is for the exchange and storage in the context of ICGLR.
+Countries that want to use the ICGLR core data model for their own national general database of mine sites might choose to extend the model with a “National identification number”, which might follow specific nationally regulated rules.
+
+The ICGLR Mine Site Identification Number should be independent of any possible change of the value of any attribute that can be prone to update, such as the ones listed above.
+The format should also be simple enough to not include unnecessary information and to not include arbitrary characters. The identification number in itself is not a sensitive information that would require encryption or complex encoding, therefore the format can be described in a linear, predictive, sequential approach.
+
+The following format approach was proposed to the Technical Committee during the meeting held in Lusaka, 18-19 March 2025, and accepted as working variant.
+
+CC-[Lat]-[Long]-NNNNN - where [Lat] and [Long] are geocoordinates given following WGS 84 format, specifically in decimal degree format with 4 decimals. Geolocalization of minee sites using geocoordinates is already a requirement of the RCM, therefore the coordinates are already part of the mine site record. Using them does not create an additional effort for the person or system that creates the identifier, it allows automatic generation of identifier and provides certain uniqueness. 
+The recommendation of storing geocoordinates in the RMD is according to WGS 84 with 4 decimals, not using cardinal points ( N/S/W/E). Since the mine site identifier is a string which for technical processing purposes should not include spaces, a formatting convention can be represented as follows:
+
+The format using geocoordinates with no cardinal points ( RW-1.9641+30.0619-12345 ) is an optimal solution, as it provides certain uniqueness and can be validated directly by the content of the record, using the required geocoordinates elements.
+
+7.1.3. Mine site attributes formatting observations
+
+The Certification Status attribute takes a value, according to the RCM, from the following possibilities: Certified (Green), un-Certified (Red), or Yellow-Flagged
+As the list of mine sites should be managed at national level, and the countries might want to use the same format, and eventually the same technical storage or data registry, for their general use in order to standardize the data formats and procedures at country level, a 4th value might be useful, that would designate a mine that was not yet inspected for certification, or that does not fall under the scope of the RCM. From the RCM perspective, a non-inspected mine site behaves equivalent to an un-Certified one, however, the specific separate  status designation might be useful for the country.
+Coding and storing of values should not be textual, but should be mapped to a discrete, numeric (integer) set of values. 
+Textual storage can induce confusion, given that the ICGLR countries use 4 official main languages, thus a Green (G) status in English, is translated as Vert in French and Verde in Portuguese, and the corresponding in Arabic, etc.
+Language-independent integer-based status can be 1 for Green, 2 for Yellow, 3 for Red, and 0 for Uninspected or Out of RCM scope mine site. 
+As the integer correspondence of statuses is a convention, another equivalent variant ( 3 for Green etc) can also be valid if expressed as a standard code list.
+
+
+7.2. MD.02 License
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+licenseType
+License type
+The type of mineral license covering the mine site (claim, exploration permit, mining license, artisanal permit, unlicensed, other type)
+MDC.04 License Type
+0..1
+licenseId
+License ID
+The identification number of the mining license, in the terms used by the national mineral claims systems (if available, in the case of artisanal miners). The actual format is established and used at national level. Can miss only if the license type is “unlicensed” 
+Identifier
+0..1
+owner
+Owner
+The owner of the mineral license. Can miss only if the license type is “unlicensed”
+MD.04 Business Entity
+0..1
+appliedDate
+Date Applied
+
+
+Date
+0..1
+grantedDate
+Date Granted
+
+
+Date
+0..1
+expiringDate
+Date expiring
+
+
+Date
+0..1
+licenseStatus
+License status
+The license status, either 1 Active or 0 Non-Active (Expired or Revoked). The Active status can alternatively be determined from the difference of Date granted and Date expiring, in case the attributes are used. Thus the value is either 1 or 0
+Integer
+1..n
+coveredCommodities
+Covered Commodities
+
+
+MDC.03 Mineral
+
+
+Special cardinality rule: Unless License type is “unlicensed”, or not available in the case of artisanal and small-scale miners, License ID and Owner must be filled. Thus, it should be always present when the license type takes value from (claim, exploration permit, mining license)
+
+7.3. MD.03 Export Certificate
+
+
+Since the development of the RCM, including its second edition in 2019, the notion of the “document” evolved beyond the traditional paper-based written, signed, stamped representation of a filled standardized template, and even beyond the equivalent electronic document in the form of PDF with electronic signature. 
+It can be considered that any form of structured data representation, that has the ensured proof of origin, thus authenticity, and an ensured proof of non-tempering, or a clear auditable record of its modifications by authorized identifiable entities only, and that can be rendered in a controlled manner based on standardized templates by authorized systems, can be subject of recognition as compliant document as long as the applicable regulations accept it.
+Thus, along with the physical form of the export certificate or the authenticated electronic reproduction of a physical form, the storage of primary data attributes of the Export Certificate should allow operations assisted by software, such as searching, filtering, investigations, and comparative analysis.
+The standardized electronic representation of the Export Certificate should allow the re-generation of a printable certificate document in the form required and in any language required, thus conforming to the specification of the RCM that “Each ICGLR Certificate shall be printed in both English and French. Additional languages may be added at the discretion of the Member State”.
+
+It should be noted that the semantic definition of the certificate fields (data attributes) and their technical representation should not be considered only for the purpose of storage and simple retrieval by ID, but should allow more complex queries that would support traceability, audit and identification of possible problems.
+
+The following table presents the proposal for the semantic representation of the Export Certificate.
+Following the table, explanations will be given on the specific proposals that are included. This document does not reproduce directly the text of the RCM, which was used as a reference for the certificate structure, as it is considered that the reader already have it available, is familiar with it or can read it for comparison.
+
+
+Cardinality
+Technical term
+Business term
+Description
+Usage note
+Semantic data type
+1..1
+issuingCountry
+Issuing country
+The ISO 3166-1 alpha-2 code of the issuing country
+ISO 3166-1 alpha-2 – two-letter country codes 
+Identifier
+1..1
+identifier
+Serial number
+A unique serial number identifying the Certificate
+A unique combination of digits and letters from the standard Latin alphabet, unique in the country
+Identifier
+1..1
+exporter
+Exporter
+A group of business terms providing
+information about the Exporter. Includes: The name, legal address and physical address of the exporter, as well as any other information required to identify the exporter
+
+
+MD.04 Business Entity
+1..1
+importer
+Importer
+The name, legal address and physical address of the importer, as well as any other information required to identify the importer
+
+
+MD.04 Business Entity
+1..1
+lotNumber
+Lot number
+The exporter’s unique lot number or export order number for the lot
+
+
+Identifier
+0..1
+designatedMineralDescription
+Designated mineral description
+A description of the Designated Mineral, including the type of ore or concentrate, weight and grade of the lot
+Free textual description 
+String
+1..1
+typeOfOre
+Type of ore
+Type of ore
+
+
+MDC.03 Mineral
+1..1
+lotWeight
+Lot Weight
+Lot Weight
+Numeric format, accepting fractional value, should always be read together with the Lot Weight Unit of Measure
+Decimal
+1..1
+lotWeightUOM
+Lot Weight Unit of Measure
+The unit of measure used by the lot weight
+The unit of measure shall be chosen from
+the lists in UN/ECE Recommendation N°. 20
+“Codes for Units of Measure Used in
+International,  Trade”. Can take value from a strict list of UOMs
+
+
+MDC.07 Unit of measurement
+1..1
+lotGrade
+Lot Grade
+Lot Grade
+Grade expression might vary depending on the mineral
+String
+1..1
+mineralOrigin
+Mineral origin
+The national origin of the material (either the name of the country, or “mixed” in the case of lots containing material from two or more nations mixed together)
+One or more country identifiers, separated by one semicolon character ( eg. CD;BI;RW ). In case the origin is not known, the character zero (0) will be used to illustrate this
+Identifier
+1..1
+customsValue
+Customs value
+The declared Customs value in USD of the Lot (explicit requirement according to Appendix C of RCM Manual)
+Use Currency code of 3 letters ( ISO 4217) and value Decimal format, separated by one space character. 
+Alternatively, it can be Decimal considering that it should always be given in USD 
+String
+1..1
+dateOfShipment
+Date of shipment
+The date the lot is planned to be shipped
+As the export certificate is issued before the shipment occurs, the actual date of shipment might be different. The RCM mandates that the term should be indicated as “Date of shipment”
+Date
+0..1
+shipmentRoute
+Shipment route
+The shipment route
+ISO 3166 alpha-2 ( array of countries separated by a semicolon without spaces CD;TZ;BI)
+String
+0..1
+transportCompany
+Transport company
+the transport company responsible for transporting the shipment, if known
+
+
+String
+1..1
+memberStateIssuingAuthority
+Member State Issuing authority
+
+
+
+
+String
+1..1
+nameOfVerifier
+Name of verifier
+name of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate
+
+
+String
+1..1
+positionOfVerifier
+Position of verifier
+position of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate
+
+
+String
+0..1
+idOfVerifier
+ID of verifier
+identification number (where available) of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate
+
+
+Identifier
+1..1
+dateOfVerification
+Date of verification
+The date the lot is verified by the Member State representative
+
+
+Date
+1..1
+nameOfValidator
+Name of validator
+The name of the Member State representative empowered to countersign the Certificate to render it valid
+
+
+String
+1..1
+dateOfIssuance
+Date of issuance
+The date that the Certificate is countersigned(Certificate is valid from this date)
+
+
+Date
+1..1
+dateOfExpiration
+Date of expiration
+The date that the Certificate expires, or the validity period of the Certificate
+Between date of issuance and date of expiration should not be more than 90 days
+Date
+1..1
+certificateFile
+Certificate file
+The certificate as file
+Should tave value from a limited list of MIME types: application/pdf, 
+image/png, image/jpeg 
+File
+
+
+
+Validation rules:
+Lot Weight should be a positive number (>0) with a maximum of 3 decimals ( 0.000)
+Mineral Origin should have only one of the following formats:
+2-letters country code eg. BI
+Array of 2-letters country codes eg. BI;TZ;CD
+The character zero ( 0 ) in case of unknown origin. Zero can be combined in an array ( eg. BI;TZ;0 ) showing that the mineral comes from at least 3 sources, from which 2 are known.
+Date of expiration should not exceed the date of issuance plus 90 days
+Certification File MIME type should be included in the subset application/pdf, image/png, image/jpeg
+
+In practical technical implementation, the size of the uploaded files should be limited in order to avoid overloading the storage and processing systems. 
+The limitation should be set at least for the Regional Minerals Database ( recommended max size 10 MB), which can be made more strict ( eg. 5 MB, 8 MB) by member states.
+
+The requirement of the RCM to include “A description of the Designated Mineral, including the type of ore or concentrate, weight and grade of the lot” is proposed to be split into 4 fields.
+
+Designated mineral description (textual)
+Type of ore ( mineral, coded based on IMA)
+Lot Weight ( in tonnes)
+Lot Grade ( specific to mineral)
+
+It is important that the “type of ore” is considered as a separate attribute and is encoded in a standardized manner, as it is ensuring this way the possibility to query a collection of certificates with interrogations including the mineral.
+In general, as shown above, in case a group of terms can be repeated or autonomous, it is preferable to be defined under a sub-entity. In the case of the “Description”, this is not the case, since each description is specifically linked with a Certificate.
+
+Encoding of country names should always follow the consistent ISO 3166-1 alpha-2 – two-letter country codes (TZ, UG, RW, etc).
+
+“The national origin of the material”, following the formulation of the RCM, proposed here as “Origin of mineral”, holds the value for  “The national origin of the material (either name of country, or “mixed” in the case of lots containing material from two or more nations mixed together)”.
+
+While the interpretation is that if we have a single country-of-origin we can use the country name, and if we have more countries of origin, we can use the word “mixed”, the strive for traceability should support us in considering that all countries of origin should be known, that even if not all are known with certainty at least providing explicit indications of those clearly known provides definite more value than the use of word “mixed”, the proposal is to use a pattern combining the country codes ( based on ISO 3166) with a separator. The separator is a convention, that might be restricted by possible technical formats to be used. The separator “space” (space character) is neutral and is a good variant that does not create limitations. Alternative separators can be “-” or “_”. Separators to be definitely avoided are commas and double commas, the percent (%) sign, the ampersand (&) sign, which have specific interpretations when processed for rendering for visual display, such as for example through HTML on a browser.
+Therefore the proposed encoding for “The national origin of the material” is given as:
+One or more country identifiers, separated by one space character ( eg. CD, BI, RW)
+
+“Date of expiration” ( alternatively it can be named “Expiry date”) reflects the request of RCM to capture “The date that the Certificate expires, or the validity period of the Certificate.” Both forms of representation are equivalent, one can be derived from the other, however with a risk factor of one day, since RCM does not mention explicitly if the date that the certificate expires is to be considered into the time of validity, or outside the time of validity, thus computing the date of expiration from the Date of issuance plus the “validity period” can give margin to error. Also, the use of “validity period” would require the specification of the calendar notions. We can consider that any value given should be expressed in “days” given RCMs request that  “The Date of expiry shall be no more than 90 days later than the date of issuance (i.e. the date the Certificate was countersigned)”, but that could be represented in multiple ways, including textual references which are language-specific and thus not compatible with the general requirement that the valuable data stored in RCM should be language-independent.
+It is thus safer to store the expiry date in clear in the standard format of Date.
+
+As an alternative, we might consider having a pair of 2 fields, of which at least one should be present: Date of expiration, and Validity Period ( for validity period, a convention of duration needs to be established - should be given in Days, to avoid the need to include a textual explanation such as the word “days”/”jours”).
+
+The RCM requires the capturing of “The shipment route and the transport company responsible for transporting the shipment, if known”.
+RCM does not require that this information is representing multiple distinct attributes, but if left just as textual (String) representation we would have the problems of not being able to actually query the respective related data, and to be language-independent.
+Therefore, we propose the separation of this information into two fields. 
+The Shipment route should be represented in a codified form. RCM does not express an intention to audit the actual shipment route, beyond its declaration in the Certificate, however, this can certainly be done, if the route is expressed in a codified manner, including the country codes and possibly also the immediate first sub-national entity. Both are available in standardized form in ISO 3166. Thus the proposal is to have this field formatted based on ISO 3166 alpha-2 ( array of countries separated by comma without spaces CD, TZ, BI...) or an array of ISO 3166 alpha-2 and ISO 3166 alpha-3 that includes also standardized denominations of regions.
+
+The Transport company can remain as String, with no other usage instructions, but it  can also be represented as a Business Entity, only if the identification information, beyond its name, is known.
+
+“Certificate file” is a field added for compatibility with the requirement of RCM to have a traditional document, reflecting the original printed and signed document. 
+In the future, this can be replaced by the actual technical record that provides the proof of origin and proof of non-tempering, with the origin being traced to the signatory, or including a qualified electronic signature or an electronic seal. Further discussion on the actual technical representation and processing is beyond the scope of this document.
+
+Further, the relevant Sub-Entities and Value Sets that are referred to in the entities above are presented. Full navigable electronic representations of all Entities and Value sets are attached for reference in Excel format and also made available in the form of navigable web pages.
+
+7.4. MD.04 Business Entity
+
+Cardinality
+Technical term
+Business term
+Description
+Usage note
+Semantic data type
+1..1
+identifier
+Identification number
+Unique identifier
+
+
+Identifier
+1..1
+name
+Name
+Legal name of the entity, as officially registtered
+
+
+String
+0..1
+legalAddress
+Legal Address
+
+
+
+
+MD.05 Address
+0..1
+physicalAddress
+Physical Address
+
+
+
+
+MD.05 Address
+1..1
+tin
+TIN
+Tax ID Number in the country of registration
+If not known, N/A can be used as value
+Identifier
+1..1
+contactDetails
+Contact Details
+Group of business terms holding contact details of entity
+
+
+MD.09 Contact details
+
+
+Rules: 
+Either Legal Address or Physical Address should exist. 
+In case one of Legal Address or Physical Address exists while the other does not, whenever the missing term is required, the value of the existing one should be retrieved, cosidering thus that both addresses are the same. 
+
+
+
+7.5. MD05.Address
+
+Cardinality
+Technical term
+Business term
+Usage note
+Semantic data type
+1..1
+country
+Country
+An ISO 3166-1 country code identifying the particular Member State. ISO 3166-1 alpha-2 – two-letter country codes
+Identifier
+0..1
+subnationalDivisionL1
+Subnational Division Level 1 Code
+Using the ISO 3166-2:[2-letter country division code]
+Identifier
+0..1
+subnationalDivisionL1Text
+Subnational Division Level 1
+
+
+String
+0..1
+subnationalDivisionL2
+Subnational Division Level 2
+
+
+String
+0..1
+subnationalDivisionL3
+Subnational Division Level 3
+
+
+String
+0..1
+subnationalDivisionL4
+Subnational Division Level 4
+
+
+String
+1..1
+addressLocalityText
+Locality as free text
+Free text
+String
+0..1
+addressLocalityCode
+Locality as code
+as designated in UPU S42, ISO 19160-1
+String
+
+
+Subnational Division can be fully coded using ISO 3166.
+For example the value “CD-BU” would be ISO 3166-2:CD CD-BU        Bas-Uélé        Lower Uele https://en.wikipedia.org/wiki/ISO_3166-2:CD
+
+Full reference of ISO 3166-2 is available freely from ISO: https://www.iso.org/obp/ui/
+
+ISO 3166 offers a full encoding to the Subnational Division Level 1 and is language-independent, including all official languages regocnized by the respective country. For example for Rwanda https://en.wikipedia.org/wiki/ISO_3166-2:RW the subdivisions are named in all 3 accepted official languages
+
+Locality should be encoded as well, following UPU S42 or ISO 19160-1
+
+
+7.6. MD.06 Geolocalization
+
+Cardinality
+Technical term
+Business term
+Description
+Usage note
+Semantic data type
+1..1
+latitude
+Latitude
+
+
+WGS 84 format
+Geocoordinate
+1..1
+longitude
+Longitude
+
+
+WGS 84 format
+Geocoordinate
+
+
+7.7. MD.07 Inspection
+
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+inspectionId
+Inspection ID number
+Generated identifier, including the initials of the inspector name and the timestamp of the recording.Example: PS-2025-12-02-16-03 - inspection performed by Peter Smith, on 2 December 2025, recorded at the time of 16:03  
+Identifier
+1..1
+inspectionDate
+Inspection date
+The dates of inspection of the mine site, either by Member State government personnel (or designates), by ICGLR Third Party Auditors, or by the ICGLR Mineral Chain Auditor
+Date
+1..1
+inspectionResult
+Inspection result
+The result of the inspection in changing or maintaining the certification status
+MDC.01 Certification status
+0..1
+inspectionReport
+Inspection report
+The Full Inspection Report of each inspection (if feasible). The MIME type should take value from the subset application/pdf, text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document
+File
+0..1
+inspectionPurpose
+Inspection purpose
+short text
+String
+0..1
+inspectionResults
+Inspection results
+long text
+String
+1..1
+inspectorName
+Inspector name
+full name
+String
+1..1
+inspectorPosition
+Inspector position
+title or position
+String
+1..1
+governmentAgency
+Government Agency
+short text
+String
+0..1
+governmentId
+Government ID
+Government identification number, if applicable
+Identifier
+
+
+Inspection File MIME type should take value from the subset application/pdf, text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+In practical technical implementation, the size of the uploaded files should be limited in order to avoid overloading the storage and processing systems. 
+The limitation should be set at least for the Regional Minerals Database ( recommended max size 10 MB), which can be made more strict ( eg. 5 MB, 8 MB) by member states.
+
+As a general observation, when a certain attribute holds a term that may be composed of several distinct values, the actual usage should determine if it needs to be further broken down into components or even be treated as a secondary entity.
+
+The “Inspection number” is not mandated by the RCM manual, but it is highly useful as a single unique identifier, particularly in the context of data storage, reporting and querying. Its addition was recommended by the ICGLR secretariat technical team. Its proposed format is an identifier, that can be autogenerated by software systems, or recorded manually, including the initials of the inspector name and the timestamp of the recording.Example: PS-2025-12-02-16-03 - inspection performed by Peter Smith, on 2 December 2025, recorded at the time of 16:03. 
+
+Usage of the File element should not be treated lightly because it is one of the most important causes for the growth of storage space on medium and long run, and can also generate risks in the data transfers between countries and ICGLR, as the data batches will grow larger and will be more prone to transaction errors due to the long time of transfer in low bandwidth conditions.. The current practice remains that the reports are scanned and stored as files, which tend to have relatively large sizes. Therefore, one usage rule that we can expect to be imposed by member states is the limiting of the size of the files to be uploaded and exchanged in the system.
+
+7.8. MD.08 Mine Site Location
+
+Cardinality
+Technical term
+Business term
+Description
+Usage note
+Semantic data type
+1..1
+geolocalization
+Geolocalization
+Geographic localization of the mine site in WGS 84 format
+Given in latitude and longitude (degrees, minutes, seconds) WGS 84 format. In decimal degree format, with 4 decimals 
+MD.06 Geolocalization
+0..1
+nationalCadasterLocalization
+National cadaster localization
+
+
+Given in the terms used by the Member State national mining cadastre
+String
+0..1
+localGeographicDesignation
+Local geographic designation
+
+
+Given in local geographic terms (province/state, municipality/chefferie/district)
+MD.05 Address
+0..1
+polygon
+Polygon
+A polygonal representation of the site, as an alternative to or supplementing the point coordinates
+Array of pairs of coordinates, formatted as GeoJSON (RFC 7946) Polygon with coordinates in WGS84 using up to 4 decimals, each position given as [longitude, latitude]. Example {"type":"Polygon","coordinates":[[[30.0619,-1.9641],[30.0623,-1.9641],[30.0623,-1.9637],[30.0619,-1.9637],[30.0619,-1.9641]]]}
+String
+0..1
+altitude
+Altitude
+Average altitude of the mine site
+Given in meters, as a number
+Decimal
+
+7.9. MD09. Contact Details
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+legalRepresentative
+Legal representative name
+First name and last name
+String
+1..n
+contactPhoneNumber
+Contact phone number
+E.164 phone format is , starting with a plus sign (+), followed by the country code, and then the national number, with a maximum of 15 digits
+String
+1..1
+contactEmail
+Contact email
+Of format text@domain.extension At implementation  RegEx can be used, such as as ^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$
+String
+
+
+7.10. MD.10 Status History
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+dateOfChange
+Date of change
+Date of status change
+Date
+1..1
+newStatus
+New Status
+The status acquired after the change
+MDC.01 Certification Status
+
+
+
+The status history should be reconstructed from intervals between status history. At the level of the Mine Site, we have a repeatable element
+ 0..n	Status change	that holds the “Status history change”,
+Thus each status change appends the required information that allows an interpreting system to reconstruct the entire chain of changes.
+
+7.11. MD.11 Tag / Unique number
+
+A Tag that can be generated and attached to a Lot. A Tag can be printed and physically connected to the Lot, in any form of packaging that is used.
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+identifier
+Tag Id
+Unique ID of the tag (can be expressed visually as QR code, barcode)
+Identifier
+1..1
+issuer
+Issuer
+The organization that issued the tag
+MD.04 Business Entity
+1..1
+issueDate
+Date of Issue
+Date when the tag was created
+Date
+1..1
+issueTime
+Time of Issue
+Time when the tag was created
+Time
+
+
+7.12. MD.12 Lot
+The holder of a quantity of minerals that are mined. The Lot is initially constituted at the Mine Site. In local/national practice, the “Lot” can be named in different ways, as Bag, as Package, etc. However, the form of packaging is not relevant for the data model used for tracing, but   intended for transport, processing, or sale.
+In the CoC, the “lot” is redefined all the time when there is a transformation involving an aggregation or disaggregation. 
+During all operations through the CoC, each Lot is “bagged, tagged and sealed”. 
+When a lot is transformed, a new Lot emerges with its own Tag and has reference to the original Bags which were the input for the forming of the lot.
+
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+lotNumber
+Lot Number
+Lot number given by the CoC actor from which the lot originates. It is not necessarily captured in a Tag.
+Identifier
+1..1
+dateRegistration
+Date of registration
+Date when the registration was created
+Date
+1..1
+timeRegistration
+Time of registration
+Time (hhmmss) when the registration was created
+
+
+Time
+1..1
+creator
+Lot Creator
+The business entity that created the lot. Equivalent to current custodian.
+MD.04 Business Entity
+1..1
+mineral
+Contained Mineral
+Identifier of the mineral contained in the bag
+MDC.03 Mineral
+1..1
+concentration
+Percentual concentration
+ Approximate mineral concentration (grade), in percent 
+Decimal
+1..1
+mass
+Lot weight
+Weight of the Lot
+Decimal
+0..1
+packageType
+Type of packaging
+Describes how the Lot is packaged ( as bag, barrel, container, etc)
+String
+0..1
+nrOfPackages
+Number of packages
+In case a lot is composed of more packages
+Decimal
+1..1
+unitOfMeasurement
+Unit of measurement
+The unit of measure shall be chosen from the lists in UN/ECE Recommendation N°. 20
+“Codes for Units of Measure Used in
+International Trade”. Can take value from a strict list of UOMs
+
+
+MDC.07 Unit of measurement
+
+
+
+
+Production
+Information Requirements for Mine Site Operators for each Lot. The information should be retained or updated (in case of specific attributes that required update) through the CoC
+[Grouping]
+0..1
+mineSiteId
+Mine Site 
+Identifier of the mine site where the ore was extracted. REQUIRED when the Originating operation is Production. It is required when the Lot Creation Operation is Production.
+
+
+MD.01 Mine Site
+1..n
+creatorRole
+Lot Creator Role
+The role(s) of the entity in the CoC
+MDC.05 CoC Roles
+0..1
+recipient
+Lot Recipient
+The identification of the customer or recipient, including name, address and site location and government identification number
+MD.04 Business Entity
+1..n
+originatingOperation
+Lot Creation Operation
+The operation(s) that determined the creation of the Lot
+MDC.06 Originating operations
+0..n
+inputLot
+Lots that form this lot
+Collection of lots that were used to aggregate this lot. If there is no transformation, except for changing actors in the CoC, the inputLot is itself. This attribute does not exist for the initial Lot (the one registered at the Mine Site)
+MD.12 Lot
+0..1
+tag
+Associated tag
+Associated tag. REQUIRED when the Originating operation is Production
+
+
+MD.11 Tag
+0..n
+taxPaid
+Values and details of all taxes paid
+Values and details of all taxes, fees or royalties paid to
+government for the purpose of extraction, trade, transport or processing of the lot, along
+with any other payments made to governmental officials for the purpose of extraction, trade,
+transport or processing of the lot
+MD.13 Tax
+0..1
+dateSealed
+Date when sealed
+The date when the lot is sealed
+Date
+0..1
+dateShipped
+Date when shipped
+The date when the lot is shipped
+Date
+
+
+
+
+Purchase
+Information Requirements for Mine Site Operators for each Lot of Designated Minerals Sourced from other Industrial Mines
+[ Grouping]
+0..1
+purchaseNumber
+Purchase number
+A unique purchase order number for the external purchase, in case it is applicable
+Identifier
+0..1
+purchaseDate
+Purchase date
+The date of the purchase, if applicable
+Date
+0..1
+responsibleStaff
+Responsible staff
+Name of the responsible staff person(s) who accepted the Designated Mineral Lot and verified the origin. Can be a string including multiple names.
+String
+
+
+
+
+Processing
+Information Requirements for Mineral Processor, Centre de Traitements, Comptoirs, or Smelters Lot of Designated Minerals Sourced from Industrial Mines
+[ Grouping]
+0..1
+dateIn
+Date received
+The date when the processor took possession of the lot ( does not apply in the first step of the CoC)
+Date
+0..1
+transportationMethod
+Transportation method
+The method by which the Lot was transported from mine site to processor
+String
+0..1
+transportationRoute
+Transportation route
+The transportation route used for the shipment of the incoming Lot
+String
+0..1
+transportCompany
+Transport Company
+transport company responsible for transporting the shipment
+String
+0..1
+exportCertificateId
+Export certificate ID by ICGLR
+An ICGLR Certificate number, if for export
+MD.03 Export Certificate
+
+
+For some fields that are in general optional (0..1, 0..n), their presence might be required in certain circumstances depending on the stage in the CoC. The validation of their presence is to be established by Rules.
+
+The model proposes a normalisation of the definition of the Lot in the entire CoC. To verify that the model is complete we present below the correspondences with the RCM Apendix B specification
+
+1. Standard Information Requirements for Mine Site Operators for each Lot
+1.1. A unique mine operator lot number for the lot. - lotNumber
+1.2. The identification of the mine owner and operator (if different), including name, address and mine site location/permit/concession given with reference to the Mine Site Identification in the ICGLR Regional Mineral Database (RMD), government identification number. - through mineSiteId
+1.3. The identification of the customer or recipient, including name, address and site location and government identification number. - recipient ( BusinessEntity)
+1.4. A description of the material, including the ore type (i.e. cassiterite), its weight (i.e. 1000kg), and grade (i.e. 45%). - 3 data attributes: mineral, concentration, mass
+1.5. Values and details of all taxes, fees or royalties paid to government for the purpose of extraction, trade, transport or processing of the lot, along with any other payments made to government for the purpose of extraction, trade, transport or processing of the lot - taxPaid (entity, 0..n)
+1.6. The date when the lot is sealed - dateSealed
+1.7. The date when the lot is shipped - dateShipped
+1.8. Name of the responsible staff person(s) who verified the documentation associated with the Lot - responsibleStaff
+
+2. Additional Information Requirements for Mine Site Operators for each Lot of Designated Minerals Sourced from other Industrial Mines
+2.1. All of the information requirements in 1.1-1.8 above plus:
+2.2. A unique purchase order number for the external purchase - purchaseNumber
+2.3. The identification of the mine site and mine operator from which the external purchase was sourced, including name, address and mine site location given with reference to the Mine Site Identification in the RMD, government identification number. - through mineSiteId [ a Lot can only have ONE mineSiteID, this is identical to 1.2 and should not be repeated]
+2.4. A description of the material, including the ore type (i.e.cassiterite), its weight (i.e. 1000kg), and grade (i.e. 45%) - - 3 data attributes: mineral, concentration, mass [ this is identical with 1.4, should not pe repeated]
+2.5. Values and details of all taxes, fees or royalties paid to government for the purpose of extraction, trade, transport or processing of the external purchase, along with any other payments made to government for the purpose of extraction, trade, transport or processing of the external purchase - taxPaid (entity, 0..n) - identical with 1.5
+2.6. The date of the purchase - purchaseDate
+2.7. Name of the responsible staff person(s) who accepted the Designated Mineral Lot and verified the origin - responsibleStaff [ although expressed differently, this should be identical to 1.8, should not be repeated]
+
+
+3. Additional Information Requirements for Mine Site Operators for each Mixed Lot of Designated Minerals Sourced from other Industrial Mines
+3.1. All of the information Requirements in 2.1-2.7 above plus
+3.2. A new unique mixed Lot number - lotNumber
+3.3. The weight/mass, ore type, and grade of the mixed Lot - 3 data attributes: mineral, concentration, mass
+3.4. The purchase order numbers of each externally purchased Lot included in the mixed lot, along with the weight and grade of ore that each externally purchased Lot contributed to the mixed Lot. - included by reference - 
+3.5. Name of the responsible staff person(s) who accepted the Designate Mineral Lot(s) and verified the origin -  responsibleStaff [ although expressed differently, this should be identical to 1.8, should not be repeated]
+
+The formulation “All of the information Requirements in 2.1-2.7 above plus” is not correct, since a mixed lot only has one number (3.2), not two numbers (3.2 AND 1.1). However, the original Lot(s) can be identified by recursive reference.
+
+4. Information Requirements for Mineral Processor, Centre de Traitements, Comptoirs, or Smelters Lot of Designated Minerals Sourced from Industrial Mines
+4.1. Information Requirements: Purchases
+4.1.1. A unique Mineral Processor, Centre de Traitement, Comptoir, or Smelter purchase order number for the purchase  - purchaseNumber
+4.1.2. The mine operator Lot number or mixed Lot number - lotNumber
+4.1.3. The identification of the mine site(s) and mine(s) operator including name, address, site location, government identification number - mineSiteId
+4.1.4. A description of each Lot of Designated Minerals, including the ore type (i.e. cassiterite), its weight (i.e. 1000kg), and grade (i.e. 45%) - - 3 data attributes: mineral, concentration, mass
+4.1.5. Values and details of all taxes, fees or royalties paid to government for the purpose of extraction, trade, transport, or processing of the incoming Lot, along with any other payments made to government for the purpose of extraction, trade, transport, or processing of the incoming Lot - taxPaid (entity, 0..n)
+4.1.6. The date that the processor took physical possession of the Lot - dateIn
+4.1.7. The method by which the Lot was transported from mine site to processor - transportationMethod
+4.1.8. The transportation route used for the shipment of the incoming Lot - transportationRoute
+4.1.9. Name of the responsible staff person(s) who accepted the Designate Mineral Lot and verified the origin -  responsibleStaff 
+
+4.2. Information Requirements: Sales
+4.2.1. A unique Mineral Processor, Centre de Traitement, Comptoir, or Smelter lot number or purchase order number for the outgoing Lot - lotNumber
+4.2.2. The identification of the comptoir, processor or smelter, including name, address and site location - creator ( business entity)
+4.2.3. The identification of the customer or recipient, including name, address and site location - - recipient ( business entity)
+4.2.4. A description of the material, including the ore type (i.e.cassiterite), its weight (i.e. 1000kg), and grade (i.e. 45%) - 3 data attributes: mineral, concentration, mass
+4.2.5. Values and details of all taxes, fees or royalties paid to government for the purpose of extraction, trade, transport, or processing of the outgoing Lot, along with any other payments made to government for the purpose of extraction, trade, transport, or processing of the outgoing Lot - taxPaid (entity, 0..n)
+4.2.6. The comptoir purchase order number of every incoming Lot of - purchaseNumber
+4.2.7. Approved mineral ore that was used to produce the outgoing Lot - mineral
+4.2.8. The weight of mineral ore from each incoming Lot (identified via purchase order number) used to produce the outgoing Lot - mass, by recurrent reference
+4.2.9. The date when the outgoing Lot is sealed - dateSealer
+4.2.10. The date when the outgoing Lot is shipped - dateShipped
+4.2.11. The route and transport company responsible for transporting the shipment - transportCompany
+4.2.12. Name of the staff responsible person(s) who verified the documentation associated with the Lot.
+4.2.13. An ICGLR Certificate number, if for export
+
+Rules:
+
+“Time of registration” should be automatically generated by the software system that assists the registration of the Lot data record 
+Information specific to a previous stage in the CoC (eg. Production) should be retained in the Lot record in accordance to the requirements of the RCM Manual, thus allowing the Lot record to be fully defined without having the need to backtrack through specifical technical queries in a software system
+A Lot that is registered at Production mine site might not have yet the attributes “recipient” and “date shipped”. However, when the registration of a Lot at Production is referred by another Lot record that originates from an operation that indicates a change of custodian, the original Lot record must include the “date shipped” and “recipient” values
+If MDC.06 Originating operations is 1 (Production), then fields mineSiteId (“Mine site”)  and tag (“associated tag”) are required
+
+
+7.13. MD.13 Tax
+
+Cardinality
+Technical term
+Business term
+Description
+Semantic data type
+1..1
+taxType
+Type of tax
+Textual description of the type of tax
+String
+1..1
+taxAmount
+Amount of tax
+Value of paid tax, expressed in the required currency
+Decimal
+1..1
+currency
+Currency used
+The currency in which the tax was expressed. Use Currency code of 3 letters ( ISO 4217)
+String (restricted)
+0..1
+taxAuthority
+Tax Authority
+Authority who imposed the tax
+String
+0..1
+taxPaidDate
+Tax Paid Date
+Date when the tax was paid
+Date
+0..1
+receiptReference
+Receipt Reference
+Receipt number or other form of reference
+String
+
+
+7.14. Code lists
+7.14.1. MDC.01 Certification status
+
+Code
+Value
+1
+Green
+2
+Yellow
+3
+Red
+0
+Blue
+
+
+Numerical coding is independent of language. The name of colors are different and have different initials in languages used nationally and regionally, including in the ICGLR context. Numerical coding is thus neutral and can be interpreted in the user interfaces depending on the linguistic context.
+7.14.2. MDC.02 Mining Activity Status
+
+Code
+Value
+1
+Active
+2
+Non-active
+0
+Abandoned
+
+
+7.14.3. MDC.03 Mineral
+
+HS Code
+IMA Code
+Value
+7108.12.00
+IMA1960-A
+Gold
+2609.00.00
+IMA1960-001
+Cassiterite
+2611.00.00
+IMA2000-014
+Wolframite
+2615.90.00
+IMA1979-A
+Columbite-Tantalite (coltan)
+
+
+The “Code” is using primarily the HS Code classification, having also correspondences with the International Mineralogical Association (IMA) classification
+The “Value” is to be used in any user-facing interface, including forms that capture data, visualisation such as web dashboards, or exported reports. 
+In practical use, in the National Minerals Database and other systems that implement the standard, the list should be extended with the codes that are relevant for the context of the usage of the system. 
+
+In practice, the following two main schemas are used by the ICGLR member states. As agreed following the Technical Working Group meeting in Lusaka, 18-19 March, 2025, the HS Codes will be used as a general standard for data exchange purposes in the context of ICGLR membership.
+
+The Harmonized System (HS Codes), a standardized system of names and numbers used to classify goods for international trade,  developed by the World Customs Organization (WCO) in 1983, updated every 5 years
+And 
+The International Mineralogical Association (IMA) classification
+Each of the codification schemas ( noted further HS Code and IMA) offers wide coverage of the minerals that can be extracted and processed, including the designated minerals.
+
+Illustrative usage of the two schemas for the designated minerals are expressed below
+
+
+Attribute
+Value
+Description
+IMA Mineral Name
+Gold
+Scientific classification based on IMA standards
+Chemical Formula
+Au
+Pure elemental composition
+IMA Code
+IMA1960-A
+Unique IMA identifier
+Mineral Class
+Native Elements
+Category within IMA classification
+HS Code
+7108.12.00
+HS code for unwrought gold (including gold plated with platinum)
+HS Description
+Gold (including gold plated with platinum), unwrought or in semi-manufactured forms, or in powder form
+
+
+Attribute
+Value
+Description
+IMA Mineral Name
+Cassiterite
+Official mineral name based on IMA standards
+Chemical Formula
+SnO₂
+Tin oxide
+IMA Code
+IMA1960-001
+Unique IMA identifier
+Mineral Class
+Oxides
+Category within IMA classification
+HS Code
+2609.00.00
+HS code for tin ores and concentrates
+HS Description
+Tin ores and concentrates
+
+
+Attribute
+Value
+Description
+IMA Mineral Name
+Wolframite
+Official mineral name based on IMA standards
+Chemical Formula
+(Fe,Mn)WO₄
+Iron-manganese tungstate
+IMA Code
+IMA2000-014
+Unique IMA identifier
+Mineral Class
+Oxides
+Category within IMA classification
+HS Code
+2611.00.00
+HS code for tungsten ores and concentrates
+HS Description
+Tungsten ores and concentrates
+
+
+Attribute
+Value
+Description
+IMA Mineral Name
+Columbite-Tantalite
+Official mineral name based on IMA standards
+Chemical Formula
+(Fe,Mn)(Nb,Ta)₂O₆
+Niobium-tantalum oxide
+IMA Code
+IMA1979-A
+Unique IMA identifier
+Mineral Class
+Oxides
+Category within IMA classification
+HS Code
+2615.90.00
+HS code for niobium, tantalum, vanadium, or zirconium ores and concentrates
+HS Description
+Niobium, tantalum, vanadium, or zirconium ores and concentrates
+
+
+
+
+
+7.14.4. MDC.04 License Type
+
+Code
+Value
+claim
+Claim
+exploration_permit
+Exploration permit
+mining_license
+Mining license
+artisanal_permit
+Artisanal permit
+unlicensed
+Unlicensed
+other
+Other
+
+
+7.14.5 MDC.05 CoC Roles
+
+
+Code
+Value
+1
+Miner
+2
+Trader (in-country)
+3
+Shipper
+4
+Processor
+5
+Warehouse
+6
+Importer
+7
+Exporter
+8
+Government
+
+
+7.14.6 MDC.06 Originating operations
+
+The originating operation applied for the creation of a Lot can be combined. We can have 2;3;4 (Purchase, Combination, Processing) as the origin of a Lot
+
+Code
+Value
+1
+Production
+2
+Purchase
+3
+Combination
+4
+Processing
+5
+Transportation
+6
+Storage/Warehousing
+7
+Import
+8
+Export
+
+
+7.14.6 MDC.07 Unit of measurement
+
+
+Code
+Value
+TNE
+tonne
+KGM
+kilogram
+
+
+8. Adoption, implementation, management, updating and publishing of the standard 
+The following considerations aim to support the adoption, implementation and maintenance of the standard. These considerations are derived from the standardization practice, adopted by international standardization organizations such as ISO, regional standardization organizations such as CEN ( European Committee for Standardization), and NSOs ( National Standardization Organizations)
+
+In the current context, the ICGLR acts in a role similar to a Regional Standardization Organization, developing and maintaining a standard that should be implemented by all member states. 
+In this role, ICGLR needs to ensure that it manages the standard in its entire life cycle. 
+
+The following section describes the activities that need to be ensured by ICGLR in the lifecycle of the standard.
+
+8.1. Development and formal adoption of the standard
+
+ICGLR is responsible with the development of the standard, ensuring that it respects the requirements for data collection, processing, reporting and sharing, including with prominence the RCM Manual and the Data Sharing Policy. 
+While the development of the standard can be supported by contracted specialised consultants, the responsibility for the standard is ultimately of ICGLR, therefore the participation of the ICGLR Secretatiat team is essential.
+The development of the standard is a consultative process, which requires participation, awareness and consensus of all the ICGLR member states.
+The documents describing the standard needs to be formally validated by the ICGLR member states in a managed consultatory approach.
+The Standard should be governed by a Standard Governance Committee, established formally by ICGLR, with designated members, that review and agree upon the standard, confirm its publication and distribution and facilitate the dialogue with all stakeholders that are interested or affected by the development and implementation of the standard.
+The Standard Governance Committee should establish a structure including a chairperson (responsible of the facilitation of the discussions and calling of the meetings), a secretary (responsible for the documentation of the Committee’s activities and conclusions), a publishing officer responsible for the publishing and distribution of the standard to the relevant stakeholders, a technical officer responsible for the support of the technical implementation of the standard and an audit officer, responsible for the verification of the adoption and correct implementation of the standard by all member states and other relevant stakeholders.
+Other functions can be established by the Committee.
+
+The Committee should meet periodically, in order to evaluate the need or the opportunity to enhance the standard, or to perform other activities, such as verifications on the effectiveness of the adoption of the standard.
+Periodical meetings should be conducted at least once at 6 months and ad-hoc extraordinary meetings can be organized any time there is a specific requirement. 
+
+The Committee should formally adopt the first version of the standard and should validate the distribution, publication and technical implementation. 
+
+8.2. Publication and dissemination of the standard
+
+The standard is designed to be used primarily by the ICGLR secretariat and by the member states, in order to ensure the implementation of the Regional Minerals Database, the national capacity for reporting in conformity with the RCM and the technical interoperability of the systems and processes that collect, process and report information that adheres to the RCM manual. 
+
+The ICGLR Standard Governance Committee should formally transmit the standard to:
+The ICGLR member states, through the formal states representative
+The technical service providers responsible with the implementation and maintenance of IT systems such as the Regional Minerals Database
+
+Each time the standard is updated, the Committee should announce and formally transmit the modified standard to the same stakeholders, including an explicit and comprehensive Change Log.
+
+The Committee can decide the confidentiality regime of the standard and the intellectual property restrictions of the standard.
+
+Thus, the standard can be, at the formal decision of the Committee, with the possibility of changing the status upon the decision of the Committee:
+Completely open and free for all, under an open license, such as the Creative Commons (CC), with explicit requirements of Attribution (BY), NonCommercial (NC), ShareAlike (SA), and NoDerivatives (ND)
+Free but restricted, available at no cost to the stakeholders that need to implement the standard for the common benefit of ICGLR and themselves, such as the ICGLR member states, the ICGRL and member states technical service providers and consultants, and other explicitly designated stakeholder, but with explicit limits in preventing unauthorized distribution or derivation.
+Restricted, available for a fee, to all or some stakeholders. This policy is employed by ISO, CEN and other standarization bodies, for most of the standardization artifacts.
+
+
+
+Development and formal adoption of the standard
+Review and update the standard whenever required and inform all stakeholders that are or might be affected by the changes, or that might benefit of the updates/additions/extensions/restrictions. Communicate the changes to the member states, including a transition term for the conformity with the updated form of the standard
+Establish the access policy for the standard and its components
+Establish a publishing policy and maintained a published, up to date, documentation related to the standard, ensure that the publishing mechanism is up to date, is available and accessible, ensure that designated content editors can update the content, know how to edit the published content and are maintaining the publishing version in strict synchronization with the current version of the standard
+Supporting the member states to adopt the standard 
+Check and validate the correct implementation of the standard, including the correct definition and implementation of national usage specifications, to ensure the maintenance of interoperability within the ICGLR
+Development and maintaining of validation artifacts, generally in form of technical tools that allow the testing of standardized data structures as used in practice, to confirm their conformity. This is an optional activity, which remains very useful for the case when ICGLR operates a technical system for data exchange based on the standards and demands technical conformity from the member states
+
+ICGLR should appoint a committee responsible for the activities related to the standard, including all the attributions mentioned above. 
+
+The access policy includes rules related to who can access the standard specification, how can the standard specification be distributed, restrictions and conditions of such distribution, including potential access fees levied from specific stakeholders. 
+It should be noted that the regular practice of ISO, CEN and NSOs is to charge certain stakeholders for the access to the standard specification, or to certain parts of the standard specification. 
+ 
+Given the specific context of each member state, it is to be expected that they will see the opportunity to adopt and implement the standard for data storage and exchange that is not necessarily exclusively related to the exchange of data in relation with the ICGLR. 
+When doing so, each member state will have to ensure that their usage of the standard is conforming both with the ICGLR standard and with the national regulations and constraints, and that it serves the national purposes such as for example mining data interoperability among systems operating nationally. 
+
+At national level, a regional standard will need to follow a lifecycle of its own, that includes the following stages:
+Adoption as national standard, in general in identical form as the regional standard, with the possibility of having it translated
+Definition of the Standard Usage Specification. The usage specification includes a collection of rules that detail or restrict rules related to the usage of standardized attribute, such as for example the length of strings, size of files, formats of identifiers, in order to ensure the adherence to the national regulations or the compatibility with existing or planned systems. The usage specification should only provide supplementary rules, but not alter the specification of the standard. A country might chose to not define a specific usage specification and should implement the standard exactly as is, that being the ideal situation.
+Extending the standard. The extension of the standard involves the addition of entities or attributes, that are to be used at national level. These extensions do not affect the interoperability imposed by the main standard
+Maintaining the standard, which generally involves updates following the publishing of the updates of the regional standard, or additions and modifications of rules in the national usage specification, or further addition of extensions
+
+Generally, the attribution related to the standard at national level could be split between the National Standardization Organization that could be responsible with the adoption and translation of the standard, and respectively an organization responsible for the standard implementation, that handles all the other operations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

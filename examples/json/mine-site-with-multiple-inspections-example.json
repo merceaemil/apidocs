@@ -1,126 +1,128 @@
 {
-  "icglr_id": "CD-1.9403+29.8739-00001",
-  "address_country": "CD",
-  "national_id": "CD-MINE-2024-001",
-  "certification_status": 2,
-  "activity_status": 1,
-  "mine_site_location": {
+  "icglrId": "CD-1.9403+29.8739-00001",
+  "addressCountry": "CD",
+  "nationalId": "CD-MINE-2024-001",
+  "certificationStatus": 2,
+  "activityStatus": 1,
+  "mineSiteLocation": {
     "geolocalization": {
       "latitude": -1.9403,
       "longitude": 29.8739
     },
-    "national_cadaster_localization": "DRC Mining Cadaster - North Kivu, Block 5",
-    "local_geographic_designation": {
+    "nationalCadasterLocalization": "DRC Mining Cadaster - North Kivu, Block 5",
+    "localGeographicDesignation": {
       "country": "CD",
-      "subnational_division_l1": "CD-NK",
-      "subnational_division_l1_text": "North Kivu",
-      "subnational_division_l2": "Masisi Territory",
-      "address_locality": "Masisi"
+      "subnationalDivisionL1": "CD-NK",
+      "subnationalDivisionL1Text": "North Kivu",
+      "subnationalDivisionL2": "Masisi Territory",
+      "addressLocalityText": "Masisi"
+    },
+    "polygon": {
+      "type": "Polygon",
+      "coordinates": [[[29.8739, -1.9403], [29.8743, -1.9403], [29.8743, -1.9399], [29.8739, -1.9399], [29.8739, -1.9403]]]
     },
     "altitude": 1500
   },
   "mineral": [
-    "IMA1979-A",
-    "IMA1960-001"
+    "2615.90.00",
+    "2609.00.00"
   ],
   "license": [
     {
-      "license_type": "mining_license",
-      "license_id": "CD-ML-2024-001",
+      "licenseType": "mining_license",
+      "licenseId": "CD-ML-2024-001",
       "owner": {
         "identifier": "COMP-CD-001",
         "name": "Kivu Mining Corporation",
-        "legal_address": {
+        "legalAddress": {
           "country": "CD",
-          "subnational_division_l1": "CD-KN",
-          "subnational_division_l1_text": "Kinshasa",
-          "address_locality": "Kinshasa"
+          "subnationalDivisionL1": "CD-KN",
+          "subnationalDivisionL1Text": "Kinshasa",
+          "addressLocalityText": "Kinshasa"
         },
-        "physical_address": {
+        "physicalAddress": {
           "country": "CD",
-          "subnational_division_l1": "CD-KN",
-          "subnational_division_l1_text": "Kinshasa",
-          "address_locality": "Kinshasa"
+          "subnationalDivisionL1": "CD-KN",
+          "subnationalDivisionL1Text": "Kinshasa",
+          "addressLocalityText": "Kinshasa"
         },
         "tin": "CD123456789",
-        "rdb_number": "CD-RDB-2024-001",
-        "rca_number": "CD-RCA-2024-001",
-        "contact_details": {
-          "legal_representative": "Jean Dupont",
-          "contact_phone_number": "+243-XXX-XXXX",
-          "contact_email": "contact@kivumining.cd"
+        "rdbNumber": "CD-RDB-2024-001",
+        "rcaNumber": "CD-RCA-2024-001",
+        "contactDetails": {
+          "legalRepresentative": "Jean Dupont",
+          "contactPhoneNumber": "+243000000000",
+          "contactEmail": "contact@kivumining.cd"
         }
       },
-      "date_granted": "2024-01-15",
-      "date_expiring": "2029-01-14",
-      "license_status": "Active",
-      "covered_commodities": [
-        "IMA1979-A",
-        "IMA1960-001"
+      "grantedDate": "2024-01-15",
+      "expiringDate": "2029-01-14",
+      "licenseStatus": 1,
+      "coveredCommodities": [
+        "2615.90.00",
+        "2609.00.00"
       ]
     }
   ],
   "owner": {
     "identifier": "COMP-CD-001",
     "name": "Kivu Mining Corporation",
-    "legal_address": {
+    "legalAddress": {
       "country": "CD",
-      "subnational_division_l1": "CD-KN",
-      "subnational_division_l1_text": "Kinshasa",
-      "address_locality": "Kinshasa"
+      "subnationalDivisionL1": "CD-KN",
+      "subnationalDivisionL1Text": "Kinshasa",
+      "addressLocalityText": "Kinshasa"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "CD",
-      "subnational_division_l1": "CD-KN",
-      "subnational_division_l1_text": "Kinshasa",
-      "address_locality": "Kinshasa"
+      "subnationalDivisionL1": "CD-KN",
+      "subnationalDivisionL1Text": "Kinshasa",
+      "addressLocalityText": "Kinshasa"
     },
     "tin": "CD123456789",
-    "rdb_number": "CD-RDB-2024-001",
-    "rca_number": "CD-RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "Jean Dupont",
-      "contact_phone_number": "+243-XXX-XXXX",
-      "contact_email": "contact@kivumining.cd"
+    "rdbNumber": "CD-RDB-2024-001",
+    "rcaNumber": "CD-RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "Jean Dupont",
+      "contactPhoneNumber": "+243000000000",
+      "contactEmail": "contact@kivumining.cd"
     }
   },
   "operator": [],
   "inspection": [
     {
-      "inspection_id": "PS-2024-01-15-10-30",
-      "inspection_date": "2024-01-15",
-      "inspection_responsible": "Ministry of Mines, DRC - Peter Smith",
-      "inspection_findings": "Certified",
-      "inspection_report": "https://reports.icglr.org/inspections/PS-2024-01-15-10-30.pdf",
-      "inspection_purpose": "Initial certification inspection",
-      "inspection_results": "Mine site meets all ICGLR certification requirements. No violations found. Recommended for Green status.",
-      "inspector_name": "Peter Smith",
-      "inspector_position": "Senior Mining Inspector",
-      "government_agency": "Ministry of Mines, DRC",
-      "government_id": "GOV-CD-001"
+      "inspectionId": "PS-2024-01-15-10-30",
+      "inspectionDate": "2024-01-15",
+      "inspectionResult": 2,
+      "inspectionReport": "https://reports.icglr.org/inspections/PS-2024-01-15-10-30.pdf",
+      "inspectionPurpose": "Initial certification inspection",
+      "inspectionResults": "Mine site meets all ICGLR certification requirements. No violations found. Recommended for Green status.",
+      "inspectorName": "Peter Smith",
+      "inspectorPosition": "Senior Mining Inspector",
+      "governmentAgency": "Ministry of Mines, DRC",
+      "governmentId": "GOV-CD-001"
     },
     {
-      "inspection_id": "PS-2024-03-20-14-00",
-      "inspection_date": "2024-03-20",
-      "inspection_responsible": "Ministry of Mines, DRC - Peter Smith",
-      "inspection_findings": "Yellow Flagged",
-      "inspection_report": "https://reports.icglr.org/inspections/PS-2024-03-20-14-00.pdf",
-      "inspection_purpose": "Follow-up inspection",
-      "inspection_results": "Minor violations found in safety procedures. Corrective actions required. Status changed to Yellow.",
-      "inspector_name": "Peter Smith",
-      "inspector_position": "Senior Mining Inspector",
-      "government_agency": "Ministry of Mines, DRC",
-      "government_id": "GOV-CD-001"
+      "inspectionId": "PS-2024-03-20-14-00",
+      "inspectionDate": "2024-03-20",
+      "inspectionResult": 1,
+      "inspectionReport": "https://reports.icglr.org/inspections/PS-2024-03-20-14-00.pdf",
+      "inspectionPurpose": "Follow-up inspection",
+      "inspectionResults": "Minor violations found in safety procedures. Corrective actions required. Status changed to Yellow.",
+      "inspectorName": "Peter Smith",
+      "inspectorPosition": "Senior Mining Inspector",
+      "governmentAgency": "Ministry of Mines, DRC",
+      "governmentId": "GOV-CD-001"
     }
   ],
-  "status_history": [
+  "statusChange": [
     {
-      "date_of_change": "2024-01-15",
-      "new_status": 1
+      "dateOfChange": "2024-01-15",
+      "newStatus": 1
     },
     {
-      "date_of_change": "2024-03-20",
-      "new_status": 2
+      "dateOfChange": "2024-03-20",
+      "newStatus": 2
     }
   ]
 }

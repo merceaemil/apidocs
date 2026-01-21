@@ -57,33 +57,33 @@ Map your internal data model to ICGLR schemas:
 ```javascript
 // Your internal model
 {
-  mine_id: "M001",
-  mine_name: "Kivu Mine",
+  mineId: "M001",
+  mineName: "Kivu Mine",
   country: "RW",
   location: { lat: -1.94, lng: 29.87 },
   status: "Certified"
 }
 
-// ICGLR format (snake_case, ICGLR ID format, integer status codes)
+// ICGLR format (camelCase, ICGLR ID format, integer status codes)
 {
-  icglr_id: "RW-1.9400+30.8700-00001",
-  address_country: "RW",
-  national_id: "M001",
-  certification_status: 1,  // 1 = Green (Certified)
-  activity_status: 1,      // 1 = Active
-  mine_site_location: {
+  icglrId: "RW-1.9400+30.8700-00001",
+  addressCountry: "RW",
+  nationalId: "M001",
+  certificationStatus: 1,  // 1 = Green (Certified)
+  activityStatus: 1,      // 1 = Active
+  mineSiteLocation: {
     geolocalization: {
       latitude: -1.94,
       longitude: 30.87
     },
-    national_cadaster_localization: "...",
-    local_geographic_designation: {
+    nationalCadasterLocalization: "...",
+    localGeographicDesignation: {
       country: "RW",
-      subnational_division_l1: "RW-02",
-      address_locality: "Muhanga"
+      subnationalDivisionL1: "RW-02",
+      addressLocalityText: "Muhanga"
     }
   },
-  mineral: ["IMA1960-001"],
+  mineral: ["2609.00.00"],
   license: [...],
   owner: {...}
 }
@@ -95,57 +95,57 @@ Map your internal data model to ICGLR schemas:
 
 **Required Endpoints**:
 - `GET /mine-sites` - List with filtering
-- `GET /mine-sites/{icglr_id}` - Get by ICGLR ID
+- `GET /mine-sites/{icglrId}` - Get by ICGLR ID
 - `POST /mine-sites` - Create
-- `PUT /mine-sites/{icglr_id}` - Update
+- `PUT /mine-sites/{icglrId}` - Update
 
 **Implementation Checklist**:
 - [ ] Validate input against JSON schema
-- [ ] Support filtering (address_country, certification_status, activity_status, mineral)
+- [ ] Support filtering (addressCountry, certificationStatus, activityStatus, mineral)
 - [ ] Validate ICGLR ID format: `CC-[Lat]-[Long]-NNNNN`
 - [ ] Implement pagination
 - [ ] Return proper error codes
-- [ ] Handle status_history updates
+- [ ] Handle statusChange updates
 
 **Key Points**:
-- Use snake_case for all field names
+- Use camelCase for all field names
 - Certification status: 0=Blue, 1=Green, 2=Yellow, 3=Red (integers, not text)
 - Activity status: 0=Abandoned, 1=Active, 2=Non-active
-- Mineral codes: Use HS Codes or IMA Codes (e.g., `IMA1960-001`)
+- Mineral codes: HS Codes are primary (e.g., `2609.00.00` for Cassiterite)
 
 #### 2.2 Export Certificates Endpoints (MD.03)
 
 **Required Endpoints**:
 - `GET /export-certificates` - List with filtering
-- `GET /export-certificates/{identifier}` - Get by identifier (requires issuing_country)
+- `GET /export-certificates/{identifier}` - Get by identifier (requires issuingCountry)
 - `POST /export-certificates` - Create
 
 **Implementation Checklist**:
 - [ ] Validate export certificate structure
-- [ ] Support filtering (issuing_country, identifier, lot_number, type_of_ore, dates)
+- [ ] Support filtering (issuingCountry, identifier, lotNumber, typeOfOre, dates)
 - [ ] Handle exporter and importer BusinessEntity
-- [ ] Validate mineral origin format (country codes separated by space)
+- [ ] Validate mineral origin format (country codes separated by semicolon, can include 0)
 - [ ] Track verification and validation dates
 
 #### 2.3 Chain of Custody - Lots Endpoints (MD.12)
 
 **Required Endpoints**:
 - `GET /lots` - List with filtering
-- `GET /lots/{lot_number}` - Get by lot number
+- `GET /lots/{lotNumber}` - Get by lot number
 - `POST /lots` - Create
 
 **Implementation Checklist**:
 - [ ] Validate lot structure
-- [ ] Support filtering (mine_site_id, mineral, creator_role, originating_operation)
-- [ ] Handle input_lot references (recursive structure)
-- [ ] Validate conditional requirements (e.g., mine_site_id and tag required for Production)
-- [ ] Track tax_paid information
+- [ ] Support filtering (mineSiteId, mineral, creatorRole, originatingOperation)
+- [ ] Handle inputLot references (recursive structure)
+- [ ] Validate conditional requirements (e.g., mineSiteId and tag required for Production)
+- [ ] Track taxPaid information
 - [ ] Support all CoC operations (Production, Purchase, Combination, Processing, etc.)
 
 **Key Points**:
 - Creator role: 1=Miner, 2=Trader, 3=Shipper, 4=Processor, 5=Warehouse, 6=Importer, 7=Exporter, 8=Government
 - Originating operation: 1=Production, 2=Purchase, 3=Combination, 4=Processing, etc.
-- If originating_operation includes Production (1), mine_site_id and tag are REQUIRED
+- If originatingOperation includes Production (1), mineSiteId and tag are REQUIRED
 
 ### Step 3: Validation
 
@@ -169,11 +169,11 @@ function createMineSite(req, res) {
   
   // Validate ICGLR ID format
   const icglrIdPattern = /^[A-Z]{2}-[+-]?[0-9]+\.[0-9]{4}[+-][0-9]+\.[0-9]{4}-[0-9]+$/;
-  if (!icglrIdPattern.test(req.body.icglr_id)) {
+  if (!icglrIdPattern.test(req.body.icglrId)) {
     return res.status(400).json({
       code: 'VALIDATION_ERROR',
       message: 'Invalid ICGLR ID format. Expected: CC-[Lat]-[Long]-NNNNN',
-      details: { field: 'icglr_id' }
+      details: { field: 'icglrId' }
     });
   }
   
@@ -193,7 +193,7 @@ Validate responses before sending:
 
 ```javascript
 function getMineSite(req, res) {
-  const mineSite = db.getMineSite(req.params.icglr_id);
+  const mineSite = db.getMineSite(req.params.icglrId);
   const result = validator.validate(mineSite, 'mine-site');
   
   if (!result.valid) {
@@ -250,11 +250,10 @@ function listMineSites(req, res) {
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const offset = (page - 1) * limit;
   
-  // Convert query parameters to snake_case
   const filters = {
-    address_country: req.query.address_country,
-    certification_status: req.query.certification_status ? parseInt(req.query.certification_status) : undefined,
-    activity_status: req.query.activity_status ? parseInt(req.query.activity_status) : undefined,
+    addressCountry: req.query.addressCountry,
+    certificationStatus: req.query.certificationStatus ? parseInt(req.query.certificationStatus) : undefined,
+    activityStatus: req.query.activityStatus ? parseInt(req.query.activityStatus) : undefined,
     mineral: req.query.mineral
   };
   
@@ -284,16 +283,16 @@ Implement filtering as specified in OpenAPI:
 
 ```javascript
 function applyFilters(query, filters) {
-  if (filters.address_country) {
-    query = query.where('address_country', filters.address_country);
+  if (filters.addressCountry) {
+    query = query.where('addressCountry', filters.addressCountry);
   }
   
-  if (filters.certification_status !== undefined) {
-    query = query.where('certification_status', filters.certification_status);
+  if (filters.certificationStatus !== undefined) {
+    query = query.where('certificationStatus', filters.certificationStatus);
   }
   
-  if (filters.activity_status !== undefined) {
-    query = query.where('activity_status', filters.activity_status);
+  if (filters.activityStatus !== undefined) {
+    query = query.where('activityStatus', filters.activityStatus);
   }
   
   if (filters.mineral) {
@@ -352,7 +351,7 @@ Add JSON-LD support:
 
 ```javascript
 function getMineSite(req, res) {
-  const mineSite = db.getMineSite(req.params.icglr_id);
+  const mineSite = db.getMineSite(req.params.icglrId);
   
   // Check if client wants JSON-LD
   if (req.headers.accept?.includes('application/ld+json')) {

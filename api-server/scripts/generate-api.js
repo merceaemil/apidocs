@@ -146,24 +146,24 @@ const validator = require('../../../conformance/validators/schema-validator');
 function insertOrGetAddress(address) {
   const existing = db.prepare(\`
     SELECT id FROM addresses 
-    WHERE country = ? AND subnational_division_l1 = ? AND address_locality = ?
-  \`).get(address.country, address.subnational_division_l1, address.address_locality);
+    WHERE country = ? AND subnationalDivisionL1 = ? AND addressLocalityText = ?
+  \`).get(address.country, address.subnationalDivisionL1, address.addressLocalityText);
 
   if (existing) return existing.id;
 
   const result = db.prepare(\`
     INSERT INTO addresses 
-    (country, subnational_division_l1, subnational_division_l1_text, 
-     subnational_division_l2, subnational_division_l3, subnational_division_l4, address_locality)
+    (country, subnationalDivisionL1, subnationalDivisionL1Text, 
+     subnationalDivisionL2, subnationalDivisionL3, subnationalDivisionL4, addressLocalityText)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   \`).run(
     address.country,
-    address.subnational_division_l1,
-    address.subnational_division_l1_text || null,
-    address.subnational_division_l2 || null,
-    address.subnational_division_l3 || null,
-    address.subnational_division_l4 || null,
-    address.address_locality
+    address.subnationalDivisionL1,
+    address.subnationalDivisionL1Text || null,
+    address.subnationalDivisionL2 || null,
+    address.subnationalDivisionL3 || null,
+    address.subnationalDivisionL4 || null,
+    address.addressLocalityText
   );
 
   return result.lastInsertRowid;
@@ -172,19 +172,19 @@ function insertOrGetAddress(address) {
 // Helper: Insert or get contact details ID
 function insertOrGetContactDetails(contactDetails) {
   const existing = db.prepare(\`
-    SELECT id FROM contact_details WHERE contact_email = ?
-  \`).get(contactDetails.contact_email);
+    SELECT id FROM contactDetails WHERE contactEmail = ?
+  \`).get(contactDetails.contactEmail);
 
   if (existing) return existing.id;
 
   const result = db.prepare(\`
-    INSERT INTO contact_details 
-    (legal_representative, contact_phone_number, contact_email)
+    INSERT INTO contactDetails 
+    (legalRepresentative, contactPhoneNumber, contactEmail)
     VALUES (?, ?, ?)
   \`).run(
-    contactDetails.legal_representative,
-    contactDetails.contact_phone_number,
-    contactDetails.contact_email
+    contactDetails.legalRepresentative,
+    contactDetails.contactPhoneNumber,
+    contactDetails.contactEmail
   );
 
   return result.lastInsertRowid;
@@ -208,18 +208,18 @@ function insertOrGetGeolocalization(geolocalization) {
 // Helper: Insert or get business entity
 function insertOrGetBusinessEntity(entity) {
   const existing = db.prepare(\`
-    SELECT identifier FROM business_entities WHERE identifier = ?
+    SELECT identifier FROM businessEntities WHERE identifier = ?
   \`).get(entity.identifier);
 
   if (existing) return entity.identifier;
 
-  const legalAddressId = insertOrGetAddress(entity.legal_address);
-  const physicalAddressId = insertOrGetAddress(entity.physical_address);
-  const contactDetailsId = insertOrGetContactDetails(entity.contact_details);
+  const legalAddressId = insertOrGetAddress(entity.legalAddress);
+  const physicalAddressId = insertOrGetAddress(entity.physicalAddress);
+  const contactDetailsId = insertOrGetContactDetails(entity.contactDetails);
 
   db.prepare(\`
-    INSERT INTO business_entities 
-    (identifier, name, legal_address_id, physical_address_id, tin, rdb_number, rca_number, contact_details_id)
+    INSERT INTO businessEntities 
+    (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   \`).run(
     entity.identifier,
@@ -227,8 +227,8 @@ function insertOrGetBusinessEntity(entity) {
     legalAddressId,
     physicalAddressId,
     entity.tin,
-    entity.rdb_number,
-    entity.rca_number,
+    entity.rdbNumber || null,
+    entity.rcaNumber || null,
     contactDetailsId
   );
 
@@ -239,19 +239,19 @@ function insertOrGetBusinessEntity(entity) {
 function getBusinessEntity(identifier) {
   const entity = db.prepare(\`
     SELECT be.*, 
-           la.country as legal_country, la.subnational_division_l1 as legal_l1, 
-           la.subnational_division_l1_text as legal_l1_text,
-           la.subnational_division_l2 as legal_l2, la.subnational_division_l3 as legal_l3,
-           la.subnational_division_l4 as legal_l4, la.address_locality as legal_locality,
-           pa.country as physical_country, pa.subnational_division_l1 as physical_l1,
-           pa.subnational_division_l1_text as physical_l1_text,
-           pa.subnational_division_l2 as physical_l2, pa.subnational_division_l3 as physical_l3,
-           pa.subnational_division_l4 as physical_l4, pa.address_locality as physical_locality,
-           cd.legal_representative, cd.contact_phone_number, cd.contact_email
-    FROM business_entities be
-    JOIN addresses la ON be.legal_address_id = la.id
-    JOIN addresses pa ON be.physical_address_id = pa.id
-    JOIN contact_details cd ON be.contact_details_id = cd.id
+           la.country as legalCountry, la.subnationalDivisionL1 as legalL1, 
+           la.subnationalDivisionL1Text as legalL1Text,
+           la.subnationalDivisionL2 as legalL2, la.subnationalDivisionL3 as legalL3,
+           la.subnationalDivisionL4 as legalL4, la.addressLocalityText as legalLocality,
+           pa.country as physicalCountry, pa.subnationalDivisionL1 as physicalL1,
+           pa.subnationalDivisionL1Text as physicalL1Text,
+           pa.subnationalDivisionL2 as physicalL2, pa.subnationalDivisionL3 as physicalL3,
+           pa.subnationalDivisionL4 as physicalL4, pa.addressLocalityText as physicalLocality,
+           cd.legalRepresentative, cd.contactPhoneNumber, cd.contactEmail
+    FROM businessEntities be
+    JOIN addresses la ON be.legalAddressId = la.id
+    JOIN addresses pa ON be.physicalAddressId = pa.id
+    JOIN contactDetails cd ON be.contactDetailsId = cd.id
     WHERE be.identifier = ?
   \`).get(identifier);
 
@@ -260,160 +260,159 @@ function getBusinessEntity(identifier) {
   return {
     identifier: entity.identifier,
     name: entity.name,
-    legal_address: {
-      country: entity.legal_country,
-      subnational_division_l1: entity.legal_l1,
-      subnational_division_l1_text: entity.legal_l1_text,
-      subnational_division_l2: entity.legal_l2,
-      subnational_division_l3: entity.legal_l3,
-      subnational_division_l4: entity.legal_l4,
-      address_locality: entity.legal_locality
+    legalAddress: {
+      country: entity.legalCountry,
+      subnationalDivisionL1: entity.legalL1,
+      subnationalDivisionL1Text: entity.legalL1Text,
+      subnationalDivisionL2: entity.legalL2,
+      subnationalDivisionL3: entity.legalL3,
+      subnationalDivisionL4: entity.legalL4,
+      addressLocalityText: entity.legalLocality
     },
-    physical_address: {
-      country: entity.physical_country,
-      subnational_division_l1: entity.physical_l1,
-      subnational_division_l1_text: entity.physical_l1_text,
-      subnational_division_l2: entity.physical_l2,
-      subnational_division_l3: entity.physical_l3,
-      subnational_division_l4: entity.physical_l4,
-      address_locality: entity.physical_locality
+    physicalAddress: {
+      country: entity.physicalCountry,
+      subnationalDivisionL1: entity.physicalL1,
+      subnationalDivisionL1Text: entity.physicalL1Text,
+      subnationalDivisionL2: entity.physicalL2,
+      subnationalDivisionL3: entity.physicalL3,
+      subnationalDivisionL4: entity.physicalL4,
+      addressLocalityText: entity.physicalLocality
     },
     tin: entity.tin,
-    rdb_number: entity.rdb_number,
-    rca_number: entity.rca_number,
-    contact_details: {
-      legal_representative: entity.legal_representative,
-      contact_phone_number: entity.contact_phone_number,
-      contact_email: entity.contact_email
+    rdbNumber: entity.rdbNumber || null,
+    rcaNumber: entity.rcaNumber || null,
+    contactDetails: {
+      legalRepresentative: entity.legalRepresentative,
+      contactPhoneNumber: entity.contactPhoneNumber,
+      contactEmail: entity.contactEmail
     }
   };
 }
 
 // Helper: Reconstruct mine site from database
 function reconstructMineSite(row) {
-  const owner = getBusinessEntity(row.owner_id);
+  const owner = getBusinessEntity(row.ownerId);
   
   // Get minerals
   const minerals = db.prepare(\`
-    SELECT mineral_code FROM mine_site_minerals WHERE mine_site_id = ?
-  \`).all(row.icglr_id).map(r => r.mineral_code);
+    SELECT mineralCode FROM mineSiteMinerals WHERE mineSiteId = ?
+  \`).all(row.icglrId).map(r => r.mineralCode);
 
   // Get mine site location (simplified - assumes one location per mine site)
-  // Note: The schema doesn't have a direct link from mine_sites to mine_site_locations
-  // This is a limitation - you may need to add a location_id column to mine_sites
+  // Note: The schema doesn't have a direct link from mineSites to mineSiteLocations
+  // This is a limitation - you may need to add a locationId column to mineSites
   // For now, we'll try to find a location that might be associated
   const locationRow = db.prepare(\`
     SELECT msl.*, g.latitude, g.longitude,
-           a.country, a.subnational_division_l1, a.subnational_division_l1_text,
-           a.subnational_division_l2, a.subnational_division_l3, a.subnational_division_l4,
-           a.address_locality
-    FROM mine_site_locations msl
-    JOIN geolocalizations g ON msl.geolocalization_id = g.id
-    JOIN addresses a ON msl.local_geographic_designation_id = a.id
+           a.country, a.subnationalDivisionL1, a.subnationalDivisionL1Text,
+           a.subnationalDivisionL2, a.subnationalDivisionL3, a.subnationalDivisionL4,
+           a.addressLocalityText
+    FROM mineSiteLocations msl
+    JOIN geolocalizations g ON msl.geolocalizationId = g.id
+    JOIN addresses a ON msl.localGeographicDesignationId = a.id
     LIMIT 1
   \`).get();
 
-  // For now, we'll need to store location_id in mine_sites table or query differently
+  // For now, we'll need to store locationId in mineSites table or query differently
   // This is a simplified version - you may need to adjust based on your schema
   const location = locationRow ? {
     geolocalization: {
       latitude: locationRow.latitude,
       longitude: locationRow.longitude
     },
-    national_cadaster_localization: locationRow.national_cadaster_localization,
-    local_geographic_designation: {
+    nationalCadasterLocalization: locationRow.nationalCadasterLocalization,
+    localGeographicDesignation: {
       country: locationRow.country,
-      subnational_division_l1: locationRow.subnational_division_l1,
-      subnational_division_l1_text: locationRow.subnational_division_l1_text,
-      subnational_division_l2: locationRow.subnational_division_l2,
-      subnational_division_l3: locationRow.subnational_division_l3,
-      subnational_division_l4: locationRow.subnational_division_l4,
-      address_locality: locationRow.address_locality
+      subnationalDivisionL1: locationRow.subnationalDivisionL1,
+      subnationalDivisionL1Text: locationRow.subnationalDivisionL1Text,
+      subnationalDivisionL2: locationRow.subnationalDivisionL2,
+      subnationalDivisionL3: locationRow.subnationalDivisionL3,
+      subnationalDivisionL4: locationRow.subnationalDivisionL4,
+      addressLocalityText: locationRow.addressLocalityText
     },
-    polygon: locationRow.polygon,
+    polygon: locationRow.polygon ? JSON.parse(locationRow.polygon) : undefined,
     altitude: locationRow.altitude
   } : null;
 
   // Get licenses
   const licenses = db.prepare(\`
-    SELECT l.* FROM licenses l WHERE l.owner_id = ?
-  \`).all(row.owner_id).map(licenseRow => {
-    const licenseOwner = getBusinessEntity(licenseRow.owner_id);
+    SELECT l.* FROM licenses l WHERE l.ownerId = ?
+  \`).all(row.ownerId).map(licenseRow => {
+    const licenseOwner = getBusinessEntity(licenseRow.ownerId);
     return {
-      license_type: licenseRow.license_type,
-      license_id: licenseRow.license_id,
+      licenseType: licenseRow.licenseType,
+      licenseId: licenseRow.licenseId,
       owner: licenseOwner,
-      date_applied: licenseRow.date_applied,
-      date_granted: licenseRow.date_granted,
-      date_expiring: licenseRow.date_expiring,
-      license_status: licenseRow.license_status,
-      covered_commodities: [] // TODO: Get from license_commodities junction table
+      appliedDate: licenseRow.appliedDate,
+      grantedDate: licenseRow.grantedDate,
+      expiringDate: licenseRow.expiringDate,
+      licenseStatus: licenseRow.licenseStatus,
+      coveredCommodities: [] // TODO: Implement license commodities junction table
     };
   });
 
   // Get inspections
   const inspections = db.prepare(\`
-    SELECT * FROM inspections WHERE inspection_id IN (
-      SELECT inspection_id FROM inspections LIMIT 10
+    SELECT * FROM inspections WHERE inspectionId IN (
+      SELECT inspectionId FROM inspections LIMIT 10
     )
   \`).all().map(inspectionRow => ({
-    inspection_id: inspectionRow.inspection_id,
-    inspection_date: inspectionRow.inspection_date,
-    inspection_responsible: inspectionRow.inspection_responsible,
-    inspection_findings: inspectionRow.inspection_findings,
-    inspection_report: inspectionRow.inspection_report,
-    inspection_purpose: inspectionRow.inspection_purpose,
-    inspection_results: inspectionRow.inspection_results,
-    inspector_name: inspectionRow.inspector_name,
-    inspector_position: inspectionRow.inspector_position,
-    government_agency: inspectionRow.government_agency,
-    government_id: inspectionRow.government_id
+    inspectionId: inspectionRow.inspectionId,
+    inspectionDate: inspectionRow.inspectionDate,
+    inspectionResult: inspectionRow.inspectionResult,
+    inspectionReport: inspectionRow.inspectionReport,
+    inspectionPurpose: inspectionRow.inspectionPurpose,
+    inspectionResults: inspectionRow.inspectionResults,
+    inspectorName: inspectionRow.inspectorName,
+    inspectorPosition: inspectionRow.inspectorPosition,
+    governmentAgency: inspectionRow.governmentAgency,
+    governmentId: inspectionRow.governmentId
   }));
 
   // Get status history
   const statusHistory = db.prepare(\`
-    SELECT date_of_change, new_status 
-    FROM status_history WHERE mine_site_id = ?
-    ORDER BY date_of_change DESC
-  \`).all(row.icglr_id).map(sh => ({
-    date_of_change: sh.date_of_change,
-    new_status: sh.new_status
+    SELECT dateOfChange, newStatus 
+    FROM statusHistory WHERE mineSiteId = ?
+    ORDER BY dateOfChange DESC
+  \`).all(row.icglrId).map(sh => ({
+    dateOfChange: sh.dateOfChange,
+    newStatus: sh.newStatus
   }));
 
   return {
-    icglr_id: row.icglr_id,
-    address_country: row.address_country,
-    national_id: row.national_id,
-    certification_status: row.certification_status,
-    activity_status: row.activity_status,
-    mine_site_location: location,
+    icglrId: row.icglrId,
+    addressCountry: row.addressCountry,
+    nationalId: row.nationalId,
+    certificationStatus: row.certificationStatus,
+    activityStatus: row.activityStatus,
+    mineSiteLocation: location,
     mineral: minerals,
     license: licenses,
     owner: owner,
     operator: [], // TODO: Implement operator relationship
     inspection: inspections,
-    status_history: statusHistory
+    statusChange: statusHistory
   };
 }
 
 class MineSitesService {
   // List mine sites with filtering and pagination
   list(filters = {}, page = 1, limit = 20) {
-    let sql = 'SELECT * FROM mine_sites WHERE 1=1';
+    let sql = 'SELECT * FROM mineSites WHERE 1=1';
     const conditions = [];
     const values = [];
 
-    if (filters.address_country) {
-      conditions.push('address_country = ?');
-      values.push(filters.address_country);
+    if (filters.addressCountry) {
+      conditions.push('addressCountry = ?');
+      values.push(filters.addressCountry);
     }
-    if (filters.certification_status !== undefined) {
-      conditions.push('certification_status = ?');
-      values.push(filters.certification_status);
+    if (filters.certificationStatus !== undefined) {
+      conditions.push('certificationStatus = ?');
+      values.push(filters.certificationStatus);
     }
-    if (filters.activity_status !== undefined) {
-      conditions.push('activity_status = ?');
-      values.push(filters.activity_status);
+    if (filters.activityStatus !== undefined) {
+      conditions.push('activityStatus = ?');
+      values.push(filters.activityStatus);
     }
 
     if (conditions.length > 0) {
@@ -452,7 +451,7 @@ class MineSitesService {
 
   // Get mine site by ICGLR ID
   getById(icglrId) {
-    const row = db.prepare('SELECT * FROM mine_sites WHERE icglr_id = ?').get(icglrId);
+    const row = db.prepare('SELECT * FROM mineSites WHERE icglrId = ?').get(icglrId);
     if (!row) {
       const error = new Error('Mine site not found');
       error.code = 'NOT_FOUND';
@@ -474,7 +473,7 @@ class MineSitesService {
     }
 
     // Check if exists
-    const existing = db.prepare('SELECT icglr_id FROM mine_sites WHERE icglr_id = ?').get(data.icglr_id);
+    const existing = db.prepare('SELECT icglrId FROM mineSites WHERE icglrId = ?').get(data.icglrId);
     if (existing) {
       const error = new Error('Mine site already exists');
       error.code = 'CONFLICT';
@@ -491,45 +490,45 @@ class MineSitesService {
 
       // Insert mine site location
       let locationId = null;
-      if (data.mine_site_location) {
-        const geoId = insertOrGetGeolocalization(data.mine_site_location.geolocalization);
-        const addressId = insertOrGetAddress(data.mine_site_location.local_geographic_designation);
+      if (data.mineSiteLocation) {
+        const geoId = insertOrGetGeolocalization(data.mineSiteLocation.geolocalization);
+        const addressId = insertOrGetAddress(data.mineSiteLocation.localGeographicDesignation);
         
         const locationResult = db.prepare(\`
-          INSERT INTO mine_site_locations 
-          (geolocalization_id, national_cadaster_localization, local_geographic_designation_id, polygon, altitude)
+          INSERT INTO mineSiteLocations 
+          (geolocalizationId, nationalCadasterLocalization, localGeographicDesignationId, polygon, altitude)
           VALUES (?, ?, ?, ?, ?)
         \`).run(
           geoId,
-          data.mine_site_location.national_cadaster_localization,
+          data.mineSiteLocation.nationalCadasterLocalization || null,
           addressId,
-          data.mine_site_location.polygon || null,
-          data.mine_site_location.altitude || null
+          data.mineSiteLocation.polygon ? JSON.stringify(data.mineSiteLocation.polygon) : null,
+          data.mineSiteLocation.altitude || null
         );
         locationId = locationResult.lastInsertRowid;
       }
 
       // Insert mine site
       db.prepare(\`
-        INSERT INTO mine_sites 
-        (icglr_id, address_country, national_id, certification_status, activity_status, owner_id)
+        INSERT INTO mineSites 
+        (icglrId, addressCountry, nationalId, certificationStatus, activityStatus, ownerId)
         VALUES (?, ?, ?, ?, ?, ?)
       \`).run(
-        data.icglr_id,
-        data.address_country,
-        data.national_id,
-        data.certification_status,
-        data.activity_status,
+        data.icglrId,
+        data.addressCountry,
+        data.nationalId,
+        data.certificationStatus,
+        data.activityStatus,
         data.owner.identifier
       );
 
       // Insert minerals
       if (data.mineral && data.mineral.length > 0) {
         const insertMineral = db.prepare(\`
-          INSERT INTO mine_site_minerals (mine_site_id, mineral_code) VALUES (?, ?)
+          INSERT INTO mineSiteMinerals (mineSiteId, mineralCode) VALUES (?, ?)
         \`);
         data.mineral.forEach(mineral => {
-          insertMineral.run(data.icglr_id, mineral);
+          insertMineral.run(data.icglrId, mineral);
         });
       }
 
@@ -539,16 +538,16 @@ class MineSitesService {
           insertOrGetBusinessEntity(license.owner);
           db.prepare(\`
             INSERT INTO licenses 
-            (license_type, license_id, owner_id, date_applied, date_granted, date_expiring, license_status)
+            (licenseType, licenseId, ownerId, appliedDate, grantedDate, expiringDate, licenseStatus)
             VALUES (?, ?, ?, ?, ?, ?, ?)
           \`).run(
-            license.license_type,
-            license.license_id,
+            license.licenseType,
+            license.licenseId,
             license.owner.identifier,
-            license.date_applied || null,
-            license.date_granted || null,
-            license.date_expiring || null,
-            license.license_status || null
+            license.appliedDate || null,
+            license.grantedDate || null,
+            license.expiringDate || null,
+            license.licenseStatus ?? null
           );
         });
       }
@@ -557,43 +556,42 @@ class MineSitesService {
       if (data.inspection && data.inspection.length > 0) {
         const insertInspection = db.prepare(\`
           INSERT INTO inspections 
-          (inspection_id, inspection_date, inspection_responsible, inspection_findings,
-           inspection_report, inspection_purpose, inspection_results, inspector_name, inspector_position,
-           government_agency, government_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (inspectionId, inspectionDate, inspectionResult,
+           inspectionReport, inspectionPurpose, inspectionResults,
+           inspectorName, inspectorPosition, governmentAgency, governmentId)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         \`);
         data.inspection.forEach(inspection => {
           insertInspection.run(
-            inspection.inspection_id,
-            inspection.inspection_date,
-            inspection.inspection_responsible,
-            inspection.inspection_findings,
-            inspection.inspection_report,
-            inspection.inspection_purpose,
-            inspection.inspection_results,
-            inspection.inspector_name,
-            inspection.inspector_position,
-            inspection.government_agency,
-            inspection.government_id || null
+            inspection.inspectionId,
+            inspection.inspectionDate,
+            inspection.inspectionResult,
+            inspection.inspectionReport || null,
+            inspection.inspectionPurpose || null,
+            inspection.inspectionResults || null,
+            inspection.inspectorName,
+            inspection.inspectorPosition,
+            inspection.governmentAgency,
+            inspection.governmentId || null
           );
         });
       }
 
       // Insert status history
-      if (data.status_history && data.status_history.length > 0) {
+      if (data.statusChange && data.statusChange.length > 0) {
         const insertStatus = db.prepare(\`
-          INSERT INTO status_history (mine_site_id, date_of_change, new_status)
+          INSERT INTO statusHistory (mineSiteId, dateOfChange, newStatus)
           VALUES (?, ?, ?)
         \`);
-        data.status_history.forEach(status => {
-          insertStatus.run(data.icglr_id, status.date_of_change, status.new_status);
+        data.statusChange.forEach(status => {
+          insertStatus.run(data.icglrId, status.dateOfChange, status.newStatus);
         });
       }
     });
 
     transaction();
 
-    return this.getById(data.icglr_id);
+    return this.getById(data.icglrId);
   }
 
   // Update mine site
@@ -611,14 +609,14 @@ class MineSitesService {
 
     // Update basic fields
     db.prepare(\`
-      UPDATE mine_sites 
-      SET address_country = ?, national_id = ?, certification_status = ?, activity_status = ?, owner_id = ?
-      WHERE icglr_id = ?
+      UPDATE mineSites 
+      SET addressCountry = ?, nationalId = ?, certificationStatus = ?, activityStatus = ?, ownerId = ?
+      WHERE icglrId = ?
     \`).run(
-      data.address_country,
-      data.national_id,
-      data.certification_status,
-      data.activity_status,
+      data.addressCountry,
+      data.nationalId,
+      data.certificationStatus,
+      data.activityStatus,
       data.owner.identifier,
       icglrId
     );
@@ -654,66 +652,66 @@ const insertOrGetBusinessEntity = mineSitesService.insertOrGetBusinessEntity;
 const getBusinessEntity = mineSitesService.getBusinessEntity;
 
 function reconstructExportCertificate(row) {
-  const exporter = getBusinessEntity(row.exporter_id);
-  const importer = getBusinessEntity(row.importer_id);
+  const exporter = getBusinessEntity(row.exporterId);
+  const importer = getBusinessEntity(row.importerId);
 
   return {
-    issuing_country: row.issuing_country,
+    issuingCountry: row.issuingCountry,
     identifier: row.identifier,
     exporter: exporter,
     importer: importer,
-    lot_number: row.lot_number,
-    designated_mineral_description: row.designated_mineral_description,
-    type_of_ore: row.type_of_ore,
-    lot_weight: row.lot_weight,
-    lot_weight_uom: row.lot_weight_uom,
-    lot_grade: row.lot_grade,
-    mineral_origin: row.mineral_origin,
-    customs_value: row.customs_value,
-    date_of_shipment: row.date_of_shipment,
-    shipment_route: row.shipment_route,
-    transport_company: row.transport_company,
-    member_state_issuing_authority: row.member_state_issuing_authority,
-    name_of_verifier: row.name_of_verifier,
-    position_of_verifier: row.position_of_verifier,
-    id_of_verifier: row.id_of_verifier,
-    date_of_verification: row.date_of_verification,
-    name_of_validator: row.name_of_validator,
-    date_of_issuance: row.date_of_issuance,
-    date_of_expiration: row.date_of_expiration,
-    certificate_file: row.certificate_file
+    lotNumber: row.lotNumber,
+    designatedMineralDescription: row.designatedMineralDescription,
+    typeOfOre: row.typeOfOre,
+    lotWeight: row.lotWeight,
+    lotWeightUOM: row.lotWeightUOM,
+    lotGrade: row.lotGrade,
+    mineralOrigin: row.mineralOrigin,
+    customsValue: row.customsValue,
+    dateOfShipment: row.dateOfShipment,
+    shipmentRoute: row.shipmentRoute,
+    transportCompany: row.transportCompany,
+    memberStateIssuingAuthority: row.memberStateIssuingAuthority,
+    nameOfVerifier: row.nameOfVerifier,
+    positionOfVerifier: row.positionOfVerifier,
+    idOfVerifier: row.idOfVerifier,
+    dateOfVerification: row.dateOfVerification,
+    nameOfValidator: row.nameOfValidator,
+    dateOfIssuance: row.dateOfIssuance,
+    dateOfExpiration: row.dateOfExpiration,
+    certificateFile: row.certificateFile
   };
 }
 
 class ExportCertificatesService {
   list(filters = {}, page = 1, limit = 20) {
-    let sql = 'SELECT * FROM export_certificates WHERE 1=1';
+    let sql = 'SELECT * FROM exportCertificates WHERE 1=1';
     const conditions = [];
     const values = [];
 
-    if (filters.issuing_country) {
-      conditions.push('issuing_country = ?');
-      values.push(filters.issuing_country);
+    if (filters.issuingCountry) {
+      conditions.push('issuingCountry = ?');
+      values.push(filters.issuingCountry);
     }
     if (filters.identifier) {
       conditions.push('identifier = ?');
       values.push(filters.identifier);
     }
-    if (filters.lot_number) {
-      conditions.push('lot_number = ?');
-      values.push(filters.lot_number);
+    if (filters.lotNumber) {
+      conditions.push('lotNumber = ?');
+      values.push(filters.lotNumber);
     }
-    if (filters.type_of_ore) {
-      conditions.push('type_of_ore = ?');
-      values.push(filters.type_of_ore);
+    if (filters.typeOfOre) {
+      conditions.push('typeOfOre = ?');
+      values.push(filters.typeOfOre);
     }
-    if (filters.date_of_issuance_from) {
-      conditions.push('date_of_issuance >= ?');
-      values.push(filters.date_of_issuance_from);
+    if (filters.dateOfIssuanceFrom) {
+      conditions.push('dateOfIssuance >= ?');
+      values.push(filters.dateOfIssuanceFrom);
     }
-    if (filters.date_of_issuance_to) {
-      conditions.push('date_of_issuance <= ?');
-      values.push(filters.date_of_issuance_to);
+    if (filters.dateOfIssuanceTo) {
+      conditions.push('dateOfIssuance <= ?');
+      values.push(filters.dateOfIssuanceTo);
     }
 
     if (conditions.length > 0) {
@@ -744,8 +742,8 @@ class ExportCertificatesService {
 
   getById(identifier, issuingCountry) {
     const row = db.prepare(\`
-      SELECT * FROM export_certificates 
-      WHERE identifier = ? AND issuing_country = ?
+      SELECT * FROM exportCertificates 
+      WHERE identifier = ? AND issuingCountry = ?
     \`).get(identifier, issuingCountry);
 
     if (!row) {
@@ -771,46 +769,49 @@ class ExportCertificatesService {
       insertOrGetBusinessEntity(data.exporter);
       insertOrGetBusinessEntity(data.importer);
 
+      const exportCertificateId = \`\${data.issuingCountry}:\${data.identifier}\`;
+
       db.prepare(\`
-        INSERT INTO export_certificates 
-        (issuing_country, identifier, exporter_id, importer_id, lot_number,
-         designated_mineral_description, type_of_ore, lot_weight, lot_weight_uom,
-         lot_grade, mineral_origin, customs_value, date_of_shipment, shipment_route,
-         transport_company, member_state_issuing_authority, name_of_verifier,
-         position_of_verifier, id_of_verifier, date_of_verification, name_of_validator,
-         date_of_issuance, date_of_expiration, certificate_file)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO exportCertificates 
+        (exportCertificateId, issuingCountry, identifier, exporterId, importerId, lotNumber,
+         designatedMineralDescription, typeOfOre, lotWeight, lotWeightUOM,
+         lotGrade, mineralOrigin, customsValue, dateOfShipment, shipmentRoute,
+         transportCompany, memberStateIssuingAuthority, nameOfVerifier,
+         positionOfVerifier, idOfVerifier, dateOfVerification, nameOfValidator,
+         dateOfIssuance, dateOfExpiration, certificateFile)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       \`).run(
-        data.issuing_country,
+        exportCertificateId,
+        data.issuingCountry,
         data.identifier,
         data.exporter.identifier,
         data.importer.identifier,
-        data.lot_number,
-        data.designated_mineral_description,
-        data.type_of_ore,
-        data.lot_weight,
-        data.lot_weight_uom,
-        data.lot_grade,
-        data.mineral_origin,
-        data.customs_value,
-        data.date_of_shipment,
-        data.shipment_route || null,
-        data.transport_company || null,
-        data.member_state_issuing_authority,
-        data.name_of_verifier,
-        data.position_of_verifier,
-        data.id_of_verifier || null,
-        data.date_of_verification,
-        data.name_of_validator,
-        data.date_of_issuance,
-        data.date_of_expiration,
-        data.certificate_file
+        data.lotNumber,
+        data.designatedMineralDescription || null,
+        data.typeOfOre,
+        data.lotWeight,
+        data.lotWeightUOM,
+        data.lotGrade,
+        data.mineralOrigin,
+        data.customsValue,
+        data.dateOfShipment,
+        data.shipmentRoute || null,
+        data.transportCompany || null,
+        data.memberStateIssuingAuthority,
+        data.nameOfVerifier,
+        data.positionOfVerifier,
+        data.idOfVerifier || null,
+        data.dateOfVerification,
+        data.nameOfValidator,
+        data.dateOfIssuance,
+        data.dateOfExpiration,
+        data.certificateFile
       );
     });
 
     transaction();
 
-    return this.getById(data.identifier, data.issuing_country);
+    return this.getById(data.identifier, data.issuingCountry);
   }
 }
 
@@ -833,77 +834,85 @@ const insertOrGetBusinessEntity = mineSitesService.insertOrGetBusinessEntity;
 const getBusinessEntity = mineSitesService.getBusinessEntity;
 
 function reconstructLot(row) {
-  const creator = getBusinessEntity(row.creator_id);
-  const recipient = row.recipient_id ? getBusinessEntity(row.recipient_id) : null;
-  const tagIssuer = getBusinessEntity(row.tag_issuer_id);
+  const creator = getBusinessEntity(row.creatorId);
+  const recipient = row.recipientId ? getBusinessEntity(row.recipientId) : null;
+  const tagIssuer = getBusinessEntity(row.tagIssuerId);
 
   // Get creator roles
   const creatorRoles = db.prepare(\`
-    SELECT role_code FROM lot_creator_roles WHERE lot_number = ?
-  \`).all(row.lot_number).map(r => r.role_code);
+    SELECT roleCode FROM lotCreatorRoles WHERE lotNumber = ?
+  \`).all(row.lotNumber).map(r => r.roleCode);
 
   // Get originating operations
   const originatingOperations = db.prepare(\`
-    SELECT operation_code FROM lot_originating_operations WHERE lot_number = ?
-  \`).all(row.lot_number).map(r => r.operation_code);
+    SELECT operationCode FROM lotOriginatingOperations WHERE lotNumber = ?
+  \`).all(row.lotNumber).map(r => r.operationCode);
 
   // Get input lots
   const inputLots = db.prepare(\`
-    SELECT input_lot_number FROM lot_input_lots WHERE lot_number = ?
-  \`).all(row.lot_number).map(r => ({ lot_number: r.input_lot_number }));
+    SELECT inputLotNumber FROM lotInputLots WHERE lotNumber = ?
+  \`).all(row.lotNumber).map(r => ({ lotNumber: r.inputLotNumber }));
 
   // Get tag
   const tagRow = db.prepare(\`
-    SELECT t.*, be.identifier as issuer_identifier
+    SELECT t.*
     FROM tags t
-    JOIN business_entities be ON t.issuer_id = be.identifier
     WHERE t.identifier = ?
-  \`).get(row.tag_identifier);
+  \`).get(row.tagIdentifier);
 
   const tag = tagRow ? {
     identifier: tagRow.identifier,
-    issuer: getBusinessEntity(tagRow.issuer_identifier),
-    issue_date: tagRow.issue_date,
-    issue_time: tagRow.issue_time
+    issuer: getBusinessEntity(tagRow.issuerId),
+    issueDate: tagRow.issueDate,
+    issueTime: tagRow.issueTime
   } : null;
 
   // Get taxes
   const taxes = db.prepare(\`
     SELECT t.* FROM taxes t
-    JOIN lot_taxes lt ON t.id = lt.tax_id
-    WHERE lt.lot_number = ?
-  \`).all(row.lot_number).map(taxRow => ({
-    tax_type: taxRow.tax_type,
-    tax_amount: taxRow.tax_amount,
-    currency: taxRow.currency
+    JOIN lotTaxes lt ON t.id = lt.taxId
+    WHERE lt.lotNumber = ?
+  \`).all(row.lotNumber).map(taxRow => ({
+    taxType: taxRow.taxType,
+    taxAmount: taxRow.taxAmount,
+    currency: taxRow.currency,
+    taxAuthority: taxRow.taxAuthority || null,
+    taxPaidDate: taxRow.taxPaidDate || null,
+    receiptReference: taxRow.receiptReference || null
   }));
 
+  // Parse dateRegistration and timeRegistration
+  const dateRegistration = row.dateRegistration;
+  const timeRegistration = row.timeRegistration;
+
   return {
-    lot_number: row.lot_number,
-    timestamp: row.timestamp,
+    lotNumber: row.lotNumber,
+    dateRegistration: dateRegistration,
+    timeRegistration: timeRegistration,
     creator: creator,
     mineral: row.mineral,
     concentration: row.concentration,
     mass: row.mass,
-    package_type: row.package_type,
-    unit_of_measurement: row.unit_of_measurement,
-    mine_site_id: row.mine_site_id,
-    creator_role: creatorRoles,
-    recipient: recipient,
-    originating_operation: originatingOperations,
-    input_lot: inputLots,
-    tag: tag,
-    tax_paid: taxes,
-    date_sealed: row.date_sealed,
-    date_shipped: row.date_shipped,
-    purchase_number: null, // TODO: Store purchase_number
-    purchase_date: row.purchase_date,
-    responsible_staff: row.responsible_staff,
-    date_in: row.date_in,
-    transportation_method: row.transportation_method,
-    transportation_route: row.transportation_route,
-    transport_company: row.transport_company,
-    export_certificate_id: row.export_certificate_id
+    packageType: row.packageType || null,
+    nrOfPackages: row.nrOfPackages || null,
+    unitOfMeasurement: row.unitOfMeasurement,
+    mineSiteId: row.mineSiteId || null,
+    creatorRole: creatorRoles,
+    recipient: recipient || null,
+    originatingOperation: originatingOperations,
+    inputLot: inputLots,
+    tag: tag || null,
+    taxPaid: taxes,
+    dateSealed: row.dateSealed || null,
+    dateShipped: row.dateShipped || null,
+    purchaseNumber: row.purchaseNumber || null,
+    purchaseDate: row.purchaseDate || null,
+    responsibleStaff: row.responsibleStaff || null,
+    dateIn: row.dateIn || null,
+    transportationMethod: row.transportationMethod || null,
+    transportationRoute: row.transportationRoute || null,
+    transportCompany: row.transportCompany || null,
+    exportCertificateId: row.exportCertificateId || null
   };
 }
 
@@ -913,39 +922,39 @@ class LotsService {
     const conditions = [];
     const values = [];
 
-    if (filters.mine_site_id) {
-      conditions.push('mine_site_id = ?');
-      values.push(filters.mine_site_id);
+    if (filters.mineSiteId) {
+      conditions.push('mineSiteId = ?');
+      values.push(filters.mineSiteId);
     }
     if (filters.mineral) {
       conditions.push('mineral = ?');
       values.push(filters.mineral);
     }
-    if (filters.lot_number) {
-      conditions.push('lot_number = ?');
-      values.push(filters.lot_number);
+    if (filters.lotNumber) {
+      conditions.push('lotNumber = ?');
+      values.push(filters.lotNumber);
     }
-    if (filters.timestamp_from) {
-      conditions.push('timestamp >= ?');
-      values.push(filters.timestamp_from);
+    if (filters.dateRegistrationFrom) {
+      conditions.push('dateRegistration >= ?');
+      values.push(filters.dateRegistrationFrom);
     }
-    if (filters.timestamp_to) {
-      conditions.push('timestamp <= ?');
-      values.push(filters.timestamp_to);
+    if (filters.dateRegistrationTo) {
+      conditions.push('dateRegistration <= ?');
+      values.push(filters.dateRegistrationTo);
     }
 
     if (conditions.length > 0) {
       sql += ' AND ' + conditions.join(' AND ');
     }
 
-    // Filter by creator_role if specified
-    if (filters.creator_role) {
+    // Filter by creatorRole if specified
+    if (filters.creatorRole) {
       const lotsWithRole = db.prepare(\`
-        SELECT DISTINCT lot_number FROM lot_creator_roles WHERE role_code = ?
-      \`).all(filters.creator_role).map(r => r.lot_number);
+        SELECT DISTINCT lotNumber FROM lotCreatorRoles WHERE roleCode = ?
+      \`).all(filters.creatorRole).map(r => r.lotNumber);
       
       if (lotsWithRole.length > 0) {
-        conditions.push('lot_number IN (' + lotsWithRole.map(() => '?').join(',') + ')');
+        conditions.push('lotNumber IN (' + lotsWithRole.map(() => '?').join(',') + ')');
         values.push(...lotsWithRole);
       } else {
         // No lots match, return empty
@@ -956,19 +965,19 @@ class LotsService {
       }
     }
 
-    // Filter by originating_operation if specified
-    if (filters.originating_operation) {
+    // Filter by originatingOperation if specified
+    if (filters.originatingOperation) {
       const lotsWithOp = db.prepare(\`
-        SELECT DISTINCT lot_number FROM lot_originating_operations WHERE operation_code = ?
-      \`).all(filters.originating_operation).map(r => r.lot_number);
+        SELECT DISTINCT lotNumber FROM lotOriginatingOperations WHERE operationCode = ?
+      \`).all(filters.originatingOperation).map(r => r.lotNumber);
       
       if (lotsWithOp.length > 0) {
-        if (!conditions.includes('lot_number IN')) {
-          conditions.push('lot_number IN (' + lotsWithOp.map(() => '?').join(',') + ')');
+        if (!conditions.includes('lotNumber IN')) {
+          conditions.push('lotNumber IN (' + lotsWithOp.map(() => '?').join(',') + ')');
           values.push(...lotsWithOp);
         } else {
           // Intersect with existing filter
-          const existing = values.filter((v, i) => conditions[i]?.includes('lot_number IN'));
+          const existing = values.filter((v, i) => conditions[i]?.includes('lotNumber IN'));
           // Simplified: just use the more restrictive filter
         }
       } else {
@@ -1002,7 +1011,7 @@ class LotsService {
   }
 
   getById(lotNumber) {
-    const row = db.prepare('SELECT * FROM lots WHERE lot_number = ?').get(lotNumber);
+    const row = db.prepare('SELECT * FROM lots WHERE lotNumber = ?').get(lotNumber);
     if (!row) {
       const error = new Error('Lot not found');
       error.code = 'NOT_FOUND';
@@ -1033,107 +1042,117 @@ class LotsService {
       // Insert tag if present
       if (data.tag) {
         db.prepare(\`
-          INSERT OR IGNORE INTO tags (identifier, issuer_id, issue_date, issue_time)
+          INSERT OR IGNORE INTO tags (identifier, issuerId, issueDate, issueTime)
           VALUES (?, ?, ?, ?)
         \`).run(
           data.tag.identifier,
           data.tag.issuer.identifier,
-          data.tag.issue_date,
-          data.tag.issue_time || null
+          data.tag.issueDate,
+          data.tag.issueTime || null
         );
       }
 
       // Insert taxes if present
       const taxIds = [];
-      if (data.tax_paid && data.tax_paid.length > 0) {
+      if (data.taxPaid && data.taxPaid.length > 0) {
         const insertTax = db.prepare(\`
-          INSERT INTO taxes (tax_type, tax_amount, currency) VALUES (?, ?, ?)
+          INSERT INTO taxes (taxType, taxAmount, currency, taxAuthority, taxPaidDate, receiptReference) VALUES (?, ?, ?, ?, ?, ?)
         \`);
-        data.tax_paid.forEach(tax => {
-          const result = insertTax.run(tax.tax_type, tax.tax_amount, tax.currency);
+        data.taxPaid.forEach(tax => {
+          const result = insertTax.run(
+            tax.taxType, 
+            tax.taxAmount, 
+            tax.currency,
+            tax.taxAuthority || null,
+            tax.taxPaidDate || null,
+            tax.receiptReference || null
+          );
           taxIds.push(result.lastInsertRowid);
         });
       }
 
-      // Insert lot
+      // Insert lot (using dateRegistration and timeRegistration directly)
       db.prepare(\`
         INSERT INTO lots 
-        (lot_number, timestamp, creator_id, mineral, concentration, mass, package_type,
-         unit_of_measurement, mine_site_id, recipient_id, tag_identifier, tag_issuer_id,
-         tag_issue_date, tag_issue_time, date_sealed, date_shipped, purchase_date,
-         responsible_staff, date_in, transportation_method, transportation_route,
-         transport_company, export_certificate_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (lotNumber, dateRegistration, timeRegistration, creatorId, mineral, concentration, mass, packageType,
+         unitOfMeasurement, mineSiteId, recipientId, tagIdentifier, tagIssuerId,
+         tagIssueDate, tagIssueTime, dateSealed, dateShipped, purchaseNumber, purchaseDate,
+         responsibleStaff, dateIn, transportationMethod, transportationRoute,
+         transportCompany, exportCertificateId, nrOfPackages)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       \`).run(
-        data.lot_number,
-        data.timestamp,
+        data.lotNumber,
+        data.dateRegistration,
+        data.timeRegistration,
         data.creator.identifier,
         data.mineral,
         data.concentration,
         data.mass,
-        data.package_type || null,
-        data.unit_of_measurement,
-        data.mine_site_id || null,
+        data.packageType || null,
+        data.unitOfMeasurement,
+        data.mineSiteId || null,
         data.recipient?.identifier || null,
         data.tag?.identifier || null,
         data.tag?.issuer?.identifier || null,
-        data.tag?.issue_date || null,
-        data.tag?.issue_time || null,
-        data.date_sealed,
-        data.date_shipped,
-        data.purchase_date || null,
-        data.responsible_staff || null,
-        data.date_in || null,
-        data.transportation_method || null,
-        data.transportation_route || null,
-        data.transport_company || null,
-        data.export_certificate_id || null
+        data.tag?.issueDate || null,
+        data.tag?.issueTime || null,
+        data.dateSealed || null,
+        data.dateShipped || null,
+        data.purchaseNumber || null,
+        data.purchaseDate || null,
+        data.responsibleStaff || null,
+        data.dateIn || null,
+        data.transportationMethod || null,
+        data.transportationRoute || null,
+        data.transportCompany || null,
+        data.exportCertificateId || null,
+        data.nrOfPackages || null
       );
 
       // Insert creator roles
-      if (data.creator_role && data.creator_role.length > 0) {
+      if (data.creatorRole && data.creatorRole.length > 0) {
         const insertRole = db.prepare(\`
-          INSERT INTO lot_creator_roles (lot_number, role_code) VALUES (?, ?)
+          INSERT INTO lotCreatorRoles (lotNumber, roleCode) VALUES (?, ?)
         \`);
-        data.creator_role.forEach(role => {
-          insertRole.run(data.lot_number, role);
+        data.creatorRole.forEach(role => {
+          insertRole.run(data.lotNumber, role);
         });
       }
 
       // Insert originating operations
-      if (data.originating_operation && data.originating_operation.length > 0) {
+      if (data.originatingOperation && data.originatingOperation.length > 0) {
         const insertOp = db.prepare(\`
-          INSERT INTO lot_originating_operations (lot_number, operation_code) VALUES (?, ?)
+          INSERT INTO lotOriginatingOperations (lotNumber, operationCode) VALUES (?, ?)
         \`);
-        data.originating_operation.forEach(op => {
-          insertOp.run(data.lot_number, op);
+        data.originatingOperation.forEach(op => {
+          insertOp.run(data.lotNumber, op);
         });
       }
 
       // Insert input lots
-      if (data.input_lot && data.input_lot.length > 0) {
+      if (data.inputLot && data.inputLot.length > 0) {
         const insertInput = db.prepare(\`
-          INSERT INTO lot_input_lots (lot_number, input_lot_number) VALUES (?, ?)
+          INSERT INTO lotInputLots (lotNumber, inputLotNumber) VALUES (?, ?)
         \`);
-        data.input_lot.forEach(input => {
-          insertInput.run(data.lot_number, input.lot_number);
+        data.inputLot.forEach(input => {
+          insertInput.run(data.lotNumber, input.lotNumber);
         });
       }
 
       // Link taxes
       if (taxIds.length > 0) {
         const linkTax = db.prepare(\`
-          INSERT INTO lot_taxes (lot_number, tax_id) VALUES (?, ?)
+          INSERT INTO lotTaxes (lotNumber, taxId) VALUES (?, ?)
         \`);
         taxIds.forEach(taxId => {
-          linkTax.run(data.lot_number, taxId);
+          linkTax.run(data.lotNumber, taxId);
         });
       }
     });
 
     transaction();
 
-    return this.getById(data.lot_number);
+    return this.getById(data.lotNumber);
   }
 }
 
@@ -1161,9 +1180,9 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      address_country: req.query.address_country,
-      certification_status: req.query.certification_status ? parseInt(req.query.certification_status) : undefined,
-      activity_status: req.query.activity_status ? parseInt(req.query.activity_status) : undefined,
+      addressCountry: req.query.addressCountry,
+      certificationStatus: req.query.certificationStatus ? parseInt(req.query.certificationStatus) : undefined,
+      activityStatus: req.query.activityStatus ? parseInt(req.query.activityStatus) : undefined,
       mineral: req.query.mineral
     };
 
@@ -1178,9 +1197,9 @@ router.get('/', (req, res, next) => {
 });
 
 // Get mine site by ID
-router.get('/:icglr_id', (req, res, next) => {
+router.get('/:icglrId', (req, res, next) => {
   try {
-    const mineSite = mineSitesService.getById(req.params.icglr_id);
+    const mineSite = mineSitesService.getById(req.params.icglrId);
     res.json(mineSite);
   } catch (error) {
     next(error);
@@ -1198,9 +1217,9 @@ router.post('/', validateRequest('mine-site'), (req, res, next) => {
 });
 
 // Update mine site
-router.put('/:icglr_id', validateRequest('mine-site'), (req, res, next) => {
+router.put('/:icglrId', validateRequest('mine-site'), (req, res, next) => {
   try {
-    const mineSite = mineSitesService.update(req.params.icglr_id, req.body);
+    const mineSite = mineSitesService.update(req.params.icglrId, req.body);
     res.json(mineSite);
   } catch (error) {
     next(error);
@@ -1226,12 +1245,12 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      issuing_country: req.query.issuing_country,
+      issuingCountry: req.query.issuingCountry,
       identifier: req.query.identifier,
-      lot_number: req.query.lot_number,
-      type_of_ore: req.query.type_of_ore,
-      date_of_issuance_from: req.query.date_of_issuance_from,
-      date_of_issuance_to: req.query.date_of_issuance_to
+      lotNumber: req.query.lotNumber,
+      typeOfOre: req.query.typeOfOre,
+      dateOfIssuanceFrom: req.query.dateOfIssuanceFrom,
+      dateOfIssuanceTo: req.query.dateOfIssuanceTo
     };
 
     const page = parseInt(req.query.page) || 1;
@@ -1247,17 +1266,17 @@ router.get('/', (req, res, next) => {
 // Get export certificate by ID
 router.get('/:identifier', (req, res, next) => {
   try {
-    if (!req.query.issuing_country) {
+    if (!req.query.issuingCountry) {
       return res.status(400).json({
         code: 'VALIDATION_ERROR',
-        message: 'issuing_country query parameter is required',
+        message: 'issuingCountry query parameter is required',
         timestamp: new Date().toISOString()
       });
     }
 
     const certificate = exportCertificatesService.getById(
       req.params.identifier,
-      req.query.issuing_country
+      req.query.issuingCountry
     );
     res.json(certificate);
   } catch (error) {
@@ -1294,13 +1313,13 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      mine_site_id: req.query.mine_site_id,
+      mineSiteId: req.query.mineSiteId,
       mineral: req.query.mineral,
-      creator_role: req.query.creator_role ? parseInt(req.query.creator_role) : undefined,
-      originating_operation: req.query.originating_operation ? parseInt(req.query.originating_operation) : undefined,
-      lot_number: req.query.lot_number,
-      timestamp_from: req.query.timestamp_from,
-      timestamp_to: req.query.timestamp_to
+      creatorRole: req.query.creatorRole ? parseInt(req.query.creatorRole) : undefined,
+      originatingOperation: req.query.originatingOperation ? parseInt(req.query.originatingOperation) : undefined,
+      lotNumber: req.query.lotNumber,
+      dateRegistrationFrom: req.query.dateRegistrationFrom,
+      dateRegistrationTo: req.query.dateRegistrationTo
     };
 
     const page = parseInt(req.query.page) || 1;
@@ -1314,9 +1333,9 @@ router.get('/', (req, res, next) => {
 });
 
 // Get lot by ID
-router.get('/:lot_number', (req, res, next) => {
+router.get('/:lotNumber', (req, res, next) => {
   try {
-    const lot = lotsService.getById(req.params.lot_number);
+    const lot = lotsService.getById(req.params.lotNumber);
     res.json(lot);
   } catch (error) {
     next(error);

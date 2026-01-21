@@ -28,7 +28,7 @@ All notable changes to the ICGLR Mining Sector Data Sharing Protocol Standards w
   - License Type
   - CoC Roles (1-8)
   - Originating Operations (1-8)
-- OpenAPI/Swagger specification with snake_case naming
+- OpenAPI/Swagger specification with camelCase naming
 - JSON-LD context for semantic interoperability
 - GraphQL schema for flexible querying
 - Conformance rules and validation tools
@@ -39,7 +39,7 @@ All notable changes to the ICGLR Mining Sector Data Sharing Protocol Standards w
 ### Features
 
 - **ICGLR ID Format**: Standardized mine site identification (`CC-[Lat]-[Long]-NNNNN`)
-- **snake_case Naming**: All technical terms use snake_case convention
+- **camelCase Naming**: All technical terms use camelCase convention
 - **Integer Status Codes**: Language-independent status codes
 - **Chain of Custody**: Complete Lot entity supporting all CoC operations
 - **Mineral Codes**: Support for HS Codes and IMA Codes
@@ -49,6 +49,6 @@ All notable changes to the ICGLR Mining Sector Data Sharing Protocol Standards w
 
 - This standard is designed for **data exchange**, not as a relational database schema
 - Countries can extend the model with additional fields while maintaining compatibility
-- All field names use snake_case as specified in the semantic model
+- All field names use camelCase as specified in the semantic model
 - Status values use integer codes for language independence
 

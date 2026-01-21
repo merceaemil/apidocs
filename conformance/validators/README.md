@@ -31,9 +31,9 @@ node schema-validator.js mine-site examples/json/mine-site-example.json
 const validator = require('./schema-validator');
 
 const data = {
-  icglr_id: "RW-1.9641+30.0619-00001",
-  address_country: "RW",
-  certification_status: 1,
+  icglrId: "RW-1.9641+30.0619-00001",
+  addressCountry: "RW",
+  certificationStatus: 1,
   // ... other fields
 };
 
@@ -60,7 +60,7 @@ if (result.valid) {
 
 The validator checks:
 - Required fields presence
-- Data types (snake_case field names)
+- Data types (camelCase field names)
 - ICGLR ID format: `CC-[Lat]-[Long]-NNNNN`
 - Status codes (integers: 0, 1, 2, 3)
 - Mineral codes (HS Codes or IMA Codes)
@@ -75,7 +75,7 @@ The API conformance validator checks if an API implementation meets the conforma
 ### Features
 
 - Validates OpenAPI endpoint implementation
-- Checks response formats (snake_case)
+- Checks response formats (camelCase)
 - Verifies error handling
 - Tests pagination
 - Validates filtering (status codes, mineral codes)
@@ -100,6 +100,6 @@ When adding new validators:
 2. Include error messages with field paths
 3. Support both CLI and programmatic usage
 4. Add tests for the validator
-5. Validate snake_case naming
+5. Validate camelCase naming
 6. Validate integer status codes
 7. Validate ICGLR ID format

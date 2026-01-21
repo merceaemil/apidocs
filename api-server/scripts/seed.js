@@ -26,11 +26,11 @@ console.log('Seeding database with example data...');
 function insertOrGetAddress(db, address) {
   const existing = db.prepare(`
     SELECT id FROM addresses 
-    WHERE country = ? AND subnational_division_l1 = ? AND address_locality = ?
+    WHERE country = ? AND subnationalDivisionL1 = ? AND addressLocalityText = ?
   `).get(
     address.country,
-    address.subnational_division_l1,
-    address.address_locality
+    address.subnationalDivisionL1,
+    address.addressLocalityText
   );
 
   if (existing) {
@@ -39,17 +39,17 @@ function insertOrGetAddress(db, address) {
 
   const result = db.prepare(`
     INSERT INTO addresses 
-    (country, subnational_division_l1, subnational_division_l1_text, 
-     subnational_division_l2, subnational_division_l3, subnational_division_l4, address_locality)
+    (country, subnationalDivisionL1, subnationalDivisionL1Text, 
+     subnationalDivisionL2, subnationalDivisionL3, subnationalDivisionL4, addressLocalityText)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(
     address.country,
-    address.subnational_division_l1,
-    address.subnational_division_l1_text || null,
-    address.subnational_division_l2 || null,
-    address.subnational_division_l3 || null,
-    address.subnational_division_l4 || null,
-    address.address_locality
+    address.subnationalDivisionL1,
+    address.subnationalDivisionL1Text || null,
+    address.subnationalDivisionL2 || null,
+    address.subnationalDivisionL3 || null,
+    address.subnationalDivisionL4 || null,
+    address.addressLocalityText
   );
 
   return result.lastInsertRowid;
@@ -58,22 +58,22 @@ function insertOrGetAddress(db, address) {
 // Helper function to insert or get contact details ID
 function insertOrGetContactDetails(db, contactDetails) {
   const existing = db.prepare(`
-    SELECT id FROM contact_details 
-    WHERE contact_email = ?
-  `).get(contactDetails.contact_email);
+    SELECT id FROM contactDetails 
+    WHERE contactEmail = ?
+  `).get(contactDetails.contactEmail);
 
   if (existing) {
     return existing.id;
   }
 
   const result = db.prepare(`
-    INSERT INTO contact_details 
-    (legal_representative, contact_phone_number, contact_email)
+    INSERT INTO contactDetails 
+    (legalRepresentative, contactPhoneNumber, contactEmail)
     VALUES (?, ?, ?)
   `).run(
-    contactDetails.legal_representative,
-    contactDetails.contact_phone_number,
-    contactDetails.contact_email
+    contactDetails.legalRepresentative,
+    contactDetails.contactPhoneNumber,
+    contactDetails.contactEmail
   );
 
   return result.lastInsertRowid;
@@ -100,16 +100,16 @@ function insertOrGetGeolocalization(db, geolocalization) {
 
 try {
   // 1. Insert addresses for business entity
-  const legalAddressId = insertOrGetAddress(db, mineSiteExample.owner.legal_address);
-  const physicalAddressId = insertOrGetAddress(db, mineSiteExample.owner.physical_address);
+  const legalAddressId = insertOrGetAddress(db, mineSiteExample.owner.legalAddress);
+  const physicalAddressId = insertOrGetAddress(db, mineSiteExample.owner.physicalAddress);
 
   // 2. Insert contact details for business entity
-  const contactDetailsId = insertOrGetContactDetails(db, mineSiteExample.owner.contact_details);
+  const contactDetailsId = insertOrGetContactDetails(db, mineSiteExample.owner.contactDetails);
 
   // 3. Insert business entity (owner) with foreign keys
   db.prepare(`
-    INSERT OR IGNORE INTO business_entities 
-    (identifier, name, legal_address_id, physical_address_id, tin, rdb_number, rca_number, contact_details_id)
+    INSERT OR IGNORE INTO businessEntities 
+    (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     mineSiteExample.owner.identifier,
@@ -117,54 +117,54 @@ try {
     legalAddressId,
     physicalAddressId,
     mineSiteExample.owner.tin,
-    mineSiteExample.owner.rdb_number,
-    mineSiteExample.owner.rca_number,
+    mineSiteExample.owner.rdbNumber || null,
+    mineSiteExample.owner.rcaNumber || null,
     contactDetailsId
   );
 
   // 4. Insert geolocalization for mine site location
   const geolocalizationId = insertOrGetGeolocalization(
     db,
-    mineSiteExample.mine_site_location.geolocalization
+    mineSiteExample.mineSiteLocation.geolocalization
   );
 
   // 5. Insert address for local geographic designation
   const localGeographicDesignationId = insertOrGetAddress(
     db,
-    mineSiteExample.mine_site_location.local_geographic_designation
+    mineSiteExample.mineSiteLocation.localGeographicDesignation
   );
 
   // 6. Insert mine site location
   const mineSiteLocationId = db.prepare(`
-    INSERT INTO mine_site_locations 
-    (geolocalization_id, national_cadaster_localization, local_geographic_designation_id, polygon, altitude)
+    INSERT INTO mineSiteLocations 
+    (geolocalizationId, nationalCadasterLocalization, localGeographicDesignationId, polygon, altitude)
     VALUES (?, ?, ?, ?, ?)
   `).run(
     geolocalizationId,
-    mineSiteExample.mine_site_location.national_cadaster_localization,
+    mineSiteExample.mineSiteLocation.nationalCadasterLocalization || null,
     localGeographicDesignationId,
-    mineSiteExample.mine_site_location.polygon || null,
-    mineSiteExample.mine_site_location.altitude || null
+    mineSiteExample.mineSiteLocation.polygon ? JSON.stringify(mineSiteExample.mineSiteLocation.polygon) : null,
+    mineSiteExample.mineSiteLocation.altitude || null
   ).lastInsertRowid;
 
   // 7. Insert mine site with foreign key to business entity
   db.prepare(`
-    INSERT OR IGNORE INTO mine_sites 
-    (icglr_id, address_country, national_id, certification_status, activity_status, owner_id)
+    INSERT OR IGNORE INTO mineSites 
+    (icglrId, addressCountry, nationalId, certificationStatus, activityStatus, ownerId)
     VALUES (?, ?, ?, ?, ?, ?)
   `).run(
-    mineSiteExample.icglr_id,
-    mineSiteExample.address_country,
-    mineSiteExample.national_id,
-    mineSiteExample.certification_status,
-    mineSiteExample.activity_status,
+    mineSiteExample.icglrId,
+    mineSiteExample.addressCountry,
+    mineSiteExample.nationalId,
+    mineSiteExample.certificationStatus,
+    mineSiteExample.activityStatus,
     mineSiteExample.owner.identifier
   );
 
   // Insert minerals
   for (const mineral of mineSiteExample.mineral) {
-    db.prepare('INSERT OR IGNORE INTO mine_site_minerals (mine_site_id, mineral_code) VALUES (?, ?)')
-      .run(mineSiteExample.icglr_id, mineral);
+    db.prepare('INSERT OR IGNORE INTO mineSiteMinerals (mineSiteId, mineralCode) VALUES (?, ?)')
+      .run(mineSiteExample.icglrId, mineral);
   }
 
   // Insert licenses
@@ -175,13 +175,13 @@ try {
       
       // Check if license owner is different from mine site owner
       if (license.owner.identifier !== mineSiteExample.owner.identifier) {
-        const licenseLegalAddressId = insertOrGetAddress(db, license.owner.legal_address);
-        const licensePhysicalAddressId = insertOrGetAddress(db, license.owner.physical_address);
-        const licenseContactDetailsId = insertOrGetContactDetails(db, license.owner.contact_details);
+        const licenseLegalAddressId = insertOrGetAddress(db, license.owner.legalAddress);
+        const licensePhysicalAddressId = insertOrGetAddress(db, license.owner.physicalAddress);
+        const licenseContactDetailsId = insertOrGetContactDetails(db, license.owner.contactDetails);
 
         db.prepare(`
-          INSERT OR IGNORE INTO business_entities 
-          (identifier, name, legal_address_id, physical_address_id, tin, rdb_number, rca_number, contact_details_id)
+          INSERT OR IGNORE INTO businessEntities 
+          (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `).run(
           license.owner.identifier,
@@ -189,24 +189,24 @@ try {
           licenseLegalAddressId,
           licensePhysicalAddressId,
           license.owner.tin,
-          license.owner.rdb_number,
-          license.owner.rca_number,
+          license.owner.rdbNumber || null,
+          license.owner.rcaNumber || null,
           licenseContactDetailsId
         );
       }
 
       const licenseResult = db.prepare(`
         INSERT OR IGNORE INTO licenses 
-        (license_type, license_id, owner_id, date_applied, date_granted, date_expiring, license_status)
+        (licenseType, licenseId, ownerId, appliedDate, grantedDate, expiringDate, licenseStatus)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).run(
-        license.license_type,
-        license.license_id,
+        license.licenseType,
+        license.licenseId,
         licenseOwnerId,
-        license.date_applied || null,
-        license.date_granted,
-        license.date_expiring,
-        license.license_status || null
+        license.appliedDate || null,
+        license.grantedDate || null,
+        license.expiringDate || null,
+        license.licenseStatus || null
       );
 
       // Note: license_commodities references licenses(id), but licenses doesn't have an id column
@@ -226,39 +226,38 @@ try {
     for (const inspection of mineSiteExample.inspection) {
       db.prepare(`
         INSERT OR IGNORE INTO inspections 
-        (inspection_id, inspection_date, inspection_responsible, inspection_findings,
-         inspection_report, inspection_purpose, inspection_results, inspector_name, inspector_position,
-         government_agency, government_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (inspectionId, inspectionDate, inspectionResult,
+         inspectionReport, inspectionPurpose, inspectionResults,
+         inspectorName, inspectorPosition, governmentAgency, governmentId)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
-        inspection.inspection_id,
-        inspection.inspection_date,
-        inspection.inspection_responsible,
-        inspection.inspection_findings,
-        inspection.inspection_report,
-        inspection.inspection_purpose,
-        inspection.inspection_results,
-        inspection.inspector_name,
-        inspection.inspector_position,
-        inspection.government_agency,
-        inspection.government_id || null
+        inspection.inspectionId,
+        inspection.inspectionDate,
+        inspection.inspectionResult,
+        inspection.inspectionReport || null,
+        inspection.inspectionPurpose || null,
+        inspection.inspectionResults || null,
+        inspection.inspectorName,
+        inspection.inspectorPosition,
+        inspection.governmentAgency,
+        inspection.governmentId || null
       );
     }
   }
 
   // Insert status history
-  if (mineSiteExample.status_history && mineSiteExample.status_history.length > 0) {
-    for (const status of mineSiteExample.status_history) {
+  if (mineSiteExample.statusChange && mineSiteExample.statusChange.length > 0) {
+    for (const status of mineSiteExample.statusChange) {
       db.prepare(`
-        INSERT OR IGNORE INTO status_history 
-        (mine_site_id, date_of_change, new_status)
+        INSERT OR IGNORE INTO statusHistory 
+        (mineSiteId, dateOfChange, newStatus)
         VALUES (?, ?, ?)
-      `).run(mineSiteExample.icglr_id, status.date_of_change, status.new_status);
+      `).run(mineSiteExample.icglrId, status.dateOfChange, status.newStatus);
     }
   }
 
   console.log('✓ Database seeded successfully');
-  console.log(`  Mine Site: ${mineSiteExample.icglr_id}`);
+  console.log(`  Mine Site: ${mineSiteExample.icglrId}`);
   console.log(`  Owner: ${mineSiteExample.owner.name}`);
 } catch (error) {
   console.error('Error seeding database:', error);

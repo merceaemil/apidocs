@@ -104,11 +104,11 @@ Example: `RW-1.9641+30.0619-00001`
 
 ### 2. Naming Convention
 
-All technical terms use **snake_case** as specified in the semantic model:
-- `icglr_id`
-- `certification_status`
-- `mine_site_location`
-- `date_of_issuance`
+All technical terms use **camelCase** as specified in the semantic model:
+- `icglrId`
+- `certificationStatus`
+- `mineSiteLocation`
+- `dateOfIssuance`
 
 ### 3. Code Lists
 
@@ -121,14 +121,14 @@ Status values use integer codes for language independence:
 ### 4. Mineral Codes
 
 Minerals are identified using:
-- **HS Codes**: Harmonized System codes (e.g., `7108.12.00` for Gold)
-- **IMA Codes**: International Mineralogical Association codes (e.g., `IMA1960-A` for Gold)
+- **HS Codes**: Harmonized System codes (primary) - e.g., `7108.12.00` for Gold
+- **IMA Codes**: International Mineralogical Association codes (alternative) - e.g., `IMA1960-A` for Gold
 
 Designated minerals (3TG):
 - Gold: `7108.12.00` / `IMA1960-A`
 - Cassiterite: `2609.00.00` / `IMA1960-001`
 - Wolframite: `2611.00.00` / `IMA2000-014`
-- Coltan: `2615.90.00` / `IMA1979-A`
+- Columbite-Tantalite (Coltan): `2615.90.00` / `IMA1979-A`
 
 ## Components
 
@@ -163,7 +163,7 @@ Implementers should:
 - Ensure conformance with validation rules
 - Support JSON-LD for semantic interoperability
 - Consider GraphQL for flexible querying
-- Use snake_case for all technical terms
+- Use camelCase for all technical terms
 - Follow the ICGLR ID format for mine sites
 - Use integer codes for status values
 

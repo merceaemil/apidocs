@@ -25,7 +25,7 @@ If you find a bug or have a suggestion:
 ### Code Standards
 
 - Follow existing code style
-- **Use snake_case for all field names** (as per semantic model)
+- **Use camelCase for all field names** (as per semantic model)
 - **Use integer codes for status values** (0, 1, 2, 3 for certification; 0, 1, 2 for activity)
 - **Validate ICGLR ID format**: `CC-[Lat]-[Long]-NNNNN`
 - Include comments for complex logic

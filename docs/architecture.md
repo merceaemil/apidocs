@@ -177,7 +177,7 @@ The architecture is based on the ICGLR Data Sharing Protocol Standards semantic 
 
 **Features**:
 - Complete API definition
-- Request/response schemas with snake_case
+- Request/response schemas with camelCase
 - Authentication/authorization
 - Error handling
 - Filtering by status codes, mineral codes, etc.

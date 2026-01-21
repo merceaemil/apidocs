@@ -5,125 +5,123 @@
   "description": "ICGLR Export Certificate entity",
   "type": "object",
   "required": [
-    "issuing_country",
+    "issuingCountry",
     "identifier",
     "exporter",
     "importer",
-    "lot_number",
-    "designated_mineral_description",
-    "type_of_ore",
-    "lot_weight",
-    "lot_weight_uom",
-    "lot_grade",
-    "mineral_origin",
-    "customs_value",
-    "date_of_shipment",
-    "member_state_issuing_authority",
-    "name_of_verifier",
-    "position_of_verifier",
-    "date_of_verification",
-    "name_of_validator",
-    "date_of_issuance",
-    "date_of_expiration",
-    "certificate_file"
+    "lotNumber",
+    "typeOfOre",
+    "lotWeight",
+    "lotWeightUOM",
+    "lotGrade",
+    "mineralOrigin",
+    "customsValue",
+    "dateOfShipment",
+    "memberStateIssuingAuthority",
+    "nameOfVerifier",
+    "positionOfVerifier",
+    "dateOfVerification",
+    "nameOfValidator",
+    "dateOfIssuance",
+    "dateOfExpiration",
+    "certificateFile"
   ],
   "properties": {
-    "issuing_country": {
+    "issuingCountry": {
       "$ref": "../core/common.json#/definitions/ICGLRMemberState",
-      "description": "The name of the issuing country - ISO 3166-1 alpha-2"
+      "description": "The ISO 3166-1 alpha-2 code of the issuing country"
     },
     "identifier": {
       "$ref": "../core/common.json#/definitions/Identifier",
-      "description": "Serial number - A unique serial number identifying the Certificate"
+      "description": "Serial number - A unique serial number identifying the Certificate. A unique combination of digits and letters from the standard Latin alphabet, unique in the country"
     },
     "exporter": {
       "$ref": "../core/common.json#/definitions/BusinessEntity",
-      "description": "MD.04 Business Entity - Exporter"
+      "description": "MD.04 Business Entity - A group of business terms providing information about the Exporter. Includes: The name, legal address and physical address of the exporter, as well as any other information required to identify the exporter"
     },
     "importer": {
       "$ref": "../core/common.json#/definitions/BusinessEntity",
-      "description": "MD.04 Business Entity - Importer"
+      "description": "MD.04 Business Entity - The name, legal address and physical address of the importer, as well as any other information required to identify the importer"
     },
-    "lot_number": {
+    "lotNumber": {
       "$ref": "../core/common.json#/definitions/Identifier",
       "description": "The exporter's unique lot number or export order number for the lot"
     },
-    "designated_mineral_description": {
+    "designatedMineralDescription": {
       "type": "string",
-      "description": "A description of the Designated Mineral, including the type of ore or concentrate, weight and grade of the lot"
+      "description": "A description of the Designated Mineral, including the type of ore or concentrate, weight and grade of the lot. Free textual description"
     },
-    "type_of_ore": {
+    "typeOfOre": {
       "$ref": "../core/common.json#/definitions/MineralCode",
       "description": "Type of ore - MDC.03 Mineral"
     },
-    "lot_weight": {
+    "lotWeight": {
       "$ref": "../core/common.json#/definitions/Decimal",
-      "description": "Lot Weight - Numeric format, accepting fractional value"
+      "description": "Lot Weight - Numeric format, accepting fractional value, should always be read together with the Lot Weight Unit of Measure. Should be a positive number (>0) with a maximum of 3 decimals (0.000)"
     },
-    "lot_weight_uom": {
-      "type": "string",
-      "description": "Lot Weight Unit of Measure - The unit of measure shall be chosen from UN/ECE Recommendation N°. 20 'Codes for Units of Measure Used in International Trade'"
+    "lotWeightUOM": {
+      "$ref": "../core/common.json#/definitions/UnitOfMeasurement",
+      "description": "Lot Weight Unit of Measure - The unit of measure shall be chosen from the lists in UN/ECE Recommendation N°. 20 'Codes for Units of Measure Used in International Trade'. Can take value from a strict list of UOMs"
     },
-    "lot_grade": {
+    "lotGrade": {
       "type": "string",
       "description": "Lot Grade - Grade expression might vary depending on the mineral"
     },
-    "mineral_origin": {
-      "type": "string",
-      "description": "The national origin of the material - One or more country identifiers (ISO 3166-1 alpha-2), separated by one space character (e.g., 'CD BI RW')"
+    "mineralOrigin": {
+      "$ref": "../core/common.json#/definitions/Identifier",
+      "description": "The national origin of the material. One or more country identifiers, separated by one semicolon character (e.g., CD;BI;RW). In case the origin is not known, the character zero (0) will be used to illustrate this. Can be combined in an array (e.g., BI;TZ;0) showing that the mineral comes from at least 3 sources, from which 2 are known."
     },
-    "customs_value": {
+    "customsValue": {
       "type": "string",
-      "description": "The declared Customs value in USD of the Lot. Use Currency code of 3 letters (ISO 4217) and value Decimal format, separated by one space character. Alternatively, it can be Decimal considering that it should always be given in USD"
+      "description": "The declared Customs value in USD of the Lot (explicit requirement according to Appendix C of RCM Manual). Use Currency code of 3 letters (ISO 4217) and value Decimal format, separated by one space character. Alternatively, it can be Decimal considering that it should always be given in USD"
     },
-    "date_of_shipment": {
+    "dateOfShipment": {
       "$ref": "../core/common.json#/definitions/Date",
-      "description": "The date the lot is planned to be shipped"
+      "description": "The date the lot is planned to be shipped. As the export certificate is issued before the shipment occurs, the actual date of shipment might be different."
     },
-    "shipment_route": {
+    "shipmentRoute": {
       "type": "string",
-      "description": "The shipment route - ISO 3166 alpha-2 (array of countries separated by comma without spaces, e.g., 'CD,TZ,BI') or array of ISO 3166 alpha-2 and ISO 3166 alpha-3"
+      "description": "The shipment route - ISO 3166 alpha-2 (array of countries separated by a semicolon without spaces, e.g., CD;TZ;BI)"
     },
-    "transport_company": {
+    "transportCompany": {
       "type": "string",
       "description": "The transport company responsible for transporting the shipment, if known"
     },
-    "member_state_issuing_authority": {
+    "memberStateIssuingAuthority": {
       "type": "string",
       "description": "Member State Issuing authority"
     },
-    "name_of_verifier": {
+    "nameOfVerifier": {
       "type": "string",
-      "description": "Name of the Member State representative responsible for verifying the documentation and recommending the issuance of an ICGLR Regional Certificate"
+      "description": "Name of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate"
     },
-    "position_of_verifier": {
+    "positionOfVerifier": {
       "type": "string",
-      "description": "Position of the Member State representative responsible for verifying the documentation"
+      "description": "Position of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate"
     },
-    "id_of_verifier": {
+    "idOfVerifier": {
       "$ref": "../core/common.json#/definitions/Identifier",
-      "description": "Identification number (where available) of the Member State representative responsible for verification"
+      "description": "Identification number (where available) of the Member State representative responsible for verifying the documentation associated the export with the export and recommending the issuance of an ICGLR Regional Certificate"
     },
-    "date_of_verification": {
+    "dateOfVerification": {
       "$ref": "../core/common.json#/definitions/Date",
       "description": "The date the lot is verified by the Member State representative"
     },
-    "name_of_validator": {
+    "nameOfValidator": {
       "type": "string",
       "description": "The name of the Member State representative empowered to countersign the Certificate to render it valid"
     },
-    "date_of_issuance": {
+    "dateOfIssuance": {
       "$ref": "../core/common.json#/definitions/Date",
       "description": "The date that the Certificate is countersigned (Certificate is valid from this date)"
     },
-    "date_of_expiration": {
+    "dateOfExpiration": {
       "$ref": "../core/common.json#/definitions/Date",
-      "description": "The date that the Certificate expires, or the validity period of the Certificate"
+      "description": "The date that the Certificate expires, or the validity period of the Certificate. Between date of issuance and date of expiration should not be more than 90 days"
     },
-    "certificate_file": {
+    "certificateFile": {
       "type": "string",
-      "description": "The certificate as file (file reference or URL)"
+      "description": "The certificate as file. Should have value from a limited list of MIME types: application/pdf, image/png, image/jpeg"
     }
   }
 }
-

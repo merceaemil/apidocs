@@ -41,10 +41,10 @@ The JSON-LD context is defined in `../context.jsonld`. To use it in your JSON da
 {
   "@context": "https://icglr.org/json-ld/context.jsonld",
   "@type": "icglr:MineSite",
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "certification_status": 1,
-  "mine_site_location": {
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "certificationStatus": 1,
+  "mineSiteLocation": {
     "@type": "icglr:MineSiteLocation",
     "geolocalization": {
       "@type": "icglr:Geolocalization",
@@ -57,11 +57,11 @@ The JSON-LD context is defined in `../context.jsonld`. To use it in your JSON da
 
 ## Field Naming
 
-All technical terms use **snake_case** convention:
-- `icglr_id`
-- `certification_status`
-- `mine_site_location`
-- `date_of_issuance`
+All technical terms use **camelCase** convention:
+- `icglrId`
+- `certificationStatus`
+- `mineSiteLocation`
+- `dateOfIssuance`
 
 ## Code Lists
 

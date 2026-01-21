@@ -7,6 +7,12 @@ scalar DateTime
 scalar Time
 scalar JSON
 
+# GeoJSON Polygon type (RFC 7946)
+type GeoJSONPolygon {
+  type: String! # Must be "Polygon"
+  coordinates: [[[Float!]!]!]! # Array of linear rings, each ring is array of [longitude, latitude] positions
+}
+
 # Common types
 type Geolocalization {
   latitude: Float!
@@ -15,12 +21,13 @@ type Geolocalization {
 
 type Address {
   country: ICGLRMemberState!
-  subnationalDivisionL1: String!
+  subnationalDivisionL1: String
   subnationalDivisionL1Text: String
   subnationalDivisionL2: String
   subnationalDivisionL3: String
   subnationalDivisionL4: String
-  addressLocality: String!
+  addressLocalityText: String!
+  addressLocalityCode: String
 }
 
 enum ICGLRMemberState {
@@ -47,30 +54,30 @@ type ContactDetails {
 type BusinessEntity {
   identifier: ID!
   name: String!
-  legalAddress: Address!
-  physicalAddress: Address!
+  legalAddress: Address
+  physicalAddress: Address
   tin: String!
-  rdbNumber: String!
-  rcaNumber: String!
+  rdbNumber: String
+  rcaNumber: String
   contactDetails: ContactDetails!
 }
 
 type MineSiteLocation {
   geolocalization: Geolocalization!
-  nationalCadasterLocalization: String!
-  localGeographicDesignation: Address!
-  polygon: String
+  nationalCadasterLocalization: String
+  localGeographicDesignation: Address
+  polygon: GeoJSONPolygon
   altitude: Float
 }
 
 type License {
   licenseType: LicenseType!
-  licenseId: ID!
-  owner: BusinessEntity!
-  dateApplied: Date
-  dateGranted: Date
-  dateExpiring: Date
-  licenseStatus: String
+  licenseId: ID
+  owner: BusinessEntity
+  appliedDate: Date
+  grantedDate: Date
+  expiringDate: Date
+  licenseStatus: Int
   coveredCommodities: [String!]!
 }
 
@@ -86,11 +93,10 @@ enum LicenseType {
 type Inspection {
   inspectionId: ID!
   inspectionDate: Date!
-  inspectionResponsible: String!
-  inspectionFindings: String!
-  inspectionReport: String!
-  inspectionPurpose: String!
-  inspectionResults: String!
+  inspectionResult: CertificationStatus!
+  inspectionReport: String
+  inspectionPurpose: String
+  inspectionResults: String
   inspectorName: String!
   inspectorPosition: String!
   governmentAgency: String!
@@ -386,11 +392,11 @@ input ContactDetailsInput {
 input BusinessEntityInput {
   identifier: ID!
   name: String!
-  legalAddress: AddressInput!
-  physicalAddress: AddressInput!
+  legalAddress: AddressInput
+  physicalAddress: AddressInput
   tin: String!
-  rdbNumber: String!
-  rcaNumber: String!
+  rdbNumber: String
+  rcaNumber: String
   contactDetails: ContactDetailsInput!
 }
 
@@ -399,33 +405,37 @@ input GeolocalizationInput {
   longitude: Float!
 }
 
+input GeoJSONPolygonInput {
+  type: String! # Must be "Polygon"
+  coordinates: [[[Float!]!]!]! # Array of linear rings, each ring is array of [longitude, latitude] positions
+}
+
 input MineSiteLocationInput {
   geolocalization: GeolocalizationInput!
-  nationalCadasterLocalization: String!
-  localGeographicDesignation: AddressInput!
-  polygon: String
+  nationalCadasterLocalization: String
+  localGeographicDesignation: AddressInput
+  polygon: GeoJSONPolygonInput
   altitude: Float
 }
 
 input LicenseInput {
   licenseType: LicenseType!
-  licenseId: ID!
-  owner: BusinessEntityInput!
-  dateApplied: Date
-  dateGranted: Date
-  dateExpiring: Date
-  licenseStatus: String
+  licenseId: ID
+  owner: BusinessEntityInput
+  appliedDate: Date
+  grantedDate: Date
+  expiringDate: Date
+  licenseStatus: Int
   coveredCommodities: [String!]!
 }
 
 input InspectionInput {
   inspectionId: ID!
   inspectionDate: Date!
-  inspectionResponsible: String!
-  inspectionFindings: String!
-  inspectionReport: String!
-  inspectionPurpose: String!
-  inspectionResults: String!
+  inspectionResult: CertificationStatus!
+  inspectionReport: String
+  inspectionPurpose: String
+  inspectionResults: String
   inspectorName: String!
   inspectorPosition: String!
   governmentAgency: String!

@@ -21,7 +21,7 @@ X-API-Key: <your-api-key>
 ### List Mine Sites
 
 ```http
-GET /v1/mine-sites?address_country=RW&certification_status=1&activity_status=1&page=1&limit=20
+GET /v1/mine-sites?addressCountry=RW&certificationStatus=1&activityStatus=1&page=1&limit=20
 Accept: application/json
 ```
 
@@ -30,21 +30,21 @@ Response:
 {
   "data": [
     {
-      "icglr_id": "RW-1.9641+30.0619-00001",
-      "address_country": "RW",
-      "national_id": "RW-MINE-2024-001",
-      "certification_status": 1,
-      "activity_status": 1,
-      "mine_site_location": {
+      "icglrId": "RW-1.9641+30.0619-00001",
+      "addressCountry": "RW",
+      "nationalId": "RW-MINE-2024-001",
+      "certificationStatus": 1,
+      "activityStatus": 1,
+      "mineSiteLocation": {
         "geolocalization": {
           "latitude": -1.9641,
           "longitude": 30.0619
         },
-        "national_cadaster_localization": "Rwanda Mining Cadaster - Sector 12",
-        "local_geographic_designation": {
+        "nationalCadasterLocalization": "Rwanda Mining Cadaster - Sector 12",
+        "localGeographicDesignation": {
           "country": "RW",
-          "subnational_division_l1": "RW-02",
-          "address_locality": "Muhanga"
+          "subnationalDivisionL1": "RW-02",
+          "addressLocalityText": "Muhanga"
         }
       },
       "mineral": ["IMA1960-001", "IMA2000-014"],
@@ -77,74 +77,74 @@ POST /v1/mine-sites
 Content-Type: application/json
 
 {
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "national_id": "RW-MINE-2024-001",
-  "certification_status": 1,
-  "activity_status": 1,
-  "mine_site_location": {
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "nationalId": "RW-MINE-2024-001",
+  "certificationStatus": 1,
+  "activityStatus": 1,
+  "mineSiteLocation": {
     "geolocalization": {
       "latitude": -1.9641,
       "longitude": 30.0619
     },
-    "national_cadaster_localization": "Rwanda Mining Cadaster - Sector 12",
-    "local_geographic_designation": {
+    "nationalCadasterLocalization": "Rwanda Mining Cadaster - Sector 12",
+    "localGeographicDesignation": {
       "country": "RW",
-      "subnational_division_l1": "RW-02",
-      "subnational_division_l1_text": "Southern Province",
-      "address_locality": "Muhanga"
+      "subnationalDivisionL1": "RW-02",
+      "subnationalDivisionL1Text": "Southern Province",
+      "addressLocalityText": "Muhanga"
     }
   },
   "mineral": ["IMA1960-001"],
   "license": [
     {
-      "license_type": "mining_license",
-      "license_id": "RW-ML-2024-001",
+      "licenseType": "mining_license",
+      "licenseId": "RW-ML-2024-001",
       "owner": {
         "identifier": "COMP-RW-001",
         "name": "Rwanda Mining Corporation Ltd",
-        "legal_address": {
+        "legalAddress": {
           "country": "RW",
-          "subnational_division_l1": "RW-01",
-          "address_locality": "Kigali"
+          "subnationalDivisionL1": "RW-01",
+          "addressLocalityText": "Kigali"
         },
-        "physical_address": {
+        "physicalAddress": {
           "country": "RW",
-          "subnational_division_l1": "RW-01",
-          "address_locality": "Kigali"
+          "subnationalDivisionL1": "RW-01",
+          "addressLocalityText": "Kigali"
         },
         "tin": "123456789",
-        "rdb_number": "RDB-2024-001",
-        "rca_number": "RCA-2024-001",
-        "contact_details": {
-          "legal_representative": "John Doe",
-          "contact_phone_number": "+250-788-123-456",
-          "contact_email": "contact@rwandamining.rw"
+        "rdbNumber": "RDB-2024-001",
+        "rcaNumber": "RCA-2024-001",
+        "contactDetails": {
+          "legalRepresentative": "John Doe",
+          "contactPhoneNumber": "+250788123456",
+          "contactEmail": "contact@rwandamining.rw"
         }
       },
-      "covered_commodities": ["IMA1960-001"]
+      "coveredCommodities": ["IMA1960-001"]
     }
   ],
   "owner": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   }
 }
@@ -157,11 +157,11 @@ PUT /v1/mine-sites/RW-1.9641+30.0619-00001
 Content-Type: application/json
 
 {
-  "certification_status": 2,
-  "status_history": [
+  "certificationStatus": 2,
+  "statusChange": [
     {
-      "date_of_change": "2024-04-15",
-      "new_status": 2
+      "dateOfChange": "2024-04-15",
+      "newStatus": 2
     }
   ]
 }
@@ -172,14 +172,14 @@ Content-Type: application/json
 ### List Export Certificates
 
 ```http
-GET /v1/export-certificates?issuing_country=RW&type_of_ore=IMA1960-001&date_of_issuance_from=2024-01-01&date_of_issuance_to=2024-12-31
+GET /v1/export-certificates?issuingCountry=RW&typeOfOre=2609.00.00&dateOfIssuanceFrom=2024-01-01&dateOfIssuanceTo=2024-12-31
 Accept: application/json
 ```
 
 ### Get Export Certificate
 
 ```http
-GET /v1/export-certificates/RW-EXP-2024-001?issuing_country=RW
+GET /v1/export-certificates/RW-EXP-2024-001?issuingCountry=RW
 Accept: application/json
 ```
 
@@ -190,69 +190,69 @@ POST /v1/export-certificates
 Content-Type: application/json
 
 {
-  "issuing_country": "RW",
+  "issuingCountry": "RW",
   "identifier": "RW-EXP-2024-001",
   "exporter": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   },
   "importer": {
     "identifier": "COMP-BE-001",
     "name": "Belgium Trading Company",
-    "legal_address": {
+    "legalAddress": {
       "country": "BE",
-      "subnational_division_l1": "BE-BRU",
-      "address_locality": "Brussels"
+      "subnationalDivisionL1": "BE-BRU",
+      "addressLocalityText": "Brussels"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "BE",
-      "subnational_division_l1": "BE-BRU",
-      "address_locality": "Brussels"
+      "subnationalDivisionL1": "BE-BRU",
+      "addressLocalityText": "Brussels"
     },
     "tin": "BE123456789",
-    "rdb_number": "BE-RDB-001",
-    "rca_number": "BE-RCA-001",
-    "contact_details": {
-      "legal_representative": "Jane Smith",
-      "contact_phone_number": "+32-2-123-4567",
-      "contact_email": "contact@belgiumtrading.be"
+    "rdbNumber": "BE-RDB-001",
+    "rcaNumber": "BE-RCA-001",
+    "contactDetails": {
+      "legalRepresentative": "Jane Smith",
+      "contactPhoneNumber": "+3221234567",
+      "contactEmail": "contact@belgiumtrading.be"
     }
   },
-  "lot_number": "LOT-RW-2024-001",
-  "designated_mineral_description": "Cassiterite concentrate, 1000kg, 45% Sn",
-  "type_of_ore": "IMA1960-001",
-  "lot_weight": 1000.0,
-  "lot_weight_uom": "KGM",
-  "lot_grade": "45%",
-  "mineral_origin": "RW",
-  "customs_value": "USD 85000.00",
-  "date_of_shipment": "2024-04-15",
-  "member_state_issuing_authority": "Ministry of Trade and Industry, Rwanda",
-  "name_of_verifier": "Peter Smith",
-  "position_of_verifier": "Senior Mining Inspector",
-  "date_of_verification": "2024-04-10",
-  "name_of_validator": "Mary Johnson",
-  "date_of_issuance": "2024-04-12",
-  "date_of_expiration": "2024-07-11",
-  "certificate_file": "https://certificates.icglr.org/RW/RW-EXP-2024-001.pdf"
+  "lotNumber": "LOT-RW-2024-001",
+  "designatedMineralDescription": "Cassiterite concentrate, 1000kg, 45% Sn",
+  "typeOfOre": "IMA1960-001",
+  "lotWeight": 1000.0,
+  "lotWeightUOM": "KGM",
+  "lotGrade": "45%",
+  "mineralOrigin": "RW",
+  "customsValue": "USD 85000.00",
+  "dateOfShipment": "2024-04-15",
+  "memberStateIssuingAuthority": "Ministry of Trade and Industry, Rwanda",
+  "nameOfVerifier": "Peter Smith",
+  "positionOfVerifier": "Senior Mining Inspector",
+  "dateOfVerification": "2024-04-10",
+  "nameOfValidator": "Mary Johnson",
+  "dateOfIssuance": "2024-04-12",
+  "dateOfExpiration": "2024-07-11",
+  "certificateFile": "https://certificates.icglr.org/RW/RW-EXP-2024-001.pdf"
 }
 ```
 
@@ -261,7 +261,7 @@ Content-Type: application/json
 ### List Lots
 
 ```http
-GET /v1/lots?mine_site_id=RW-1.9641+30.0619-00001&mineral=IMA1960-001&creator_role=1&originating_operation=1
+GET /v1/lots?mineSiteId=RW-1.9641+30.0619-00001&mineral=2609.00.00&creatorRole=1&originatingOperation=1&dateRegistrationFrom=2024-01-01&dateRegistrationTo=2024-12-31
 Accept: application/json
 ```
 
@@ -279,73 +279,74 @@ POST /v1/lots
 Content-Type: application/json
 
 {
-  "lot_number": "LOT-RW-2024-001",
-  "timestamp": "2024-03-20T10:30:00Z",
+  "lotNumber": "LOT-RW-2024-001",
+  "dateRegistration": "2024-03-20",
+  "timeRegistration": "103000",
   "creator": {
     "identifier": "COMP-RW-001",
     "name": "Rwanda Mining Corporation Ltd",
-    "legal_address": {
+    "legalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
-    "physical_address": {
+    "physicalAddress": {
       "country": "RW",
-      "subnational_division_l1": "RW-01",
-      "address_locality": "Kigali"
+      "subnationalDivisionL1": "RW-01",
+      "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdb_number": "RDB-2024-001",
-    "rca_number": "RCA-2024-001",
-    "contact_details": {
-      "legal_representative": "John Doe",
-      "contact_phone_number": "+250-788-123-456",
-      "contact_email": "contact@rwandamining.rw"
+    "rdbNumber": "RDB-2024-001",
+    "rcaNumber": "RCA-2024-001",
+    "contactDetails": {
+      "legalRepresentative": "John Doe",
+      "contactPhoneNumber": "+250788123456",
+      "contactEmail": "contact@rwandamining.rw"
     }
   },
   "mineral": "IMA1960-001",
   "concentration": 45.5,
   "mass": 1000.0,
-  "unit_of_measurement": "KGM",
-  "mine_site_id": "RW-1.9641+30.0619-00001",
-  "creator_role": [1],
-  "originating_operation": [1],
+  "unitOfMeasurement": "KGM",
+  "mineSiteId": "RW-1.9641+30.0619-00001",
+  "creatorRole": [1],
+  "originatingOperation": [1],
   "tag": {
     "identifier": "TAG-RW-2024-001",
     "issuer": {
       "identifier": "GOV-RW-001",
       "name": "Ministry of Mines, Rwanda",
-      "legal_address": {
+      "legalAddress": {
         "country": "RW",
-        "subnational_division_l1": "RW-01",
-        "address_locality": "Kigali"
+        "subnationalDivisionL1": "RW-01",
+        "addressLocalityText": "Kigali"
       },
-      "physical_address": {
+      "physicalAddress": {
         "country": "RW",
-        "subnational_division_l1": "RW-01",
-        "address_locality": "Kigali"
+        "subnationalDivisionL1": "RW-01",
+        "addressLocalityText": "Kigali"
       },
       "tin": "GOV-001",
-      "rdb_number": "GOV-RDB-001",
-      "rca_number": "GOV-RCA-001",
-      "contact_details": {
-        "legal_representative": "Government Representative",
-        "contact_phone_number": "+250-788-000-000",
-        "contact_email": "mines@gov.rw"
+      "rdbNumber": "GOV-RDB-001",
+      "rcaNumber": "GOV-RCA-001",
+      "contactDetails": {
+        "legalRepresentative": "Government Representative",
+        "contactPhoneNumber": "+250788000000",
+        "contactEmail": "mines@gov.rw"
       }
     },
-    "issue_date": "2024-03-20",
-    "issue_time": "10:30:00"
+    "issueDate": "2024-03-20",
+    "issueTime": "103000"
   },
-  "tax_paid": [
+  "taxPaid": [
     {
-      "tax_type": "Mining Royalty",
-      "tax_amount": 5000.00,
+      "taxType": "Mining Royalty",
+      "taxAmount": 5000.00,
       "currency": "USD"
     }
   ],
-  "date_sealed": "2024-03-20",
-  "date_shipped": "2024-03-22"
+  "dateSealed": "2024-03-20",
+  "dateShipped": "2024-03-22"
 }
 ```
 
@@ -448,7 +449,7 @@ Response will include `@context` and use JSON-LD structure with semantic annotat
   "code": "VALIDATION_ERROR",
   "message": "Request validation failed",
   "details": {
-    "field": "icglr_id",
+    "field": "icglrId",
     "reason": "Invalid format. Expected: CC-[Lat]-[Long]-NNNNN"
   },
   "timestamp": "2024-01-15T10:30:00Z"
@@ -477,7 +478,7 @@ Response will include `@context` and use JSON-LD structure with semantic annotat
 
 ## Notes
 
-- All field names use **snake_case** convention
+- All technical field names use **camelCase** convention
 - Mine Site IDs follow format: `CC-[Lat]-[Long]-NNNNN` (e.g., `RW-1.9641+30.0619-00001`)
 - Mineral codes use HS Codes or IMA Codes (e.g., `IMA1960-001` for Cassiterite)
 - Status values are integers, not text (language-independent)

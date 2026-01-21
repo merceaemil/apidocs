@@ -21,13 +21,13 @@ Resolvers should:
 - Handle pagination
 - Support filtering and sorting
 - Return appropriate error messages
-- Convert snake_case backend fields to GraphQL camelCase (if needed)
+- Convert backend fields as needed (the standard uses camelCase)
 
 ### Mutation Resolvers
 
 Mutations should:
 - Validate input data against JSON schemas
-- Transform GraphQL input to backend format (snake_case)
+- Transform GraphQL input to backend format (camelCAse)
 - Handle business logic and validation
 - Return created/updated entities
 - Validate ICGLR ID format for mine sites
@@ -36,9 +36,9 @@ Mutations should:
 ### Entity-Specific Resolvers
 
 #### Mine Sites (MD.01)
-- Validate `icglr_id` format: `CC-[Lat]-[Long]-NNNNN`
+- Validate `icglrId` format: `CC-[Lat]-[Long]-NNNNN`
 - Handle certification status as integer (0, 1, 2, 3)
-- Support filtering by address_country, certification_status, activity_status, mineral
+- Support filtering by addressCountry, certificationStatus, activityStatus, mineral
 
 #### Export Certificates (MD.03)
 - Handle exporter and importer BusinessEntity
@@ -46,9 +46,9 @@ Mutations should:
 - Support date range filtering
 
 #### Lots (MD.12)
-- Handle recursive input_lot references
-- Validate conditional requirements (mine_site_id and tag required for Production)
-- Support filtering by creator_role, originating_operation
+- Handle recursive inputLot references
+- Validate conditional requirements (mineSiteId and tag required for Production)
+- Support filtering by creatorRole, originatingOperation
 - Track Chain of Custody transformations
 
 ### Flexible Query Endpoint
@@ -92,11 +92,11 @@ Resolvers should be tested with:
 - Conformance tests to ensure standard compliance
 - Validation of ICGLR ID format
 - Validation of status code integers
-- Validation of snake_case field names
+- Validation of camelCase field names
 
 ## Key Considerations
 
-1. **Field Naming**: Backend uses snake_case, GraphQL may use camelCase - handle conversion
+1. **Field Naming**: Backend uses camelCase, GraphQL may use camelCase - handle conversion
 2. **Status Codes**: Always use integers (0, 1, 2, 3) not strings
 3. **ICGLR ID Format**: Validate format `CC-[Lat]-[Long]-NNNNN`
 4. **Mineral Codes**: Support both HS Codes and IMA Codes

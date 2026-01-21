@@ -236,7 +236,7 @@ JSON Schemas are machine-readable documents that define the structure, format, a
    const schema = require('./schemas/mine-site/mine-site.json');
    const validate = ajv.compile(schema);
    
-   const data = { icglr_id: "RW-1.9641+30.0619-00001", ... };
+   const data = { icglrId: "RW-1.9641+30.0619-00001", ... };
    const valid = validate(data);
    if (!valid) {
      console.log(validate.errors);
@@ -331,7 +331,7 @@ paths:
     get:
       summary: List mine sites
       parameters:
-        - name: address_country
+        - name: addressCountry
           in: query
           schema:
             $ref: '#/components/schemas/ICGLRMemberState'
@@ -606,9 +606,9 @@ Comprehensive documentation including guides, examples, architecture description
 ```javascript
 // Copy from examples/json/mine-site-example.json
 const mineSite = {
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "certification_status": 1,
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "certificationStatus": 1,
   // ... rest from example
 };
 
@@ -735,8 +735,8 @@ Secondary entities can be nested. For example:
 
 **Naming Convention:**
 - **Business Terms**: Human-readable terms that describe concepts (e.g., "ICGLR Identification number")
-- **Technical Terms**: Transcriptions of business terms in `snake_case` (e.g., `icglr_id`)
-- The standard uses `snake_case` as it is the most human-readable and aligns with other standardization initiatives
+- **Technical Terms**: Transcriptions of business terms in `camelCase` (e.g., `icglrId`)
+- The standard uses `camelCase` as it is the most human-readable and aligns with other standardization initiatives (e.g., https://spdci.org/)
 
 **Cardinality Notation:**
 - `1..1` - Required, only once (at least one, at most one)
@@ -831,18 +831,18 @@ The semantic model defines:
 
 The Mine Site is a primary entity representing a physical location where mining occurs. Key attributes include:
 
-- **icglr_id** (Business Term: ICGLR Identification number): Unique identifier in format `CC-[Lat]-[Long]-NNNNN`
-- **address_country** (Business Term: Country): ISO 3166-1 alpha-2 country code
-- **national_id** (Business Term: National Identification Number): Unique identifier at country level
-- **certification_status**: Current certification status (0=Blue, 1=Green, 2=Yellow, 3=Red)
-- **activity_status**: Mining activity status (0=Abandoned, 1=Active, 2=Non-active)
-- **mine_site_location**: Geographic location (references MD.08)
-- **mineral**: Array of minerals produced (1..n, using IMA codes)
+- **icglrId** (Business Term: ICGLR Identification number): Unique identifier in format `CC-[Lat]-[Long]-NNNNN`
+- **addressCountry** (Business Term: Country): ISO 3166-1 alpha-2 country code
+- **nationalId** (Business Term: National Identification Number): Unique identifier at country level
+- **certificationStatus**: Current certification status (0=Blue, 1=Green, 2=Yellow, 3=Red)
+- **activityStatus**: Mining activity status (0=Abandoned, 1=Active, 2=Non-active)
+- **mineSiteLocation**: Geographic location (references MD.08)
+- **mineral**: Array of minerals produced (1..n, HS codes are primary)
 - **license**: Array of licenses (1..n, references MD.02)
 - **owner**: Business entity that owns the mine (references MD.04)
 - **operator**: Array of operators if different from owner (0..n, references MD.04)
 - **inspection**: Array of inspections (0..n, references MD.07)
-- **status_history**: Array of status changes (0..n, references MD.10)
+- **statusChange**: Array of status changes (0..n, references MD.10)
 
 **Certification Status Notes:**
 - Blue status (0) can be valid for 3 years, otherwise the mine site turns red
@@ -852,30 +852,30 @@ The Mine Site is a primary entity representing a physical location where mining 
 
 The Export Certificate represents an ICGLR Regional Certificate issued for mineral exports. Key attributes include:
 
-- **issuing_country**: ISO 3166-1 alpha-2 country code
+- **issuingCountry**: ISO 3166-1 alpha-2 country code
 - **identifier**: Unique serial number (unique in the country)
 - **exporter**: Business entity (references MD.04)
 - **importer**: Business entity (references MD.04)
-- **lot_number**: Exporter's unique lot number
-- **designated_mineral_description**: Textual description
-- **type_of_ore**: Mineral code (references MDC.03)
-- **lot_weight**: Numeric value (Decimal)
-- **lot_weight_uom**: Unit of measure (UN/ECE Recommendation N°. 20)
-- **lot_grade**: Grade expression (varies by mineral)
-- **mineral_origin**: Country codes separated by space (e.g., "CD BI RW")
-- **customs_value**: Declared value in USD (String with currency code or Decimal)
-- **date_of_shipment**: Planned shipment date
-- **shipment_route**: ISO 3166 codes separated by comma (optional)
-- **transport_company**: Transport company name (optional)
-- **member_state_issuing_authority**: Issuing authority name
-- **name_of_verifier**: Verifier's name
-- **position_of_verifier**: Verifier's position
-- **id_of_verifier**: Verifier's ID (optional)
-- **date_of_verification**: Verification date
-- **name_of_validator**: Validator's name
-- **date_of_issuance**: Certificate countersign date
-- **date_of_expiration**: Expiration date (no more than 90 days from issuance)
-- **certificate_file**: Certificate as file
+- **lotNumber**: Exporter's unique lot number
+- **designatedMineralDescription**: Textual description (optional)
+- **typeOfOre**: Mineral code (references MDC.03)
+- **lotWeight**: Numeric value (Decimal)
+- **lotWeightUOM**: Unit of measure (MDC.07, UN/ECE Recommendation N°. 20)
+- **lotGrade**: Grade expression (varies by mineral)
+- **mineralOrigin**: Country codes separated by semicolon (e.g., `CD;BI;RW`), can include `0` for unknown
+- **customsValue**: Declared value in USD (String with currency code or Decimal)
+- **dateOfShipment**: Planned shipment date
+- **shipmentRoute**: ISO 3166 codes separated by semicolon (optional)
+- **transportCompany**: Transport company name (optional)
+- **memberStateIssuingAuthority**: Issuing authority name
+- **nameOfVerifier**: Verifier's name
+- **positionOfVerifier**: Verifier's position
+- **idOfVerifier**: Verifier's ID (optional)
+- **dateOfVerification**: Verification date
+- **nameOfValidator**: Validator's name
+- **dateOfIssuance**: Certificate countersign date
+- **dateOfExpiration**: Expiration date (no more than 90 days from issuance)
+- **certificateFile**: Certificate as file
 
 **Important Notes:**
 - The certificate should allow regeneration in any language (RCM requires English and French)
@@ -887,37 +887,37 @@ The Export Certificate represents an ICGLR Regional Certificate issued for miner
 The Lot entity is central to Chain of Custody tracking. It represents a holder of a quantity of minerals that are mined, intended for transport, processing, or sale.
 
 **Key Attributes:**
-- **lot_number**: Lot number given by CoC actor (Identifier)
+- **lotNumber**: Lot number given by CoC actor (Identifier)
 - **timestamp**: Date+time when registration was created (automatically generated)
 - **creator**: Business entity that created the lot (current custodian, references MD.04)
 - **mineral**: Contained mineral identifier (references MDC.03)
 - **concentration**: Approximate concentration percentage (Decimal)
 - **mass**: Lot weight (Decimal)
-- **package_type**: Type of packaging (optional, String)
-- **unit_of_measurement**: Unit of measure (UN/ECE Recommendation N°. 20)
-- **mine_site_id**: Mine site identifier (REQUIRED when originating_operation includes Production, references MD.01)
-- **creator_role**: Array of CoC roles (1..n, references MDC.05)
+- **packageType**: Type of packaging (optional, String)
+- **unitOfMeasurement**: Unit of measure (UN/ECE Recommendation N°. 20)
+- **mineSiteId**: Mine site identifier (REQUIRED when originatingOperation includes Production, references MD.01)
+- **creatorRole**: Array of CoC roles (1..n, references MDC.05)
 - **recipient**: Lot recipient business entity (optional, references MD.04)
-- **originating_operation**: Array of operations (1..n, references MDC.06)
-- **input_lot**: Array of lots that form this lot (0..n, recursive reference to MD.12)
-- **tag**: Associated tag (REQUIRED when originating_operation includes Production, references MD.11)
-- **tax_paid**: Array of taxes paid (0..n, references MD.13)
-- **date_sealed**: Date when lot is sealed
-- **date_shipped**: Date when lot is shipped
-- **purchase_number**: Purchase order number (optional, for purchases)
-- **purchase_date**: Purchase date (optional)
-- **responsible_staff**: Name of responsible staff (optional, String)
-- **date_in**: Date received by processor (optional)
-- **transportation_method**: Transportation method (optional)
-- **transportation_route**: Transportation route (optional)
-- **transport_company**: Transport company (optional)
-- **export_certificate_id**: ICGLR Certificate number if for export (optional, references MD.03)
+- **originatingOperation**: Array of operations (1..n, references MDC.06)
+- **inputLot**: Array of lots that form this lot (0..n, recursive reference to MD.12)
+- **tag**: Associated tag (REQUIRED when originatingOperation includes Production, references MD.11)
+- **taxPaid**: Array of taxes paid (0..n, references MD.13)
+- **dateSealed**: Date when lot is sealed
+- **dateShipped**: Date when lot is shipped
+- **purchaseNumber**: Purchase order number (optional, for purchases)
+- **purchaseDate**: Purchase date (optional)
+- **responsibleStaff**: Name of responsible staff (optional, String)
+- **dateIn**: Date received by processor (optional)
+- **transportationMethod**: Transportation method (optional)
+- **transportationRoute**: Transportation route (optional)
+- **transportCompany**: Transport company (optional)
+- **exportCertificateId**: ICGLR Certificate number if for export (optional, references MD.03)
 
 **Key Rules:**
 1. Time of registration is automatically generated by the software system
 2. Information from previous CoC stages should be retained in the Lot record
-3. A Lot registered at Production might not have "recipient" and "date_shipped" initially, but must include them when referenced by another Lot
-4. If originating_operation includes Production (1), then `mine_site_id` and `tag` are REQUIRED
+3. A Lot registered at Production might not have "recipient" and "dateShipped" initially, but must include them when referenced by another Lot
+4. If originatingOperation includes Production (1), then `mineSiteId` and `tag` are REQUIRED
 
 **Lot Transformations:**
 The model supports all types of lot-to-lot transformations:
@@ -932,24 +932,25 @@ Represents companies and organizations involved in mining operations. Attributes
 
 - **identifier**: Unique identification number
 - **name**: Legal name as officially registered
-- **legal_address**: Legal address (references MD.05 Address)
-- **physical_address**: Physical address (references MD.05 Address)
+- **legalAddress**: Legal address (references MD.05 Address)
+- **physicalAddress**: Physical address (references MD.05 Address)
 - **tin**: Tax ID Number in country of registration
-- **rdb_number**: Business registration number
-- **rca_number**: Other identifying information
-- **contact_details**: Contact details (references MD.09 Contact Details)
+- **rdbNumber**: Business registration number
+- **rcaNumber**: Other identifying information
+- **contactDetails**: Contact details (references MD.09 Contact Details)
 
 #### MD.05 Address
 
 Address information using ISO standards:
 
 - **country**: ISO 3166-1 alpha-2 country code (required)
-- **subnational_division_l1**: ISO 3166-2 code (e.g., "RW-02", required)
-- **subnational_division_l1_text**: Textual name (optional)
-- **subnational_division_l2**: Level 2 subdivision (optional)
-- **subnational_division_l3**: Level 3 subdivision (optional)
-- **subnational_division_l4**: Level 4 subdivision (optional)
-- **address_locality**: Locality as designated in UPU S42, ISO 19160-1 (required)
+- **subnationalDivisionL1**: ISO 3166-2 code (e.g., "RW-02", optional)
+- **subnationalDivisionL1Text**: Textual name (optional)
+- **subnationalDivisionL2**: Level 2 subdivision (optional)
+- **subnationalDivisionL3**: Level 3 subdivision (optional)
+- **subnationalDivisionL4**: Level 4 subdivision (optional)
+- **addressLocalityText**: Locality as free text (required)
+- **addressLocalityCode**: Locality as code (optional)
 
 #### MD.06 Geolocalization
 
@@ -962,17 +963,16 @@ Geographic coordinates:
 
 Mine site inspection records:
 
-- **inspection_id**: Generated identifier (e.g., "PS-2025-12-02-16-03" for inspector initials and timestamp)
-- **inspection_date**: Date of inspection
-- **inspection_responsible**: Agency and person responsible
-- **inspection_findings**: Findings (Certified, un-Certified, or Yellow Flagged)
-- **inspection_report**: Full inspection report (File)
-- **inspection_purpose**: Short text
-- **inspection_results**: Long text
-- **inspector_name**: Full name
-- **inspector_position**: Title or position
-- **government_agency**: Government agency (short text)
-- **government_id**: Government identification number (optional)
+- **inspectionId**: Generated identifier (e.g., "PS-2025-12-02-16-03" for inspector initials and timestamp)
+- **inspectionDate**: Date of inspection
+- **inspectionResult**: Certification status code (MDC.01)
+- **inspectionReport**: Full inspection report (optional, File/URI)
+- **inspectionPurpose**: Short text (optional)
+- **inspectionResults**: Long text (optional)
+- **inspectorName**: Full name
+- **inspectorPosition**: Title or position
+- **governmentAgency**: Government agency (short text)
+- **governmentId**: Government identification number (optional)
 
 #### MD.11 Tag
 
@@ -980,15 +980,15 @@ Tag attached to a Lot:
 
 - **identifier**: Unique ID (can be QR code, barcode, numeric)
 - **issuer**: Organization that issued the tag (references MD.04)
-- **issue_date**: Date when tag was created
-- **issue_time**: Time when tag was created (format: HH:mm:ss)
+- **issueDate**: Date when tag was created
+- **issueTime**: Time when tag was created (format: hhmmss)
 
 #### MD.13 Tax
 
 Tax payment information:
 
-- **tax_type**: Textual description of tax type
-- **tax_amount**: Value of paid tax (Decimal)
+- **taxType**: Textual description of tax type
+- **taxAmount**: Value of paid tax (Decimal)
 - **currency**: Currency code (ISO 4217, 3 letters)
 
 ### Architecture
@@ -1104,9 +1104,9 @@ GET /mine-sites
 ```
 
 **Query Parameters:**
-- `address_country` (string): Filter by ICGLR member state code
-- `certification_status` (integer): Filter by certification status (0-3)
-- `activity_status` (integer): Filter by activity status (0-2)
+- `addressCountry` (string): Filter by ICGLR member state code
+- `certificationStatus` (integer): Filter by certification status (0-3)
+- `activityStatus` (integer): Filter by activity status (0-2)
 - `mineral` (string): Filter by mineral code
 - `page` (integer): Page number (default: 1)
 - `limit` (integer): Results per page (default: 20, max: 100)
@@ -1116,13 +1116,13 @@ GET /mine-sites
 {
   "data": [
     {
-      "icglr_id": "RW-1.9641+30.0619-00001",
-      "address_country": "RW",
-      "national_id": "MINE-001",
-      "certification_status": 1,
-      "activity_status": 1,
-      "mine_site_location": { ... },
-      "mineral": ["IMA1960-001"],
+      "icglrId": "RW-1.9641+30.0619-00001",
+      "addressCountry": "RW",
+      "nationalId": "MINE-001",
+      "certificationStatus": 1,
+      "activityStatus": 1,
+      "mineSiteLocation": { ... },
+      "mineral": ["2609.00.00"],
       "license": [ ... ],
       "owner": { ... }
     }
@@ -1141,27 +1141,27 @@ GET /mine-sites
 ##### Get Mine Site by ID
 
 ```http
-GET /mine-sites/{icglr_id}
+GET /mine-sites/{icglrId}
 ```
 
 **Path Parameters:**
-- `icglr_id` (string): ICGLR mine site ID (format: `CC-[Lat]-[Long]-NNNNN`)
+- `icglrId` (string): ICGLR mine site ID (format: `CC-[Lat]-[Long]-NNNNN`)
 
 **Response:**
 ```json
 {
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "national_id": "MINE-001",
-  "certification_status": 1,
-  "activity_status": 1,
-  "mine_site_location": { ... },
-  "mineral": ["IMA1960-001"],
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "nationalId": "MINE-001",
+  "certificationStatus": 1,
+  "activityStatus": 1,
+  "mineSiteLocation": { ... },
+  "mineral": ["2609.00.00"],
   "license": [ ... ],
   "owner": { ... },
   "operator": [ ... ],
   "inspection": [ ... ],
-  "status_history": [ ... ]
+  "statusChange": [ ... ]
 }
 ```
 
@@ -1175,24 +1175,24 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
-  "icglr_id": "RW-1.9641+30.0619-00001",
-  "address_country": "RW",
-  "national_id": "MINE-001",
-  "certification_status": 1,
-  "activity_status": 1,
-  "mine_site_location": {
+  "icglrId": "RW-1.9641+30.0619-00001",
+  "addressCountry": "RW",
+  "nationalId": "MINE-001",
+  "certificationStatus": 1,
+  "activityStatus": 1,
+  "mineSiteLocation": {
     "geolocalization": {
       "latitude": -1.9641,
       "longitude": 30.0619
     },
-    "national_cadaster_localization": "CAD-12345",
-    "local_geographic_designation": {
+    "nationalCadasterLocalization": "CAD-12345",
+    "localGeographicDesignation": {
       "country": "RW",
-      "subnational_division_l1": "RW-02",
-      "address_locality": "Muhanga"
+      "subnationalDivisionL1": "RW-02",
+      "addressLocalityText": "Muhanga"
     }
   },
-  "mineral": ["IMA1960-001"],
+  "mineral": ["2609.00.00"],
   "license": [ ... ],
   "owner": { ... }
 }
@@ -1203,7 +1203,7 @@ Content-Type: application/json
 ##### Update Mine Site
 
 ```http
-PUT /mine-sites/{icglr_id}
+PUT /mine-sites/{icglrId}
 Content-Type: application/json
 ```
 
@@ -1220,26 +1220,26 @@ GET /export-certificates
 ```
 
 **Query Parameters:**
-- `issuing_country` (string): Filter by issuing country
+- `issuingCountry` (string): Filter by issuing country
 - `identifier` (string): Filter by certificate serial number
-- `lot_number` (string): Filter by lot number
-- `type_of_ore` (string): Filter by mineral code
-- `date_of_issuance_from` (date): Filter from date
-- `date_of_issuance_to` (date): Filter to date
+- `lotNumber` (string): Filter by lot number
+- `typeOfOre` (string): Filter by mineral code
+- `dateOfIssuanceFrom` (date): Filter from date
+- `dateOfIssuanceTo` (date): Filter to date
 - `page` (integer): Page number
 - `limit` (integer): Results per page
 
 ##### Get Export Certificate
 
 ```http
-GET /export-certificates/{identifier}?issuing_country={country}
+GET /export-certificates/{identifier}?issuingCountry={country}
 ```
 
 **Path Parameters:**
 - `identifier` (string): Certificate serial number
 
 **Query Parameters:**
-- `issuing_country` (string, required): Issuing country code
+- `issuingCountry` (string, required): Issuing country code
 
 ##### Create Export Certificate
 
@@ -1257,20 +1257,20 @@ GET /lots
 ```
 
 **Query Parameters:**
-- `mine_site_id` (string): Filter by mine site ICGLR ID
+- `mineSiteId` (string): Filter by mine site ICGLR ID
 - `mineral` (string): Filter by mineral code
-- `creator_role` (integer): Filter by CoC role code (1-8)
-- `originating_operation` (integer): Filter by operation code (1-8)
-- `lot_number` (string): Filter by lot number
-- `timestamp_from` (date-time): Filter from timestamp
-- `timestamp_to` (date-time): Filter to timestamp
+- `creatorRole` (integer): Filter by CoC role code (1-8)
+- `originatingOperation` (integer): Filter by operation code (1-8)
+- `lotNumber` (string): Filter by lot number
+- `dateRegistrationFrom` (date): Filter from dateRegistration
+- `dateRegistrationTo` (date): Filter to dateRegistration
 - `page` (integer): Page number
 - `limit` (integer): Results per page
 
 ##### Get Lot
 
 ```http
-GET /lots/{lot_number}
+GET /lots/{lotNumber}
 ```
 
 ##### Create Lot
@@ -1289,7 +1289,7 @@ All endpoints return standardized error responses:
   "code": "ERROR_CODE",
   "message": "Human-readable error message",
   "details": {
-    "field": "field_name",
+    "field": "fieldName",
     "reason": "Validation error details"
   },
   "timestamp": "2024-01-15T10:30:00Z"
@@ -1344,8 +1344,8 @@ Map your internal data model to ICGLR schemas:
 ```javascript
 // Your internal model
 {
-  mine_id: "M001",
-  mine_name: "Kivu Mine",
+  mineId: "M001",
+  mineName: "Kivu Mine",
   country: "RW",
   location: { lat: -1.94, lng: 29.87 },
   status: "Certified"
@@ -1353,21 +1353,21 @@ Map your internal data model to ICGLR schemas:
 
 // ICGLR format
 {
-  icglr_id: "RW-1.9400+30.8700-00001",
-  address_country: "RW",
-  national_id: "M001",
-  certification_status: 1,  // 1 = Green (Certified)
-  activity_status: 1,        // 1 = Active
-  mine_site_location: {
+  icglrId: "RW-1.9400+30.8700-00001",
+  addressCountry: "RW",
+  nationalId: "M001",
+  certificationStatus: 1,  // 1 = Green (Certified)
+  activityStatus: 1,        // 1 = Active
+  mineSiteLocation: {
     geolocalization: {
       latitude: -1.94,
       longitude: 30.87
     },
-    national_cadaster_localization: "...",
-    local_geographic_designation: {
+    nationalCadasterLocalization: "...",
+    localGeographicDesignation: {
       country: "RW",
-      subnational_division_l1: "RW-02",
-      address_locality: "Muhanga"
+      subnationalDivisionL1: "RW-02",
+      addressLocalityText: "Muhanga"
     }
   },
   mineral: ["IMA1960-001"],
@@ -1395,7 +1395,7 @@ function createMineSite(req, res) {
   
   // Validate ICGLR ID format
   const icglrIdPattern = /^[A-Z]{2}-[+-]?[0-9]+\.[0-9]{4}[+-][0-9]+\.[0-9]{4}-[0-9]+$/;
-  if (!icglrIdPattern.test(req.body.icglr_id)) {
+  if (!icglrIdPattern.test(req.body.icglrId)) {
     return res.status(400).json({
       code: 'VALIDATION_ERROR',
       message: 'Invalid ICGLR ID format. Expected: CC-[Lat]-[Long]-NNNNN'
@@ -1457,9 +1457,9 @@ function errorHandler(err, req, res, next) {
 - Enum values MUST be from allowed sets
 
 **Identifier Structure:**
-- Mine Sites MUST use `icglr_id` with format `CC-[Lat]-[Long]-NNNNN`
+- Mine Sites MUST use `icglrId` with format `CC-[Lat]-[Long]-NNNNN`
 - All identifiers MUST be unique
-- Field names MUST use snake_case convention
+- Field names MUST use camelCase convention
 
 **Geographic Data:**
 - All location data MUST include `geolocalization` with `latitude` and `longitude`
@@ -1470,17 +1470,18 @@ function errorHandler(err, req, res, next) {
 
 **Date and Time Formats:**
 - All dates MUST use ISO 8601 format (YYYY-MM-DD)
-- All date-times MUST use ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
-- Time zones MUST be specified (preferably UTC)
+- All date-times MUST use ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) when a date-time is used
+- Time (primitive) MUST use hhmmss (e.g., `103000`)
+- Time zones MUST be specified (preferably UTC) when using date-times
 
 **ICGLR Member State Codes:**
 - Country codes MUST use ISO 3166-1 alpha-2 format
 - Only ICGLR member state codes allowed: AO, BI, CD, CF, CG, KE, RW, SS, SD, TZ, UG, ZM
 
 **Naming Convention:**
-- All technical field names MUST use snake_case convention
-- Examples: `icglr_id`, `certification_status`, `mine_site_location`
-- NO camelCase or PascalCase in field names
+- All technical field names MUST use camelCase convention
+- Examples: `icglrId`, `certificationStatus`, `mineSiteLocation`
+- NO snake_case or PascalCase in field names
 
 **Code Lists:**
 - Certification Status: 0=Blue, 1=Green, 2=Yellow, 3=Red (integers)
@@ -1498,9 +1499,9 @@ function errorHandler(err, req, res, next) {
 - Status codes MUST follow REST conventions
 
 **Required Endpoints:**
-- Mine Sites: `GET /mine-sites`, `GET /mine-sites/{icglr_id}`, `POST /mine-sites`, `PUT /mine-sites/{icglr_id}`
+- Mine Sites: `GET /mine-sites`, `GET /mine-sites/{icglrId}`, `POST /mine-sites`, `PUT /mine-sites/{icglrId}`
 - Export Certificates: `GET /export-certificates`, `GET /export-certificates/{identifier}`, `POST /export-certificates`
-- Lots: `GET /lots`, `GET /lots/{lot_number}`, `POST /lots`
+- Lots: `GET /lots`, `GET /lots/{lotNumber}`, `POST /lots`
 
 **Pagination:**
 - List endpoints MUST support pagination
@@ -1669,17 +1670,17 @@ CC-[Lat]-[Long]-NNNNN
 ```
 
 **Business Term**: ICGLR Identification number  
-**Technical Term**: `icglr_id`  
+**Technical Term**: `icglrId`  
 **Cardinality**: 1..1 (Required, only once)
 
-#### Snake Case Naming
+#### camelCase Naming
 
-All field names use snake_case:
-- ✅ `icglr_id`
-- ✅ `certification_status`
-- ✅ `mine_site_location`
-- ✅ `date_of_issuance`
-- ❌ `icglrId` (camelCase)
+All field names use camelCase:
+- ✅ `icglrId`
+- ✅ `certificationStatus`
+- ✅ `mineSiteLocation`
+- ✅ `dateOfIssuance`
+- ❌ `icglr_id` (snake_case)
 - ❌ `CertificationStatus` (PascalCase)
 
 #### Status Codes
@@ -1738,8 +1739,8 @@ Support for two code systems:
 The Lot entity (MD.12) supports complete Chain of Custody tracking:
 
 **Key Features:**
-- Recursive `input_lot` references for transformations
-- Conditional requirements (e.g., `mine_site_id` and `tag` required for Production)
+- Recursive `inputLot` references for transformations
+- Conditional requirements (e.g., `mineSiteId` and `tag` required for Production)
 - Support for all CoC operations
 - Tax payment tracking
 - Transformation support (1-to-1, 1-to-n, n-to-1, n-to-n)

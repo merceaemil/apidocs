@@ -11,9 +11,9 @@ const { validateRequest } = require('../middleware/validation');
 router.get('/', (req, res, next) => {
   try {
     const filters = {
-      address_country: req.query.address_country,
-      certification_status: req.query.certification_status ? parseInt(req.query.certification_status) : undefined,
-      activity_status: req.query.activity_status ? parseInt(req.query.activity_status) : undefined,
+      addressCountry: req.query.addressCountry,
+      certificationStatus: req.query.certificationStatus ? parseInt(req.query.certificationStatus) : undefined,
+      activityStatus: req.query.activityStatus ? parseInt(req.query.activityStatus) : undefined,
       mineral: req.query.mineral
     };
 
@@ -28,9 +28,9 @@ router.get('/', (req, res, next) => {
 });
 
 // Get mine site by ID
-router.get('/:icglr_id', (req, res, next) => {
+router.get('/:icglrId', (req, res, next) => {
   try {
-    const mineSite = mineSitesService.getById(req.params.icglr_id);
+    const mineSite = mineSitesService.getById(req.params.icglrId);
     res.json(mineSite);
   } catch (error) {
     next(error);
@@ -48,9 +48,9 @@ router.post('/', validateRequest('mine-site'), (req, res, next) => {
 });
 
 // Update mine site
-router.put('/:icglr_id', validateRequest('mine-site'), (req, res, next) => {
+router.put('/:icglrId', validateRequest('mine-site'), (req, res, next) => {
   try {
-    const mineSite = mineSitesService.update(req.params.icglr_id, req.body);
+    const mineSite = mineSitesService.update(req.params.icglrId, req.body);
     res.json(mineSite);
   } catch (error) {
     next(error);
