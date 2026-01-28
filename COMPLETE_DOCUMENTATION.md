@@ -837,18 +837,18 @@ The semantic model defines:
 
 The Mine Site is a primary entity representing a physical location where mining occurs. Key attributes include:
 
-- **icglrId** (Business Term: ICGLR Identification number): Unique identifier in format `CC-[Lat]-[Long]-NNNNN`
-- **addressCountry** (Business Term: Country): ISO 3166-1 alpha-2 country code
-- **nationalId** (Business Term: National Identification Number): Unique identifier at country level
-- **certificationStatus**: Current certification status (0=Blue, 1=Green, 2=Yellow, 3=Red)
-- **activityStatus**: Mining activity status (0=Abandoned, 1=Active, 2=Non-active)
-- **mineSiteLocation**: Geographic location (references MD.08)
-- **mineral**: Array of minerals produced (1..n, HS codes are primary)
-- **license**: Array of licenses (1..n, references MD.02)
-- **owner**: Business entity that owns the mine (references MD.04)
-- **operator**: Array of operators if different from owner (0..n, references MD.04)
-- **inspection**: Array of inspections (0..n, references MD.07)
-- **statusChange**: Array of status changes (0..n, references MD.10)
+- **icglrId** (Business Term: ICGLR Identification number): Unique identifier in format `CC-[Lat]-[Long]-NNNNN` (required, Identifier)
+- **addressCountry** (Business Term: Country): ISO 3166-1 alpha-2 country code (required, Identifier)
+- **nationalId** (Business Term: National Identification Number): Unique identifier at country level (required, Identifier)
+- **certificationStatus**: Current certification status (required, references MDC.01). Should be: 1,2,3 (corresponding to Green, Yellow, Red) and 0 can be used additionally for new mines which were not yet inspected
+- **activityStatus**: Mining activity status (required, references MDC.02). 1=active, 2=non-active, 0=abandoned
+- **mineSiteLocation**: Geographic location (1..n, required, references MD.08) - A mine site can have multiple locations
+- **mineral**: Array of minerals produced (1..n, required, references MDC.03). Takes values strictly from the HS Code classification. For designated minerals: 7108.12.00 (Gold), 2609.00.00 (Cassiterite), 2611.00.00 (Wolframite), 2615.90.00 (Columbite-Tantalite/Coltan)
+- **license**: Array of licenses (1..n, required, references MD.02). Every mine site has a License field, even when the mine site is unlicensed. This is illustrated by the license type attribute of License entity
+- **owner**: Business entity that owns the mine (1..1, required, references MD.04)
+- **operator**: Array of operators if different from owner (0..n, optional, references MD.04)
+- **inspection**: Array of inspections (0..n, optional, references MD.07)
+- **statusChange**: Array of status changes (0..n, optional, references MD.10)
 
 **Certification Status Notes:**
 - Blue status (0) can be valid for 3 years, otherwise the mine site turns red
@@ -885,7 +885,7 @@ The Export Certificate represents an ICGLR Regional Certificate issued for miner
 
 **Important Notes:**
 - The certificate should allow regeneration in any language (RCM requires English and French)
-- Mineral origin uses space-separated country codes, not the word "mixed"
+- Mineral origin uses semicolon-separated country codes (e.g., `CD;BI;RW`), not the word "mixed". In case the origin is not known, the character zero (0) will be used
 - Date of expiration is stored directly (not computed from validity period) to avoid ambiguity
 
 #### MD.12 Lot (Chain of Custody)
@@ -893,23 +893,25 @@ The Export Certificate represents an ICGLR Regional Certificate issued for miner
 The Lot entity is central to Chain of Custody tracking. It represents a holder of a quantity of minerals that are mined, intended for transport, processing, or sale.
 
 **Key Attributes:**
-- **lotNumber**: Lot number given by CoC actor (Identifier)
-- **timestamp**: Date+time when registration was created (automatically generated)
-- **creator**: Business entity that created the lot (current custodian, references MD.04)
-- **mineral**: Contained mineral identifier (references MDC.03)
-- **concentration**: Approximate concentration percentage (Decimal)
-- **mass**: Lot weight (Decimal)
+- **lotNumber**: Lot number given by CoC actor (required, Identifier)
+- **dateRegistration**: Date when the registration was created (required, Date)
+- **timeRegistration**: Time when the registration was created (required, Time format: hhmmss)
+- **creator**: Business entity that created the lot (current custodian, required, references MD.04)
+- **mineral**: Contained mineral identifier (required, references MDC.03)
+- **concentration**: Approximate mineral concentration (grade) in percent (required, Decimal)
+- **mass**: Lot weight (required, Decimal)
 - **packageType**: Type of packaging (optional, String)
-- **unitOfMeasurement**: Unit of measure (MDC.07, UN/ECE Recommendation N°. 20)
-- **mineSiteId**: Mine site identifier (REQUIRED when originatingOperation includes Production, references MD.01)
-- **creatorRole**: Array of CoC roles (1..n, references MDC.05)
-- **recipient**: Lot recipient business entity (optional, references MD.04)
-- **originatingOperation**: Array of operations (1..n, references MDC.06)
-- **inputLot**: Array of lots that form this lot (0..n, recursive reference to MD.12)
-- **tag**: Associated tag (REQUIRED when originatingOperation includes Production, references MD.11)
+- **nrOfPackages**: Number of packages (optional, Decimal) - In case a lot is composed of more packages
+- **unitOfMeasurement**: Unit of measure (required, MDC.07, UN/ECE Recommendation N°. 20)
+- **mineSiteId**: Mine site identifier (REQUIRED when originatingOperation includes Production, optional otherwise, references MD.01)
+- **creatorRole**: Array of CoC roles (1..n, required, references MDC.05)
+- **recipient**: Lot recipient business entity (0..1, optional, references MD.04)
+- **originatingOperation**: Array of operations (1..n, required, references MDC.06)
+- **inputLot**: Array of lots that form this lot (0..n, recursive reference to MD.12) - This attribute does not exist for the initial Lot (the one registered at the Mine Site)
+- **tag**: Associated tag (REQUIRED when originatingOperation includes Production, optional otherwise, references MD.11)
 - **taxPaid**: Array of taxes paid (0..n, references MD.13)
-- **dateSealed**: Date when lot is sealed
-- **dateShipped**: Date when lot is shipped
+- **dateSealed**: Date when lot is sealed (optional)
+- **dateShipped**: Date when lot is shipped (optional)
 - **purchaseNumber**: Purchase order number (optional, for purchases)
 - **purchaseDate**: Purchase date (optional)
 - **responsibleStaff**: Name of responsible staff (optional, String)
@@ -920,10 +922,12 @@ The Lot entity is central to Chain of Custody tracking. It represents a holder o
 - **exportCertificateId**: ICGLR Certificate number if for export (optional, references MD.03)
 
 **Key Rules:**
-1. Time of registration is automatically generated by the software system
+1. Time of registration (`timeRegistration`) is automatically generated by the software system
 2. Information from previous CoC stages should be retained in the Lot record
-3. A Lot registered at Production might not have "recipient" and "dateShipped" initially, but must include them when referenced by another Lot
+3. A Lot registered at Production might not have "dateShipped" initially, but must include it when referenced by another Lot
 4. If originatingOperation includes Production (1), then `mineSiteId` and `tag` are REQUIRED
+5. If there is no transformation, except for changing actors in the CoC, the `inputLot` is itself
+6. The `inputLot` attribute does not exist for the initial Lot (the one registered at the Mine Site)
 
 **Lot Transformations:**
 The model supports all types of lot-to-lot transformations:
@@ -936,14 +940,34 @@ The model supports all types of lot-to-lot transformations:
 
 Represents companies and organizations involved in mining operations. Attributes include:
 
-- **identifier**: Unique identification number
-- **name**: Legal name as officially registered
-- **legalAddress**: Legal address (references MD.05 Address)
-- **physicalAddress**: Physical address (references MD.05 Address)
-- **tin**: Tax ID Number in country of registration
-- **rdbNumber**: Business registration number
-- **rcaNumber**: Other identifying information
-- **contactDetails**: Contact details (references MD.09 Contact Details)
+- **identifier**: Unique identification number (required)
+- **name**: Legal name as officially registered (required)
+- **legalAddress**: Legal address (optional, references MD.05 Address)
+- **physicalAddress**: Physical address (optional, references MD.05 Address)
+- **tin**: Tax ID Number in country of registration (required, Identifier). If not known, N/A can be used as value
+- **contactDetails**: Contact details (required, references MD.09 Contact Details)
+
+**Special Rules:**
+- Either Legal Address or Physical Address should exist
+- In case one of Legal Address or Physical Address exists while the other does not, whenever the missing term is required, the value of the existing one should be retrieved, considering thus that both addresses are the same
+
+#### MD.02 License
+
+Mining license information:
+
+- **licenseType**: The type of mineral license covering the mine site (required, references MDC.04 License Type)
+- **licenseId**: The identification number of the mining license (optional, Identifier)
+- **owner**: The owner of the mineral license (optional, references MD.04 Business Entity)
+- **appliedDate**: Date Applied (optional, Date)
+- **grantedDate**: Date Granted (optional, Date)
+- **expiringDate**: Date expiring (optional, Date)
+- **licenseStatus**: License status - 1 Active or 0 Non-Active (Expired or Revoked) (optional, Integer)
+- **coveredCommodities**: Array of covered commodities (1..n, references MDC.03 Mineral)
+
+**Special Rules:**
+- Unless License type is "unlicensed", or not available in the case of artisanal and small-scale miners, License ID and Owner must be filled
+- License ID and Owner should always be present when the license type takes value from (claim, exploration_permit, mining_license)
+- The Active status can alternatively be determined from the difference of Date granted and Date expiring, in case the attributes are used
 
 #### MD.05 Address
 
@@ -969,16 +993,50 @@ Geographic coordinates:
 
 Mine site inspection records:
 
-- **inspectionId**: Generated identifier (e.g., "PS-2025-12-02-16-03" for inspector initials and timestamp)
-- **inspectionDate**: Date of inspection
-- **inspectionResult**: Certification status code (MDC.01)
-- **inspectionReport**: Full inspection report (optional, File/URI)
-- **inspectionPurpose**: Short text (optional)
-- **inspectionResults**: Long text (optional)
-- **inspectorName**: Full name
-- **inspectorPosition**: Title or position
-- **governmentAgency**: Government agency (short text)
-- **governmentId**: Government identification number (optional)
+- **inspectionId**: Generated identifier (required, Identifier). Example: "PS-2025-12-02-16-03" for inspector initials and timestamp
+- **inspectionDate**: Date of inspection (required, Date)
+- **inspectionResult**: The result of the inspection in changing or maintaining the certification status (required, references MDC.01 Certification Status)
+- **inspectionReport**: Full inspection report (optional, File). MIME type should take value from: application/pdf, text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document
+- **inspectionPurpose**: Inspection purpose - short text (optional, String)
+- **inspectionResults**: Inspection results - long text (optional, String)
+- **inspectorName**: Inspector name - full name (required, String)
+- **inspectorPosition**: Inspector position - title or position (required, String)
+- **governmentAgency**: Government Agency - short text (optional, String)
+- **governmentId**: Government ID - Government identification number, if applicable (optional, Identifier)
+
+**Important Notes:**
+- The "Inspection number" (inspectionId) is not mandated by the RCM manual, but it is highly useful as a single unique identifier, particularly in the context of data storage, reporting and querying. Its addition was recommended by the ICGLR secretariat technical team
+- Usage of the File element (inspectionReport) should not be treated lightly because it is one of the most important causes for the growth of storage space on medium and long run, and can also generate risks in the data transfers between countries and ICGLR, as the data batches will grow larger and will be more prone to transaction errors due to the long time of transfer in low bandwidth conditions
+- The current practice remains that the reports are scanned and stored as files, which tend to have relatively large sizes. Therefore, one usage rule that we can expect to be imposed by member states is the limiting of the size of the files to be uploaded and exchanged in the system
+
+#### MD.08 Mine Site Location
+
+Location information for a mine site:
+
+- **geolocalization**: Geographic localization in WGS 84 format (references MD.06, required)
+- **nationalCadasterLocalization**: National cadaster localization (optional, String)
+- **localGeographicDesignation**: Local geographic designation (optional, references MD.05 Address)
+- **polygon**: Polygonal representation of the site as GeoJSON Polygon (optional, GeoJSON object)
+- **altitude**: Average altitude of the mine site in meters (optional, Decimal)
+
+#### MD.09 Contact Details
+
+Contact information for business entities:
+
+- **legalRepresentative**: Legal representative name (First name and last name, required)
+- **contactPhoneNumber**: Contact phone number (E.164 format, starting with +, followed by country code and national number, maximum 15 digits, required)
+- **contactEmail**: Contact email (format: text@domain.extension, required)
+
+*Note: At implementation, RegEx can be used for email validation, such as `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`*
+
+#### MD.10 Status History
+
+History of certification status changes:
+
+- **dateOfChange**: Date of status change (required, Date)
+- **newStatus**: The status acquired after the change (required, references MDC.01 Certification Status)
+
+*Note: The status history should be reconstructed from intervals between status history records. Each status change appends the required information that allows an interpreting system to reconstruct the entire chain of changes.*
 
 #### MD.11 Tag
 

@@ -109,16 +109,14 @@ try {
   // 3. Insert business entity (owner) with foreign keys
   db.prepare(`
     INSERT OR IGNORE INTO businessEntities 
-    (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (identifier, name, legalAddressId, physicalAddressId, tin, contactDetailsId)
+    VALUES (?, ?, ?, ?, ?, ?)
   `).run(
     mineSiteExample.owner.identifier,
     mineSiteExample.owner.name,
     legalAddressId,
     physicalAddressId,
     mineSiteExample.owner.tin,
-    mineSiteExample.owner.rdbNumber || null,
-    mineSiteExample.owner.rcaNumber || null,
     contactDetailsId
   );
 
@@ -181,16 +179,14 @@ try {
 
         db.prepare(`
           INSERT OR IGNORE INTO businessEntities 
-          (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          (identifier, name, legalAddressId, physicalAddressId, tin, contactDetailsId)
+          VALUES (?, ?, ?, ?, ?, ?)
         `).run(
           license.owner.identifier,
           license.owner.name,
           licenseLegalAddressId,
           licensePhysicalAddressId,
           license.owner.tin,
-          license.owner.rdbNumber || null,
-          license.owner.rcaNumber || null,
           licenseContactDetailsId
         );
       }

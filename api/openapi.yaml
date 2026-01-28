@@ -564,12 +564,6 @@ components:
         tin:
           type: string
           description: Tax ID Number in the country of registration. If not known, N/A can be used as value
-        rdbNumber:
-          type: string
-          description: Business registration number
-        rcaNumber:
-          type: string
-          description: Other identifying information as required
         contactDetails:
           $ref: '#/components/schemas/ContactDetails'
           description: MD.09 Contact Details - Group of business terms holding contact details of entity

@@ -83,16 +83,14 @@ function insertOrGetBusinessEntity(entity) {
 
   db.prepare(`
     INSERT INTO businessEntities 
-    (identifier, name, legalAddressId, physicalAddressId, tin, rdbNumber, rcaNumber, contactDetailsId)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (identifier, name, legalAddressId, physicalAddressId, tin, contactDetailsId)
+    VALUES (?, ?, ?, ?, ?, ?)
   `).run(
     entity.identifier,
     entity.name,
     legalAddressId,
     physicalAddressId,
     entity.tin,
-    entity.rdbNumber || null,
-    entity.rcaNumber || null,
     contactDetailsId
   );
 
@@ -143,8 +141,6 @@ function getBusinessEntity(identifier) {
       addressLocalityText: entity.physicalLocality
     },
     tin: entity.tin,
-    rdbNumber: entity.rdbNumber || null,
-    rcaNumber: entity.rcaNumber || null,
     contactDetails: {
       legalRepresentative: entity.legalRepresentative,
       contactPhoneNumber: entity.contactPhoneNumber,

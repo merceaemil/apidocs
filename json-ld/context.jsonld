@@ -184,14 +184,6 @@
       "@id": "icglr:tin",
       "@type": "xsd:string"
     },
-    "rdbNumber": {
-      "@id": "icglr:rdbNumber",
-      "@type": "xsd:string"
-    },
-    "rcaNumber": {
-      "@id": "icglr:rcaNumber",
-      "@type": "xsd:string"
-    },
     "contactDetails": {
       "@id": "icglr:contactDetails",
       "@type": "icglr:ContactDetails"
@@ -353,9 +345,13 @@
       "@type": "xsd:anyURI"
     },
     
-    "timestamp": {
-      "@id": "dc:created",
-      "@type": "xsd:dateTime"
+    "dateRegistration": {
+      "@id": "icglr:dateRegistration",
+      "@type": "xsd:date"
+    },
+    "timeRegistration": {
+      "@id": "icglr:timeRegistration",
+      "@type": "xsd:time"
     },
     "creator": {
       "@id": "icglr:creator",
@@ -372,6 +368,10 @@
     "packageType": {
       "@id": "icglr:packageType",
       "@type": "xsd:string"
+    },
+    "nrOfPackages": {
+      "@id": "icglr:nrOfPackages",
+      "@type": "xsd:decimal"
     },
     "unitOfMeasurement": {
       "@id": "schema:unitCode",

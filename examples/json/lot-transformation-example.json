@@ -18,8 +18,6 @@
       "addressLocalityText": "Huye"
     },
     "tin": "987654321",
-    "rdbNumber": "RDB-2024-002",
-    "rcaNumber": "RCA-2024-002",
     "contactDetails": {
       "legalRepresentative": "Alice Brown",
       "contactPhoneNumber": "+250788654321",
@@ -48,8 +46,6 @@
       "addressLocalityText": "Brussels"
     },
     "tin": "BE123456789",
-    "rdbNumber": "BE-RDB-001",
-    "rcaNumber": "BE-RCA-001",
     "contactDetails": {
       "legalRepresentative": "Jane Smith",
       "contactPhoneNumber": "+3221234567",

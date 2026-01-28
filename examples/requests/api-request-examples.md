@@ -114,8 +114,6 @@ Content-Type: application/json
           "addressLocalityText": "Kigali"
         },
         "tin": "123456789",
-        "rdbNumber": "RDB-2024-001",
-        "rcaNumber": "RCA-2024-001",
         "contactDetails": {
           "legalRepresentative": "John Doe",
           "contactPhoneNumber": "+250788123456",
@@ -139,8 +137,6 @@ Content-Type: application/json
       "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdbNumber": "RDB-2024-001",
-    "rcaNumber": "RCA-2024-001",
     "contactDetails": {
       "legalRepresentative": "John Doe",
       "contactPhoneNumber": "+250788123456",
@@ -206,8 +202,6 @@ Content-Type: application/json
       "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdbNumber": "RDB-2024-001",
-    "rcaNumber": "RCA-2024-001",
     "contactDetails": {
       "legalRepresentative": "John Doe",
       "contactPhoneNumber": "+250788123456",
@@ -228,8 +222,6 @@ Content-Type: application/json
       "addressLocalityText": "Brussels"
     },
     "tin": "BE123456789",
-    "rdbNumber": "BE-RDB-001",
-    "rcaNumber": "BE-RCA-001",
     "contactDetails": {
       "legalRepresentative": "Jane Smith",
       "contactPhoneNumber": "+3221234567",
@@ -296,8 +288,6 @@ Content-Type: application/json
       "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdbNumber": "RDB-2024-001",
-    "rcaNumber": "RCA-2024-001",
     "contactDetails": {
       "legalRepresentative": "John Doe",
       "contactPhoneNumber": "+250788123456",
@@ -327,8 +317,6 @@ Content-Type: application/json
         "addressLocalityText": "Kigali"
       },
       "tin": "GOV-001",
-      "rdbNumber": "GOV-RDB-001",
-      "rcaNumber": "GOV-RCA-001",
       "contactDetails": {
         "legalRepresentative": "Government Representative",
         "contactPhoneNumber": "+250788000000",

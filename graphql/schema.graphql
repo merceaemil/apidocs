@@ -57,8 +57,6 @@ type BusinessEntity {
   legalAddress: Address
   physicalAddress: Address
   tin: String!
-  rdbNumber: String
-  rcaNumber: String
   contactDetails: ContactDetails!
 }
 
@@ -201,12 +199,14 @@ enum OriginatingOperation {
 
 type Lot {
   lotNumber: ID!
-  timestamp: DateTime!
+  dateRegistration: Date!
+  timeRegistration: Time!
   creator: BusinessEntity!
   mineral: String!
   concentration: Float!
   mass: Float!
   packageType: String
+  nrOfPackages: Float
   unitOfMeasurement: String!
   mineSiteId: String
   creatorRole: [CoCRole!]!
@@ -215,9 +215,9 @@ type Lot {
   inputLot: [LotReference!]
   tag: Tag
   taxPaid: [Tax!]
-  dateSealed: Date!
-  dateShipped: Date!
-  purchaseNumber: [String!]
+  dateSealed: Date
+  dateShipped: Date
+  purchaseNumber: String
   purchaseDate: Date
   responsibleStaff: String
   dateIn: Date
@@ -395,8 +395,6 @@ input BusinessEntityInput {
   legalAddress: AddressInput
   physicalAddress: AddressInput
   tin: String!
-  rdbNumber: String
-  rcaNumber: String
   contactDetails: ContactDetailsInput!
 }
 
@@ -508,12 +506,14 @@ input LotReferenceInput {
 
 input LotInput {
   lotNumber: ID!
-  timestamp: DateTime!
+  dateRegistration: Date!
+  timeRegistration: Time!
   creator: BusinessEntityInput!
   mineral: String!
   concentration: Float!
   mass: Float!
   packageType: String
+  nrOfPackages: Float
   unitOfMeasurement: String!
   mineSiteId: String
   creatorRole: [CoCRole!]!
@@ -522,9 +522,9 @@ input LotInput {
   inputLot: [LotReferenceInput!]
   tag: TagInput
   taxPaid: [TaxInput!]
-  dateSealed: Date!
-  dateShipped: Date!
-  purchaseNumber: [String!]
+  dateSealed: Date
+  dateShipped: Date
+  purchaseNumber: String
   purchaseDate: Date
   responsibleStaff: String
   dateIn: Date

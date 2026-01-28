@@ -47,8 +47,6 @@
           "addressLocalityText": "Kinshasa"
         },
         "tin": "CD123456789",
-        "rdbNumber": "CD-RDB-2024-001",
-        "rcaNumber": "CD-RCA-2024-001",
         "contactDetails": {
           "legalRepresentative": "Jean Dupont",
           "contactPhoneNumber": "+243000000000",
@@ -80,8 +78,6 @@
       "addressLocalityText": "Kinshasa"
     },
     "tin": "CD123456789",
-    "rdbNumber": "CD-RDB-2024-001",
-    "rcaNumber": "CD-RCA-2024-001",
     "contactDetails": {
       "legalRepresentative": "Jean Dupont",
       "contactPhoneNumber": "+243000000000",

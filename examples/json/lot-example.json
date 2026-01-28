@@ -18,8 +18,6 @@
       "addressLocalityText": "Kigali"
     },
     "tin": "123456789",
-    "rdbNumber": "RDB-2024-001",
-    "rcaNumber": "RCA-2024-001",
     "contactDetails": {
       "legalRepresentative": "John Doe",
       "contactPhoneNumber": "+250788123456",
@@ -50,8 +48,6 @@
       "addressLocalityText": "Huye"
     },
     "tin": "987654321",
-    "rdbNumber": "RDB-2024-002",
-    "rcaNumber": "RCA-2024-002",
     "contactDetails": {
       "legalRepresentative": "Alice Brown",
       "contactPhoneNumber": "+250788654321",
@@ -77,8 +73,6 @@
         "addressLocalityText": "Kigali"
       },
       "tin": "GOV-001",
-      "rdbNumber": "GOV-RDB-001",
-      "rcaNumber": "GOV-RCA-001",
       "contactDetails": {
         "legalRepresentative": "Government Representative",
         "contactPhoneNumber": "+250788000000",
