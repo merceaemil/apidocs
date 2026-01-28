@@ -772,7 +772,7 @@ The semantic model defines:
 - **MD.11 Tag**: Lot tags
 - **MD.13 Tax**: Tax payment information
 
-#### Code Lists (MDC.01 - MDC.06)
+#### Code Lists (MDC.01 - MDC.07)
 
 **MDC.01 Certification Status** (Integer codes for language independence):
 - `0` = Blue (Uninspected or Out of RCM scope)
@@ -824,6 +824,12 @@ The semantic model defines:
 - `8` = Export
 
 *Note: Originating operations can be combined. For example, a lot can have operations 2, 3, 4 (Purchase, Combination, Processing) as its origin.*
+
+**MDC.07 Unit of Measurement** (String codes, UN/ECE Recommendation N°. 20):
+- `TNE` = tonne
+- `KGM` = kilogram
+
+*Note: The unit of measure shall be chosen from the lists in UN/ECE Recommendation N°. 20 "Codes for Units of Measure Used in International Trade". Used for lot weight/mass measurements in Lot and Export Certificate entities.*
 
 ### Detailed Entity Descriptions
 
@@ -894,7 +900,7 @@ The Lot entity is central to Chain of Custody tracking. It represents a holder o
 - **concentration**: Approximate concentration percentage (Decimal)
 - **mass**: Lot weight (Decimal)
 - **packageType**: Type of packaging (optional, String)
-- **unitOfMeasurement**: Unit of measure (UN/ECE Recommendation N°. 20)
+- **unitOfMeasurement**: Unit of measure (MDC.07, UN/ECE Recommendation N°. 20)
 - **mineSiteId**: Mine site identifier (REQUIRED when originatingOperation includes Production, references MD.01)
 - **creatorRole**: Array of CoC roles (1..n, references MDC.05)
 - **recipient**: Lot recipient business entity (optional, references MD.04)
@@ -990,6 +996,9 @@ Tax payment information:
 - **taxType**: Textual description of tax type
 - **taxAmount**: Value of paid tax (Decimal)
 - **currency**: Currency code (ISO 4217, 3 letters)
+- **taxAuthority**: Authority who imposed the tax (optional)
+- **taxPaidDate**: Date when the tax was paid (optional)
+- **receiptReference**: Receipt number or other form of reference (optional)
 
 ### Architecture
 
