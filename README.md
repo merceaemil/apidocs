@@ -16,7 +16,7 @@ The standard defines:
 
 The semantic model is based on the ICGLR Data Sharing Protocol Standards document and defines:
 
-### Primary Entities (MD.01 - MD.12)
+### Primary Entities (MD.01 - MD.13)
 - **MD.01 Mine Site**: Core mining site information
 - **MD.03 Export Certificate**: ICGLR export certificates
 - **MD.12 Lot**: Chain of Custody lot tracking
