@@ -40,6 +40,7 @@ The semantic model is based on the ICGLR Data Sharing Protocol Standards documen
 - **MDC.04 License Type**: claim, exploration_permit, mining_license, etc.
 - **MDC.05 CoC Roles**: 1=Miner, 2=Trader, 3=Shipper, etc.
 - **MDC.06 Originating Operations**: 1=Production, 2=Purchase, 3=Combination, etc.
+- **MDC.07 Unit of measurement**: TNE=tonne, KGM=kilogram
 
 ## Repository Structure
 
