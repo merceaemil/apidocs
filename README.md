@@ -33,7 +33,7 @@ The semantic model is based on the ICGLR Data Sharing Protocol Standards documen
 - **MD.11 Tag**: Lot tags
 - **MD.13 Tax**: Tax payment information
 
-### Code Lists (MDC.01 - MDC.06)
+### Code Lists (MDC.01 - MDC.07)
 - **MDC.01 Certification Status**: 0=Blue, 1=Green, 2=Yellow, 3=Red
 - **MDC.02 Mining Activity Status**: 0=Abandoned, 1=Active, 2=Non-active
 - **MDC.03 Mineral**: HS Codes and IMA Codes
