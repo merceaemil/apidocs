@@ -17,6 +17,11 @@
       "$ref": "../core/common.json#/definitions/Identifier",
       "description": "The identification number of the mining license, in the terms used by the national mineral claims systems (if available, in the case of artisanal miners). The actual format is established and used at national level. Can miss only if the license type is 'unlicensed'"
     },
+     "licenseLocation": {
+      "type": "string",
+      "minItems": 1,
+      "description": "License location providing the Country and the first level of Country subdivision in codified format using ISO 3166 2 letters for country followed by - followed by 2 letters for subdivision ( example: CD-BU)"
+    },
     "owner": {
       "$ref": "../core/common.json#/definitions/BusinessEntity",
       "description": "The owner of the mineral license. Can miss only if the license type is 'unlicensed'"
