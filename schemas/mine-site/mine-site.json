@@ -48,6 +48,10 @@
       },
       "description": "The type or types of Mineral(s) produced at the mine, including Designated Minerals. Takes values strictly from the HS Code classification. For designated minerals: 7108.12.00 (Gold), 2609.00.00 (Cassiterite), 2611.00.00 (Wolframite), 2615.90.00 (Columbite-Tantalite/Coltan)"
     },
+    "listOfMinerals": {
+      "type": "string",
+      "description": "Optional description of minerals mined at the site"
+    },
     "license": {
       "type": "array",
       "minItems": 1,
